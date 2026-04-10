@@ -7,18 +7,64 @@
     <link rel="stylesheet" href="./src/styles/style.css" />
     <title>controle financeiro</title>
   </head>
-  <body>
-    <div id="container-principal">
-      <nav id="menu-navegacao">
-        <ul id="lista-navegacao">
-          <li><a href="#">Dashboard</a></li>
-          <li><a href="#">Rendas</a></li>
-          <li><a href="#">Gastos</a></li>
-          <li><a href="#">Cofrinho</a></li>
+  <body class="bg-gray-100">
+    <!-- Container principal -->
+    <div id="container-pai" class="w-full flex min-h-screen">
+      <!-- Menu de navegação -->
+      <nav
+        id="container-menu-filho-1"
+        class="w-[30%] bg-green-800 text-white p-2 flex flex-col"
+      >
+        <!-- Lista de navegação -->
+        <ul
+          id="lista-navegacao"
+          class="w-full flex flex-col gap-4 mt-10 text-lg"
+        >
+          <li>
+            <button
+              class="w-full gap-1 p-1 flex items-center text-left hover:bg-green-700 text-white rounded"
+            >
+              <img src="./src/assets/apartment.png" alt="" class="w-5 h-5" />
+              Dashboard
+            </button>
+          </li>
+          <li>
+            <button
+              class="w-full gap-1 p-1 flex items-center text-left hover:bg-green-700 text-white rounded"
+            >
+              <img src="./src/assets/money.png" alt="" class="w-5 h-5" />
+              Renda
+            </button>
+          </li>
+          <li class="w-full flex items-center gap-1">
+            <button
+              class="w-full gap-1 p-1 flex items-center text-left hover:bg-green-700 text-white rounded"
+            >
+              <img src="./src/assets/bar-chart.png" alt="" class="w-5 h-5" />
+              Contas
+            </button>
+          </li>
+          <li class="w-full flex items-center gap-1">
+            <button
+              class="w-full gap-1 p-1 flex items-center text-left hover:bg-green-700 text-white rounded"
+            >
+              <img src="./src/assets/piggy-bank.png" alt="" class="w-5 h-5" />
+              Cofrinho
+            </button>
+          </li>
         </ul>
+        <!-- Lista de navegação fim -->
       </nav>
-      <div id="conteudo-principal"></div>
+      <!-- Menu de navegação fim -->
+
+      <!-- Conteúdo principal -->
+      <div
+        id="container-conteudo-filho-2"
+        class="w-[70%] bg-gray-50 border"
+      ></div>
+      <!-- Conteúdo principal fim -->
     </div>
+    <!-- container principal fim -->
 
     <script type="module" src="./src/main.js"></script>
   </body>
