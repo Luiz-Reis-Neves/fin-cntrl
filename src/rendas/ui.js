@@ -21,7 +21,7 @@ export function renderizarRenda() {
           >
             <h1 class="text-xl font-semibold">Painel de Rendas</h1>
           </div>
-          <div class="w-full h-[400px] border rounded-[10px]"></div>
+          <div id="container-lista-rendas" class="w-full h-[400px] border rounded-[10px] p-2 flex flex-col gap-2 overflow-y-auto"></div>
 
 
           
@@ -47,7 +47,7 @@ export function renderizarRenda() {
                     <option disabled selected value="">
                       Selecione uma opção
                     </option>
-                    <option value="salario">Salário</option>
+                    <option value="salário">Salário</option>
                     <option value="freelance">Freelance</option>
                     <option value="investimentos">Investimentos</option>
                     <option value="hora_extra">Hora Extra</option>
@@ -135,9 +135,42 @@ export function inicializarRenda() {
   })
 
   btnModelCadastrar.addEventListener("click", () => {
-
     let fncRenda = adicionarRenda(inputCategoria.value, inputValor.value, inputData.value, inputDescricao.value)
     rendas.push(fncRenda)
-    console.log(rendas)
+    renderizarListaRenda()
+  })
+}
+
+export function renderizarListaRenda() {
+  const containerLista = document.querySelector("#container-lista-rendas")
+  containerLista.innerHTML = ""
+
+  rendas.forEach((itens) => {
+    containerLista.innerHTML += `
+    <div
+          class="w-full h-20 border flex rounded-md items-center justify-between p-4"
+        >
+          <div class="h-[30px] flex items-center gap-1 p-1">
+            <h2>Categoria:</h2>
+            <span class="border p-1 rounded-[10px] text-center">${itens.categoria}</span>
+          </div>
+
+          <div class="h-[30px] flex items-center gap-1 p-1">
+            <h2>Valor:</h2>
+            <span class="p-1 rounded-[10px] text-center">${itens.valor}</span>
+          </div>
+
+          <div class="h-[30px] flex items-center gap-1 p-1">
+            <h2>Data:</h2>
+            <span class="p-1 rounded-[10px] text-center">${itens.data}</span>
+          </div>
+
+          <div class="h-[30px] flex items-center gap-1 p-1">
+            <h2>Descrição:</h2>
+            <span class="p-1 rounded-[10px] text-center">${itens.descricao}</span>
+          </div>
+        </div>
+    
+    `
   })
 }
