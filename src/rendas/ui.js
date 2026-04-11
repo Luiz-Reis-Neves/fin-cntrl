@@ -96,7 +96,7 @@ export function renderizarRenda() {
                 <div class="flex justify-between gap-2">
                   <button type="button"
                     id="btn-model-cadastrar"
-                    class="w-full bg-green-800 text-white py-2 rounded hover:bg-green-700"
+                    class="w-full bg-green-800  text-white py-2 rounded hover:bg-green-700"
                   >
                     Cadastrar
                   </button>
@@ -143,34 +143,44 @@ export function inicializarRenda() {
 
 export function renderizarListaRenda() {
   const containerLista = document.querySelector("#container-lista-rendas")
-  containerLista.innerHTML = ""
+
+  let htmlCards = ""
 
   rendas.forEach((itens) => {
-    containerLista.innerHTML += `
-    <div
-          class="w-full h-20 border flex rounded-md items-center justify-between p-4"
-        >
-          <div class="h-[30px] flex items-center gap-1 p-1">
-            <h2>Categoria:</h2>
-            <span class="border p-1 rounded-[10px] text-center">${itens.categoria}</span>
-          </div>
-
-          <div class="h-[30px] flex items-center gap-1 p-1">
-            <h2>Valor:</h2>
-            <span class="p-1 rounded-[10px] text-center">${itens.valor}</span>
-          </div>
-
-          <div class="h-[30px] flex items-center gap-1 p-1">
-            <h2>Data:</h2>
-            <span class="p-1 rounded-[10px] text-center">${itens.data}</span>
-          </div>
-
-          <div class="h-[30px] flex items-center gap-1 p-1">
-            <h2>Descrição:</h2>
-            <span class="p-1 rounded-[10px] text-center">${itens.descricao}</span>
-          </div>
-        </div>
-    
+    htmlCards += `
+    <div class="w-full h-20 border flex rounded-md items-center justify-between p-4">
+      <div class="h-[30px] flex items-center gap-1 p-1">
+        <h2>Categoria:</h2>
+        <span class="border p-1 rounded-[10px] text-center">${itens.categoria}</span>
+      </div>
+      <div class="h-[30px] flex items-center gap-1 p-1">
+        <h2>Valor:</h2>
+        <span class="p-1 rounded-[10px] text-center">${itens.valor}</span>
+      </div>
+      <div class="h-[30px] flex items-center gap-1 p-1">
+        <h2>Data:</h2>
+        <span class="p-1 rounded-[10px] text-center">${itens.data}</span>
+      </div>
+      <div class="h-[30px] flex items-center gap-1 p-1">
+        <h2>Descrição:</h2>
+        <span class="p-1 rounded-[10px] text-center">${itens.descricao}</span>
+      </div>
+      <div class="w-[120px] p-1 flex items-center justify-between">
+        <button id="btn-editar-${itens.id}" class="p-1 bg-blue-500 hover:bg-blue-400 text-white rounded">Editar</button>
+        <button id="btn-deletar-${itens.id}" class="p-1 bg-red-500 hover:bg-red-400 text-white rounded">Excluir</button>
+      </div>
+    </div>
     `
+  })
+
+  containerLista.innerHTML = htmlCards
+
+  rendas.forEach((itens) => {
+    const btnDeletar = document.querySelector(`#btn-deletar-${itens.id}`)
+    btnDeletar.addEventListener("click", () => {
+      const index = rendas.findIndex((renda) => renda.id === itens.id)
+      rendas.splice(index, 1)
+      renderizarListaRenda()
+    })
   })
 }
