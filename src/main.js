@@ -1,5 +1,6 @@
 import './styles/style.css';
 import { renderizarRenda, inicializarRenda } from './rendas/ui.js';
+
 // Declaração de variaveis dos botões
 const botoesNav = document.querySelectorAll("#lista-navegacao button")
 let containerConteudoFilho2 = document.querySelector("#container-conteudo-filho-2")
