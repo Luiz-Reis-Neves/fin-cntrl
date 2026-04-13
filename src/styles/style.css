@@ -1,1 +1,24 @@
 @import "tailwindcss";
+*{
+     font-family: "Roboto", sans-serif;
+}
+
+.btn-3d {
+  box-shadow: 0 6px 0 #2d6b43;
+  transition: all 0.1s ease;
+}
+
+.btn-3d:active {
+  box-shadow: 0 2px 0 #2d6b43;
+  transform: translateY(4px);
+}
+
+.btn-3d-cancelar{
+box-shadow: 0 6px 0 #6b0000;
+  transition: all 0.1s ease;
+}
+
+.btn-3d-cancelar:active {
+  box-shadow: 0 2px 0 #6b0000;
+  transform: translateY(4px);
+}

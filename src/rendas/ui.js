@@ -5,23 +5,26 @@ export function renderizarRenda() {
   return `
     <section class="w-full h-full flex flex-col p-2 gap-2">
           <div
-            class="w-full h-[100px] bg-gray-200 border rounded-[10px] flex items-center gap-4 p-2"
-          >
-            <div class="flex gap-1">
-              <h2 class="text-xl">Saldo Total:</h2>
-              <label for="" class="text-lg font-semibold">2.500,00</label>
-            </div>
-            <button id="btn-nova-renda"
-              class="bg-[#459464] hover:bg-[#3a7d54] text-white py-1 px-4 rounded"
+          class="w-full h-[100px] bg-gray-200 rounded-[10px] flex items-center gap-4 p-2 shadow-md"
+        >
+          <div class="flex flex-col shadow-md rounded-2xl p-4">
+            <h2 class="text-sm text-gray-500">Saldo Total</h2>
+            <label for="" class="text-xl text-green-700 font-bold"
+              >2.500,00</label
             >
-              + Nova Renda
-            </button>
           </div>
+          <button
+          id="btn-nova-renda"
+          class="bg-[#459464] hover:bg-[#3a7d54] text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d"
+        >
+          + Nova Renda
+        </button>
+        </div>
           <div
-            class="w-full h-[50px] bg-gray-200 p-2 flex items-center border rounded-[10px]"
-          >
-            <h1 class="text-xl font-semibold">Painel de Rendas</h1>
-          </div>
+          class="w-full h-[50px] text-green-800 bg-white p-2 flex items-center rounded-[10px] shadow-sm rounded-2xl border-l-4 border-green-800"
+        >
+          <h1 class="text-xl font-semibold">Painel de Rendas</h1>
+        </div>
           <div id="container-lista-rendas" class="w-full h-[400px] border rounded-[10px] p-2 flex flex-col gap-2 overflow-y-auto"></div>
 
 
@@ -38,78 +41,82 @@ export function renderizarRenda() {
             class="w-full h-full border flex items-center justify-center"
           >
             <form>
-              <div class="w-[400px] bg-white p-6 rounded shadow">
-                <h2 class="text-2xl font-bold mb-4">Cadastro de Renda</h2>
-                <div class="mb-4">
-                  <label for="descricao" class="block text-gray-700"
-                    >Tipo de Renda</label
-                  >
-                  <select name="" id="inputCategoria" class="w-full px-3 py-2 border rounded">
-                    <option disabled selected value="">
-                      Selecione uma opção
-                    </option>
-                    <option value="salário">Salário</option>
-                    <option value="freelance">Freelance</option>
-                    <option value="investimentos">Investimentos</option>
-                    <option value="hora_extra">Hora Extra</option>
-                    <option value="comissao">Comissão</option>
-                    <option value="aluguel_recebido">Aluguel Recebido</option>
-                    <option value="dividendos">Dividendos</option>
-                    <option value="presente">Presente</option>
-                    <option value="restituicao">Restituição</option>
-                    <option value="outros">Outros</option>
-                  </select>
-                </div>
-                <div class="mb-4">
-                  <label for="valor" class="block text-gray-700">Valor</label>
-                  <input
-                    type="number"
-                    id="inputValor"
-                    name="valor"
-                    class="w-full px-3 py-2 border rounded"
-                    placeholder="Digite o valor"
-                  />
-                </div>
-                <div class="mb-4">
-                  <label for="data" class="block text-gray-700"
-                    >Data de Recebimento</label
-                  >
-                  <input
-                    type="date"
-                    id="inputData"
-                    name="data"
-                    class="w-full px-3 py-2 border rounded"
-                  />
-                </div>
-                <div class="mb-4">
-                  <label for="descricao" class="block text-gray-700"
-                    >Descrição</label
-                  >
-                  <input
-                    type="text"
-                    id="inputDescricao"
-                    name="descricao"
-                    class="w-full px-3 py-2 border rounded"
-                    placeholder="Digite uma descrição"
-                  />
-                </div>
-                
-                <div class="flex justify-between gap-2">
-                  <button type="button"
-                    id="btn-model-cadastrar"
-                    class="w-full bg-green-800  text-white py-2 rounded hover:bg-green-700"
-                  >
-                    Cadastrar
-                  </button>
-                  <button type="button"
-                    id="btn-model-cancelar"
-                    class="w-full bg-red-800 text-white py-2 rounded hover:bg-red-700"
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              </div>
-            </form>
+          <div class="w-[400px] bg-white p-6 rounded shadow">
+            <h2 class="text-2xl font-bold mb-4">Cadastro de Renda</h2>
+            <div class="mb-4">
+              <label for="inputCategoria" class="block text-gray-700"
+                >Tipo de Renda</label
+              >
+              <select
+                id="inputCategoria"
+                name=""
+                class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
+              >
+                <option disabled selected value="">Selecione uma opção</option>
+                <option value="salário">Salário</option>
+                <option value="freelance">Freelance</option>
+                <option value="investimentos">Investimentos</option>
+                <option value="hora_extra">Hora Extra</option>
+                <option value="comissao">Comissão</option>
+                <option value="aluguel_recebido">Aluguel Recebido</option>
+                <option value="dividendos">Dividendos</option>
+                <option value="presente">Presente</option>
+                <option value="restituicao">Restituição</option>
+                <option value="outros">Outros</option>
+              </select>
+            </div>
+            <div class="mb-4">
+              <label for="inputValor" class="block text-gray-700">Valor</label>
+              <input
+                type="number"
+                id="inputValor"
+                name="valor"
+                class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
+                placeholder="Digite o valor"
+              />
+            </div>
+            <div class="mb-4">
+              <label for="inputData" class="block text-gray-700"
+                >Data de Recebimento</label
+              >
+              <input
+                type="date"
+                id="inputData"
+                name="data"
+                class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
+              />
+            </div>
+            <div class="mb-4">
+              <label for="inputDescricao" class="block text-gray-700"
+                >Descrição</label
+              >
+              <input
+                type="text"
+                id="inputDescricao"
+                name="descricao"
+                class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
+                placeholder="Digite uma descrição"
+              />
+            </div>
+
+            <div class="flex justify-between gap-2">
+              <button
+                type="button"
+                id="btn-model-cadastrar"
+                class="w-full bg-green-800 text-white py-2 rounded hover:bg-green-700 active:scale-95 btn-3d"
+              >
+                Cadastrar
+              </button>
+              <button
+                type="button"
+                id="btn-model-cancelar"
+                class="w-full bg-red-800 text-white py-2 rounded hover:bg-red-700 btn-3d-cancelar"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </form>
           </div>
         </div>
         </section>
