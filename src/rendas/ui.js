@@ -140,6 +140,8 @@ export function inicializarRenda() {
   // mostrar model
   btnNovaRenda.addEventListener("click", () => {
     fundoEscuro.classList.remove("hidden")
+    rendaEmEdicao = null
+    btnModelCadastrar.textContent = "Cadastrar"
   })
   // fecha model
   btnModelCancelar.addEventListener("click", () => {
