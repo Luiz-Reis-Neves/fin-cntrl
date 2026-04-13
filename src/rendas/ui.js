@@ -245,12 +245,15 @@ export function renderizarListaRenda() {
     `
 
 
-    let totalRenda = document.querySelector("#total-Renda")
-    totalRenda.textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calcularTotalRenda())
-
 
 
   })
+
+  let totalRenda = document.querySelector("#total-Renda")
+  totalRenda.textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calcularTotalRenda())
+
+
+
   // importante: injeta todos os cards de uma vez no container, evitando perda de event listeners
   containerLista.innerHTML = htmlCards
   // array que vai percorrer o array procurando o id que vai ser deltado
