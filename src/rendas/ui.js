@@ -8,7 +8,7 @@ export function renderizarRenda() {
           class="w-full h-[100px] bg-gray-200 rounded-[10px] flex items-center gap-4 p-2 shadow-md"
         >
           <div class="flex flex-col shadow-md rounded-2xl p-4">
-            <h2 class="text-sm text-gray-500">Saldo Total</h2>
+            <h2 class="text-sm text-gray-500">Renda Total</h2>
             <label for="" class="text-xl text-green-700 font-bold"
               >2.500,00</label
             >
@@ -187,28 +187,60 @@ export function renderizarListaRenda() {
     let valorformat = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(itens.valor)
     // injeta o card no html
     htmlCards += `
-    <div class="w-full h-20 border flex rounded-md items-center justify-between p-4">
-      <div class="h-[30px] flex items-center gap-1 p-1">
-        <h2>Categoria:</h2>
-        <span class="border p-1 rounded-[10px] text-center">${itens.categoria}</span>
-      </div>
-      <div class="h-[30px] flex items-center gap-1 p-1">
-        <h2>Valor:</h2>
-        <span class="p-1 rounded-[10px] text-center">${valorformat}</span>
-      </div>
-      <div class="h-[30px] flex items-center gap-1 p-1">
-        <h2>Data:</h2>
-        <span class="p-1 rounded-[10px] text-center">${itens.data.split("-").reverse().join("/")}</span>
-      </div>
-      <div class="h-[30px] flex items-center gap-1 p-1">
-        <h2>Descrição:</h2>
-        <span class="p-1 rounded-[10px] text-center">${itens.descricao}</span>
-      </div>
-      <div class="w-[120px] p-1 flex items-center justify-between">
-        <button id="btn-editar-${itens.id}" class="p-1 bg-blue-500 hover:bg-blue-400 text-white rounded">Editar</button>
-        <button id="btn-deletar-${itens.id}" class="p-1 bg-red-500 hover:bg-red-400 text-white rounded">Excluir</button>
-      </div>
-    </div>
+    <div
+          class="w-full h-20 bg-gray-200 rounded-[10px] gap-4 p-2 shadow-md flex rounded-md items-center justify-between"
+        >
+          <div class="h-[30px] flex items-center gap-1 p-1">
+            <h2 class="text-gray-400">Categoria:</h2>
+            <span
+              class="border p-1 rounded-[10px] text-center text-gray-800 font-medium"
+              >${itens.categoria}</span
+            >
+          </div>
+          <div class="h-[30px] flex items-center gap-1 p-1">
+            <h2 class="text-gray-400">Valor:</h2>
+            <span
+              class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
+              >${valorformat}</span
+            >
+          </div>
+          <div class="h-[30px] flex items-center gap-1 p-1">
+            <h2 class="text-gray-400">Data:</h2>
+            <span
+              class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
+              >${itens.data.split("-").reverse().join("/")}</span
+            >
+          </div>
+          <div class="h-[30px] flex items-center gap-1 p-1">
+            <h2 class="text-gray-400">Descrição:</h2>
+            <span
+              class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
+              >${itens.descricao}</span
+            >
+          </div>
+          <div class="w-[110px] p-1 flex items-center justify-between">
+            <button
+              id="btn-editar-${itens.id}"
+              class="w-[50px] h-[30px] bg-blue-500 hover:bg-blue-400 text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d-editar"
+            >
+              <img
+                src="./src/assets/botao-editar.png"
+                class="w-auto h-auto"
+                alt=""
+              />
+            </button>
+            <button
+              id="btn-deletar-${itens.id}"
+              class="w-[50px] h-[30px] bg-red-500 hover:bg-red-400 text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d-deletar"
+            >
+              <img
+                src="./src/assets/excluir.png"
+                class="w-auto h-auto"
+                alt=""
+              />
+            </button>
+          </div>
+        </div>
     `
   })
   // importante: injeta todos os cards de uma vez no container, evitando perda de event listeners

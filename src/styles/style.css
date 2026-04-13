@@ -13,12 +13,27 @@
   transform: translateY(4px);
 }
 
-.btn-3d-cancelar{
-box-shadow: 0 6px 0 #6b0000;
+.btn-3d-cancelar,
+.btn-3d-deletar {
+  box-shadow: 0 6px 0 #6b0000;
   transition: all 0.1s ease;
 }
 
-.btn-3d-cancelar:active {
+.btn-3d-cancelar:active,
+.btn-3d-deletar:active {
   box-shadow: 0 2px 0 #6b0000;
   transform: translateY(4px);
 }
+
+.btn-3d-editar {
+  box-shadow: 0 6px 0 #1d4ed8;
+  transition: all 0.1s ease;
+}
+
+.btn-3d-editar:active {
+  box-shadow: 0 2px 0 #1d4ed8;
+  transform: translateY(4px);
+}
+
+
+
