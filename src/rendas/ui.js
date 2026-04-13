@@ -1,5 +1,6 @@
-import { adicionarRenda } from "./logic.js"
+import { adicionarRenda, validarRenda } from "./logic.js"
 import { rendas } from "../data/store.js"
+let rendaEmEdicao = null
 export function renderizarRenda() {
   return `
     <section class="w-full h-full flex flex-col p-2 gap-2">
@@ -126,26 +127,50 @@ export function inicializarRenda() {
   let inputData = document.querySelector("#inputData")
   let inputDescricao = document.querySelector("#inputDescricao")
 
+  // mostrar model
   btnNovaRenda.addEventListener("click", () => {
     fundoEscuro.classList.remove("hidden")
   })
-
+  // fecha model
   btnModelCancelar.addEventListener("click", () => {
     fundoEscuro.classList.add("hidden")
-  })
 
+  })
+  // pegar os valores do model
   btnModelCadastrar.addEventListener("click", () => {
+    if (!validarRenda(inputCategoria.value, inputValor.value, inputData.value)) {
+      return
+    }
+
     let fncRenda = adicionarRenda(inputCategoria.value, inputValor.value, inputData.value, inputDescricao.value)
-    rendas.push(fncRenda)
-    renderizarListaRenda()
+
+    if (rendaEmEdicao === null) {
+      rendas.push(fncRenda)
+      renderizarListaRenda()
+    } else {
+      // edição
+      const indexEditar = rendas.findIndex((renda) => renda.id === rendaEmEdicao)
+      rendas[indexEditar].categoria = inputCategoria.value
+      rendas[indexEditar].valor = inputValor.value
+      rendas[indexEditar].data = inputData.value
+      rendas[indexEditar].descricao = inputDescricao.value
+      renderizarListaRenda()
+      fundoEscuro.classList.add("hidden")
+      rendaEmEdicao = null
+      btnModelCadastrar.textContent = "Cadastrar"
+    }
+
+
   })
 }
 
+// mostrar os cards na tela
 export function renderizarListaRenda() {
   const containerLista = document.querySelector("#container-lista-rendas")
-
+  const btnModelCadastrar = document.querySelector("#btn-model-cadastrar")
+  // limpar cards
   let htmlCards = ""
-
+  // pegar os valores e colocar nos cards
   rendas.forEach((itens) => {
     htmlCards += `
     <div class="w-full h-20 border flex rounded-md items-center justify-between p-4">
@@ -172,15 +197,46 @@ export function renderizarListaRenda() {
     </div>
     `
   })
-
+  // importante: injeta todos os cards de uma vez no container, evitando perda de event listeners
   containerLista.innerHTML = htmlCards
+  // array que vai percorrer o array procurando o id que vai ser deltado
+  rendas.forEach((itens) => {
+    // identificar o id que vai ser deltado
+    const btnDeletar = document.querySelector(`#btn-deletar-${itens.id}`)
+    // adicionar o evento do botão delete
+    btnDeletar.addEventListener("click", () => {
+      // percorre o array rendas em busca do item clickado e guarda no index
+      const indexExcluir = rendas.findIndex((renda) => renda.id === itens.id)
+      // apaga o item na renda
+      rendas.splice(indexExcluir, 1)
+      // mostra a nova lista tualiazada
+      renderizarListaRenda()
+    })
+  })
 
   rendas.forEach((itens) => {
-    const btnDeletar = document.querySelector(`#btn-deletar-${itens.id}`)
-    btnDeletar.addEventListener("click", () => {
-      const index = rendas.findIndex((renda) => renda.id === itens.id)
-      rendas.splice(index, 1)
-      renderizarListaRenda()
+
+    // identificar o item que vai ser deletado
+    const btnEditar = document.querySelector(`#btn-editar-${itens.id}`)
+    // adicionar o evento do botão editar
+    btnEditar.addEventListener("click", () => {
+      // declaração de variaveis para ser usada dentro do modal
+      let inputCategoria = document.querySelector("#inputCategoria")
+      let inputValor = document.querySelector("#inputValor")
+      let inputData = document.querySelector("#inputData")
+      let inputDescricao = document.querySelector("#inputDescricao")
+      const fundoEscuro = document.querySelector("#fundo-escuro")
+      // percorrer o array rendas para encontrar o item para editar
+      const indexEditar = rendas.findIndex((renda) => renda.id === itens.id)
+      rendaEmEdicao = rendas[indexEditar].id
+      // abrir o modal
+      btnModelCadastrar.textContent = "Concluir Edição"
+      fundoEscuro.classList.remove("hidden")
+      // colocar as informações do card dentro do modal
+      inputCategoria.value = rendas[indexEditar].categoria
+      inputValor.value = rendas[indexEditar].valor
+      inputData.value = rendas[indexEditar].data
+      inputDescricao.value = rendas[indexEditar].descricao
     })
   })
 }
