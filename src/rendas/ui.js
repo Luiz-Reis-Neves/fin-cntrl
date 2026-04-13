@@ -25,7 +25,10 @@ export function renderizarRenda() {
         >
           <h1 class="text-xl font-semibold">Painel de Rendas</h1>
         </div>
-          <div id="container-lista-rendas" class="w-full h-[400px] border rounded-[10px] p-2 flex flex-col gap-2 overflow-y-auto"></div>
+          <div
+          id="container-lista-rendas"
+          class="w-full h-[400px] p-2 flex flex-col gap-2 overflow-y-auto bg-white rounded-[10px] shadow-2xl"
+        ></div>
 
 
           
