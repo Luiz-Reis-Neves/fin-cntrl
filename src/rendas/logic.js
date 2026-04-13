@@ -1,8 +1,14 @@
+import { rendas } from '../data/store.js'
 export function adicionarRenda(categoria, valor, data, descricao) {
     let id = Date.now()
     let dadosDeRenda = { id: id, categoria: categoria, valor: valor, data: data, descricao: descricao }
 
     return dadosDeRenda;
+}
+// calcula a renda total dos cards somados
+export function calcularTotalRenda() {
+    let total = rendas.reduce((acumulador, renda) => acumulador + Number(renda.valor), 0)
+    return total
 }
 
 export function validarCategoria(categoria) {

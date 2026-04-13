@@ -1,4 +1,4 @@
-import { adicionarRenda, validarRenda } from "./logic.js"
+import { adicionarRenda, validarRenda, calcularTotalRenda } from "./logic.js"
 import { rendas } from "../data/store.js"
 let rendaEmEdicao = null
 export function renderizarRenda() {
@@ -9,8 +9,8 @@ export function renderizarRenda() {
         >
           <div class="flex flex-col shadow-md rounded-2xl p-4">
             <h2 class="text-sm text-gray-500">Renda Total</h2>
-            <label for="" class="text-xl text-green-700 font-bold"
-              >2.500,00</label
+            <label id="total-Renda" for="" class="text-xl text-green-700 font-bold"
+              >R$ 0,00</label
             >
           </div>
           <button
@@ -56,16 +56,16 @@ export function renderizarRenda() {
                 class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
               >
                 <option disabled selected value="">Selecione uma opção</option>
-                <option value="salário">Salário</option>
-                <option value="freelance">Freelance</option>
-                <option value="investimentos">Investimentos</option>
-                <option value="hora_extra">Hora Extra</option>
-                <option value="comissao">Comissão</option>
-                <option value="aluguel_recebido">Aluguel Recebido</option>
-                <option value="dividendos">Dividendos</option>
-                <option value="presente">Presente</option>
-                <option value="restituicao">Restituição</option>
-                <option value="outros">Outros</option>
+                <option value="Salário">Salário</option>
+                <option value="Freelance">Freelance</option>
+                <option value="Investimentos">Investimentos</option>
+                <option value="Hora Extra">Hora Extra</option>
+                <option value="Comissão">Comissão</option>
+                <option value="Aluguel Recebido">Aluguel Recebido</option>
+                <option value="Dividendos">Dividendos</option>
+                <option value="Presente">Presente</option>
+                <option value="Restituição">Restituição</option>
+                <option value="Outros">Outros</option>
               </select>
             </div>
             <div class="mb-4">
@@ -171,6 +171,7 @@ export function inicializarRenda() {
     }
 
 
+
   })
 }
 
@@ -193,7 +194,7 @@ export function renderizarListaRenda() {
           <div class="h-[30px] flex items-center gap-1 p-1">
             <h2 class="text-gray-400">Categoria:</h2>
             <span
-              class="border p-1 rounded-[10px] text-center text-gray-800 font-medium"
+              class="border p-1 rounded-[10px] text-center text-gray-800 font-medium ${corCategoria(itens.categoria)}"
               >${itens.categoria}</span
             >
           </div>
@@ -242,6 +243,13 @@ export function renderizarListaRenda() {
           </div>
         </div>
     `
+
+
+    let totalRenda = document.querySelector("#total-Renda")
+    totalRenda.textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calcularTotalRenda())
+
+
+
   })
   // importante: injeta todos os cards de uma vez no container, evitando perda de event listeners
   containerLista.innerHTML = htmlCards
@@ -285,4 +293,30 @@ export function renderizarListaRenda() {
       inputDescricao.value = rendas[indexEditar].descricao
     })
   })
+}
+
+function corCategoria(categoria) {
+  switch (categoria) {
+    case "Salário":
+      return "bg-blue-200 text-blue-800"
+    case "Freelance":
+      return "bg-purple-200 text-purple-800"
+    case "Investimentos":
+      return "bg-yellow-200 text-yellow-800"
+    case "Hora Extra":
+      return "bg-orange-200 text-orange-800"
+    case "Comissão":
+      return "bg-pink-200 text-pink-800"
+    case "Aluguel Recebido":
+      return "bg-teal-200 text-teal-800"
+    case "Dividendos":
+      return "bg-green-200 text-green-800"
+    case "Presente":
+      return "bg-red-200 text-red-800"
+    case "Restituição":
+      return "bg-indigo-200 text-indigo-800"
+    case "Outros":
+      return "bg-gray-200 text-gray-800"
+    default:
+  }
 }
