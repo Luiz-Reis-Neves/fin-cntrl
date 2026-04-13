@@ -172,6 +172,10 @@ export function renderizarListaRenda() {
   let htmlCards = ""
   // pegar os valores e colocar nos cards
   rendas.forEach((itens) => {
+    // coloca ponto e virgula no numero
+    // ex:2000 vai para 2.000,00
+    let valorformat = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(itens.valor)
+    // injeta o card no html
     htmlCards += `
     <div class="w-full h-20 border flex rounded-md items-center justify-between p-4">
       <div class="h-[30px] flex items-center gap-1 p-1">
@@ -180,11 +184,11 @@ export function renderizarListaRenda() {
       </div>
       <div class="h-[30px] flex items-center gap-1 p-1">
         <h2>Valor:</h2>
-        <span class="p-1 rounded-[10px] text-center">${itens.valor}</span>
+        <span class="p-1 rounded-[10px] text-center">${valorformat}</span>
       </div>
       <div class="h-[30px] flex items-center gap-1 p-1">
         <h2>Data:</h2>
-        <span class="p-1 rounded-[10px] text-center">${itens.data}</span>
+        <span class="p-1 rounded-[10px] text-center">${itens.data.split("-").reverse().join("/")}</span>
       </div>
       <div class="h-[30px] flex items-center gap-1 p-1">
         <h2>Descrição:</h2>
