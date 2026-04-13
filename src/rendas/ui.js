@@ -1,40 +1,58 @@
 import { adicionarRenda, validarRenda, calcularTotalRenda } from "./logic.js"
 import { rendas } from "../data/store.js"
 let rendaEmEdicao = null
-export function renderizarRenda() {
+
+// função que contem o template do header rendas
+function renderizarHeader() {
   return `
-    <section class="w-full h-full flex flex-col p-2 gap-2">
-          <div
+  <div
           class="w-full h-[100px] bg-gray-200 rounded-[10px] flex items-center gap-4 p-2 shadow-md"
         >
           <div class="flex flex-col shadow-md rounded-2xl p-4">
             <h2 class="text-sm text-gray-500">Renda Total</h2>
-            <label id="total-Renda" for="" class="text-xl text-green-700 font-bold"
-              >R$ 0,00</label
+            <label
+              id="total-Renda"
+              for=""
+              class="text-xl text-green-700 font-bold"
             >
+              R$ 0,00
+            </label>
           </div>
           <button
-          id="btn-nova-renda"
-          class="bg-[#459464] hover:bg-[#3a7d54] text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d"
-        >
-          + Nova Renda
-        </button>
+            id="btn-nova-renda"
+            class="bg-[#459464] hover:bg-[#3a7d54] text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d"
+          >
+            + Nova Renda
+          </button>
         </div>
-          <div
+  
+  `
+}
+// função que contem o painel do rendas
+function renderizarPainel() {
+  return `
+  <div
           class="w-full h-[50px] text-green-800 bg-white p-2 flex items-center rounded-[10px] shadow-sm rounded-2xl border-l-4 border-green-800"
         >
           <h1 class="text-xl font-semibold">Painel de Rendas</h1>
         </div>
-          <div
+  
+  `
+}
+// função que contem a lista do rendas
+function renderizarLista() {
+  return `
+  <div
           id="container-lista-rendas"
           class="w-full h-[400px] p-2 flex flex-col gap-2 overflow-y-auto bg-white rounded-[10px] shadow-2xl"
         ></div>
-
-
-          
-
-
-          <div
+  
+  `
+}
+// função que contem o modal do rendas
+function renderizarModal() {
+  return `
+  <div
           id="fundo-escuro"
           class="w-full h-full bg-black/50 hidden fixed inset-0 z-50"
         >
@@ -122,7 +140,18 @@ export function renderizarRenda() {
         </form>
           </div>
         </div>
-        </section>
+  
+  `
+}
+// função que chama todos os templentes de rendas
+export function renderizarRenda() {
+  return `
+    <section class="w-full h-full flex flex-col p-2 gap-2">
+      ${renderizarHeader()}
+      ${renderizarPainel()}
+      ${renderizarLista()}
+      ${renderizarModal()}   
+    </section>
     
     `
 }
