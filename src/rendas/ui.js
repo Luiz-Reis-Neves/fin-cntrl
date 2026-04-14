@@ -28,7 +28,7 @@ function renderizarHeader() {
   
   `
 }
-// função que contem o painel do rendas
+// função que contem o templete painel do rendas
 function renderizarPainel() {
   return `
   <div
@@ -39,7 +39,7 @@ function renderizarPainel() {
   
   `
 }
-// função que contem a lista do rendas
+// função que contem o templete lista do rendas
 function renderizarLista() {
   return `
   <div
@@ -49,7 +49,7 @@ function renderizarLista() {
   
   `
 }
-// função que contem o modal do rendas
+// função que contem o templete modal do rendas
 function renderizarModal() {
   return `
   <div
@@ -155,6 +155,65 @@ export function renderizarRenda() {
     
     `
 }
+// função que contem o templete lista de cards
+function renderizarListaCards(itens, valorformat) {
+  return `
+  <div
+          class="w-full h-20 bg-gray-200 rounded-[10px] gap-4 p-2 shadow-md flex rounded-md items-center justify-between"
+        >
+          <div class="h-[30px] flex items-center gap-1 p-1">
+            <h2 class="text-gray-400">Categoria:</h2>
+            <span
+              class="border p-1 rounded-[10px] text-center text-gray-800 font-medium ${corCategoria(itens.categoria)}"
+              >${itens.categoria}</span
+            >
+          </div>
+          <div class="h-[30px] flex items-center gap-1 p-1">
+            <h2 class="text-gray-400">Valor:</h2>
+            <span
+              class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
+              >${valorformat}</span
+            >
+          </div>
+          <div class="h-[30px] flex items-center gap-1 p-1">
+            <h2 class="text-gray-400">Data:</h2>
+            <span
+              class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
+              >${itens.data.split("-").reverse().join("/")}</span
+            >
+          </div>
+          <div class="h-[30px] flex items-center gap-1 p-1">
+            <h2 class="text-gray-400">Descrição:</h2>
+            <span
+              class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
+              >${itens.descricao}</span
+            >
+          </div>
+          <div class="w-[110px] p-1 flex items-center justify-between">
+            <button
+              id="btn-editar-${itens.id}"
+              class="w-[50px] h-[30px] bg-blue-500 hover:bg-blue-400 text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d-editar"
+            >
+              <img
+                src="./src/assets/botao-editar.png"
+                class="w-auto h-auto"
+                alt=""
+              />
+            </button>
+            <button
+              id="btn-deletar-${itens.id}"
+              class="w-[50px] h-[30px] bg-red-500 hover:bg-red-400 text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d-deletar"
+            >
+              <img
+                src="./src/assets/excluir.png"
+                class="w-auto h-auto"
+                alt=""
+              />
+            </button>
+          </div>
+        </div>
+  `
+}
 
 // função que mostra o modal cadastrar
 function btnMostrarModal({ btnNovaRenda, fundoEscuro, btnModelCadastrar }) {
@@ -209,7 +268,7 @@ function pegarValoresModal({ btnModelCadastrar, inputCategoria, inputValor, inpu
 
   })
 }
-
+// função principal que controla o model, botões de: mostrar, fechar e cadastrar
 export function inicializarRenda() {
   const btnNovaRenda = document.querySelector("#btn-nova-renda")
   const fundoEscuro = document.querySelector("#fundo-escuro")
@@ -228,88 +287,17 @@ export function inicializarRenda() {
   pegarValoresModal({ btnModelCadastrar, inputCategoria, inputValor, inputData, inputDescricao, fundoEscuro })
 }
 
-// mostrar os cards na tela
-export function renderizarListaRenda() {
-  const containerLista = document.querySelector("#container-lista-rendas")
-  const btnModelCadastrar = document.querySelector("#btn-model-cadastrar")
-  // limpar cards
+// funcão para pegar valores que colocar no cards
+function pegarValoresCards() {
   let htmlCards = ""
-  // pegar os valores e colocar nos cards
   rendas.forEach((itens) => {
-    // coloca ponto e virgula no numero
-    // ex:2000 vai para 2.000,00
     let valorformat = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(itens.valor)
-    // injeta o card no html
-    htmlCards += `
-    <div
-          class="w-full h-20 bg-gray-200 rounded-[10px] gap-4 p-2 shadow-md flex rounded-md items-center justify-between"
-        >
-          <div class="h-[30px] flex items-center gap-1 p-1">
-            <h2 class="text-gray-400">Categoria:</h2>
-            <span
-              class="border p-1 rounded-[10px] text-center text-gray-800 font-medium ${corCategoria(itens.categoria)}"
-              >${itens.categoria}</span
-            >
-          </div>
-          <div class="h-[30px] flex items-center gap-1 p-1">
-            <h2 class="text-gray-400">Valor:</h2>
-            <span
-              class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
-              >${valorformat}</span
-            >
-          </div>
-          <div class="h-[30px] flex items-center gap-1 p-1">
-            <h2 class="text-gray-400">Data:</h2>
-            <span
-              class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
-              >${itens.data.split("-").reverse().join("/")}</span
-            >
-          </div>
-          <div class="h-[30px] flex items-center gap-1 p-1">
-            <h2 class="text-gray-400">Descrição:</h2>
-            <span
-              class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
-              >${itens.descricao}</span
-            >
-          </div>
-          <div class="w-[110px] p-1 flex items-center justify-between">
-            <button
-              id="btn-editar-${itens.id}"
-              class="w-[50px] h-[30px] bg-blue-500 hover:bg-blue-400 text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d-editar"
-            >
-              <img
-                src="./src/assets/botao-editar.png"
-                class="w-auto h-auto"
-                alt=""
-              />
-            </button>
-            <button
-              id="btn-deletar-${itens.id}"
-              class="w-[50px] h-[30px] bg-red-500 hover:bg-red-400 text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d-deletar"
-            >
-              <img
-                src="./src/assets/excluir.png"
-                class="w-auto h-auto"
-                alt=""
-              />
-            </button>
-          </div>
-        </div>
-    `
-
-
-
-
+    htmlCards += renderizarListaCards(itens, valorformat)
   })
+  return htmlCards
+}
 
-  let totalRenda = document.querySelector("#total-Renda")
-  totalRenda.textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calcularTotalRenda())
-
-
-
-  // importante: injeta todos os cards de uma vez no container, evitando perda de event listeners
-  containerLista.innerHTML = htmlCards
-  // array que vai percorrer o array procurando o id que vai ser deltado
+function deletarCards() {
   rendas.forEach((itens) => {
     // identificar o id que vai ser deltado
     const btnDeletar = document.querySelector(`#btn-deletar-${itens.id}`)
@@ -323,7 +311,9 @@ export function renderizarListaRenda() {
       renderizarListaRenda()
     })
   })
+}
 
+function editarCards(btnModelCadastrar) {
   rendas.forEach((itens) => {
 
     // identificar o item que vai ser deletado
@@ -351,6 +341,26 @@ export function renderizarListaRenda() {
   })
 }
 
+// mostrar os cards na tela
+export function renderizarListaRenda() {
+  const containerLista = document.querySelector("#container-lista-rendas")
+  const btnModelCadastrar = document.querySelector("#btn-model-cadastrar")
+
+  // pegar os valores e colocar nos cards
+  let htmlCards = pegarValoresCards()
+
+  // exibir o total da renda no header
+  let totalRenda = document.querySelector("#total-Renda")
+  totalRenda.textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calcularTotalRenda())
+
+  // importante: injeta todos os cards de uma vez no container, evitando perda de event listeners
+  containerLista.innerHTML = htmlCards
+  // array que vai percorrer o array procurando o id que vai ser deltado
+  deletarCards()
+  // função que edita os cards
+  editarCards(btnModelCadastrar)
+}
+// cores das categorias do card
 function corCategoria(categoria) {
   switch (categoria) {
     case "Salário":
