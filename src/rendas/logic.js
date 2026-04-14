@@ -1,5 +1,5 @@
 import { rendas } from '../data/store.js'
-export function adicionarRenda(categoria, valor, data, descricao) {
+export function adicionarRenda({ categoria, valor, data, descricao }) {
     let id = Date.now()
     let dadosDeRenda = { id: id, categoria: categoria, valor: valor, data: data, descricao: descricao }
 
@@ -39,7 +39,7 @@ export function validarData(data) {
     return true
 }
 
-export function validarRenda(categoria, valor, data) {
+export function validarRenda({ categoria, valor, data }) {
     let funcCategoria = validarCategoria(categoria)
     let funcValor = validarValor(valor)
     let funcData = validarData(data)

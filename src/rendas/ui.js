@@ -156,6 +156,60 @@ export function renderizarRenda() {
     `
 }
 
+// função que mostra o modal cadastrar
+function btnMostrarModal({ btnNovaRenda, fundoEscuro, btnModelCadastrar }) {
+  // adicionar o evento no btn nova renda
+  btnNovaRenda.addEventListener("click", () => {
+    // retirar o hidden para aparecer o modal
+    fundoEscuro.classList.remove("hidden")
+    // Garante que quando o usuário abrir o modal pelo botão "Nova Renda", o modo de edição está desativado.
+    rendaEmEdicao = null
+    // modar o nome do botão para cadastrar
+    btnModelCadastrar.textContent = "Cadastrar"
+  })
+}
+
+// função para editar as informações do card
+function btnEditar({ inputCategoria, inputValor, inputData, inputDescricao, fundoEscuro, btnModelCadastrar }) {
+  const indexEditar = rendas.findIndex((renda) => renda.id === rendaEmEdicao)
+  rendas[indexEditar].categoria = inputCategoria.value
+  rendas[indexEditar].valor = inputValor.value
+  rendas[indexEditar].data = inputData.value
+  rendas[indexEditar].descricao = inputDescricao.value
+  renderizarListaRenda()
+  fundoEscuro.classList.add("hidden")
+  rendaEmEdicao = null
+  btnModelCadastrar.textContent = "Cadastrar"
+}
+
+// função do botão cancelar no modal
+function btnFecharModal({ btnModelCancelar, fundoEscuro }) {
+  btnModelCancelar.addEventListener("click", () => {
+    fundoEscuro.classList.add("hidden")
+  })
+}
+// pegar os valores do modal
+function pegarValoresModal({ btnModelCadastrar, inputCategoria, inputValor, inputData, inputDescricao, fundoEscuro }) {
+  btnModelCadastrar.addEventListener("click", () => {
+    if (!validarRenda({ categoria: inputCategoria.value, valor: inputValor.value, data: inputData.value })) {
+      return
+    }
+
+    let fncRenda = adicionarRenda({ categoria: inputCategoria.value, valor: inputValor.value, data: inputData.value, descricao: inputDescricao.value })
+
+    if (rendaEmEdicao === null) {
+      rendas.push(fncRenda)
+      renderizarListaRenda()
+    } else {
+      // edição
+      btnEditar({ inputCategoria, inputValor, inputData, inputDescricao, fundoEscuro, btnModelCadastrar })
+    }
+
+
+
+  })
+}
+
 export function inicializarRenda() {
   const btnNovaRenda = document.querySelector("#btn-nova-renda")
   const fundoEscuro = document.querySelector("#fundo-escuro")
@@ -167,43 +221,11 @@ export function inicializarRenda() {
   let inputDescricao = document.querySelector("#inputDescricao")
 
   // mostrar model
-  btnNovaRenda.addEventListener("click", () => {
-    fundoEscuro.classList.remove("hidden")
-    rendaEmEdicao = null
-    btnModelCadastrar.textContent = "Cadastrar"
-  })
+  btnMostrarModal({ btnNovaRenda, fundoEscuro, btnModelCadastrar })
   // fecha model
-  btnModelCancelar.addEventListener("click", () => {
-    fundoEscuro.classList.add("hidden")
-
-  })
+  btnFecharModal({ btnModelCancelar, fundoEscuro })
   // pegar os valores do model
-  btnModelCadastrar.addEventListener("click", () => {
-    if (!validarRenda(inputCategoria.value, inputValor.value, inputData.value)) {
-      return
-    }
-
-    let fncRenda = adicionarRenda(inputCategoria.value, inputValor.value, inputData.value, inputDescricao.value)
-
-    if (rendaEmEdicao === null) {
-      rendas.push(fncRenda)
-      renderizarListaRenda()
-    } else {
-      // edição
-      const indexEditar = rendas.findIndex((renda) => renda.id === rendaEmEdicao)
-      rendas[indexEditar].categoria = inputCategoria.value
-      rendas[indexEditar].valor = inputValor.value
-      rendas[indexEditar].data = inputData.value
-      rendas[indexEditar].descricao = inputDescricao.value
-      renderizarListaRenda()
-      fundoEscuro.classList.add("hidden")
-      rendaEmEdicao = null
-      btnModelCadastrar.textContent = "Cadastrar"
-    }
-
-
-
-  })
+  pegarValoresModal({ btnModelCadastrar, inputCategoria, inputValor, inputData, inputDescricao, fundoEscuro })
 }
 
 // mostrar os cards na tela
