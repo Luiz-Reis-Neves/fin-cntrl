@@ -20,11 +20,26 @@ function renderizarHeader() {
           </div>
           <button
             id="btn-nova-renda"
-            class="bg-[#459464] hover:bg-[#3a7d54] text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d"
+            class="w-[140px] h-[40px] bg-[#459464] hover:bg-[#3a7d54] text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d"
           >
             + Nova Renda
           </button>
+          <div id="lista-cards-header" class="flex gap-2 overflow-x-auto">
+
+          </div>
         </div>
+  
+  `
+}
+// templetes cards do header
+function renderizarCardsHeader(categoria, valorformat) {
+  return `
+  <div class=" flex flex-col shadow-md rounded-2xl p-4 ${corCategoria(categoria)}">
+              <h2 class="text-sm text-blue-800">${categoria}</h2>
+              <label for="" class="text-xl text-blue-800 font-bold"
+                >${valorformat}</label
+              >
+            </div>
   
   `
 }
@@ -297,6 +312,30 @@ function pegarValoresCards() {
   return htmlCards
 }
 
+function pegarValoresHeaderCards() {
+  let headerCards = ""
+  const resumoTotais = rendas.reduce((totais, itens) => {
+    const categoriaAtual = itens.categoria;
+    const valorAtual = Number(itens.valor);
+
+    if (!totais[categoriaAtual]) {
+      totais[categoriaAtual] = 0;
+    }
+
+    totais[categoriaAtual] += valorAtual;
+
+    return totais;
+  }, {});
+
+  Object.entries(resumoTotais).forEach(([categoria, valorTotal]) => {
+    let valorformat = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorTotal)
+    headerCards += renderizarCardsHeader(categoria, valorformat);
+  });
+
+  return headerCards;
+
+}
+
 function deletarCards() {
   rendas.forEach((itens) => {
     // identificar o id que vai ser deltado
@@ -348,10 +387,13 @@ export function renderizarListaRenda() {
 
   // pegar os valores e colocar nos cards
   let htmlCards = pegarValoresCards()
-
+  let headerCards = pegarValoresHeaderCards()
   // exibir o total da renda no header
   let totalRenda = document.querySelector("#total-Renda")
   totalRenda.textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calcularTotalRenda())
+
+  const listaCardsHeader = document.querySelector("#lista-cards-header")
+  listaCardsHeader.innerHTML = headerCards
 
   // importante: injeta todos os cards de uma vez no container, evitando perda de event listeners
   containerLista.innerHTML = htmlCards
