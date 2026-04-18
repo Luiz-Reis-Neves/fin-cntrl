@@ -1,4 +1,4 @@
-import { } from "./logic.js"
+import { adicionarRenda } from "./logic.js"
 
 
 // função que contem o template do header rendas
@@ -255,7 +255,7 @@ function pegarValoresModal() {
 export function eventosDoModal() {
   let btnNovaRenda = document.querySelector("#btn-nova-renda")
   let btnModelCancelar = document.querySelector("#btn-model-cancelar")
-  let btnModelCadastrar = document.querySelector("#btn-model-cadastrar")
+  let btnModalCadastrar = document.querySelector("#btn-model-cadastrar")
 
   btnNovaRenda.addEventListener("click", () => {
     abrirModal()
@@ -265,7 +265,7 @@ export function eventosDoModal() {
     fecharModal()
   })
 
-  btnModelCadastrar.addEventListener("click", () => {
+  btnModalCadastrar.addEventListener("click", () => {
     pegarValoresModal()
   })
 }

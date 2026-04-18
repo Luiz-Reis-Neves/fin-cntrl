@@ -14,9 +14,12 @@ export function adicionarRenda({ categoria, valor, data, descricao }) {
         data: data,
         descricao: descricao
     }
+    // rendas.push(dadosDeRenda)
+    return rendas
 }
 
 
 export function inicializarRenda() {
     eventosDoModal()
+    // console.table(adicionarRenda())
 }
