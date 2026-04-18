@@ -1,4 +1,4 @@
-
+import { } from "./logic.js"
 
 
 // função que contem o template do header rendas
@@ -224,37 +224,48 @@ export function renderizarRenda() {
       ${renderizarHeader()}
       ${renderizarPainel()}
       ${renderizarLista()}
-      ${renderizarModal()}   
+      ${renderizarModal()}
     </section>
     
     `
 }
+// quando clickar no "cadastrar renda" vai abrir o modal
+function abrirModal() {
+  let fundoEscuro = document.querySelector("#fundo-escuro")
+  fundoEscuro.classList.remove("hidden")
+}
+// botão cancelar dentro do modal
+function fecharModal() {
+  let fundoEscuro = document.querySelector("#fundo-escuro")
+  fundoEscuro.classList.add("hidden")
+}
 
+// pegar valores dos inputs do modal
+function pegarValoresModal() {
+  let categoria = document.querySelector("#inputCategoria").value;
+  let valor = document.querySelector("#inputValor").value;
+  let data = document.querySelector("#inputData").value;
+  let descricao = document.querySelector("#inputDescricao").value;
 
+  // Coloca tudo num pacote e entrega pra quem pediu
+  return { categoria, valor, data, descricao };
+}
 
-// cores das categorias do card
-// function corCategoria(categoria) {
-//   switch (categoria) {
-//     case "Salário":
-//       return "bg-blue-200 text-blue-800"
-//     case "Freelance":
-//       return "bg-purple-200 text-purple-800"
-//     case "Investimentos":
-//       return "bg-yellow-200 text-yellow-800"
-//     case "Hora Extra":
-//       return "bg-orange-200 text-orange-800"
-//     case "Comissão":
-//       return "bg-pink-200 text-pink-800"
-//     case "Aluguel Recebido":
-//       return "bg-teal-200 text-teal-800"
-//     case "Dividendos":
-//       return "bg-green-200 text-green-800"
-//     case "Presente":
-//       return "bg-red-200 text-red-800"
-//     case "Restituição":
-//       return "bg-indigo-200 text-indigo-800"
-//     case "Outros":
-//       return "bg-gray-200 text-gray-800"
-//     default:
-//   }
-// }
+// funcionalidades do modal
+export function eventosDoModal() {
+  let btnNovaRenda = document.querySelector("#btn-nova-renda")
+  let btnModelCancelar = document.querySelector("#btn-model-cancelar")
+  let btnModelCadastrar = document.querySelector("#btn-model-cadastrar")
+
+  btnNovaRenda.addEventListener("click", () => {
+    abrirModal()
+  })
+
+  btnModelCancelar.addEventListener("click", () => {
+    fecharModal()
+  })
+
+  btnModelCadastrar.addEventListener("click", () => {
+    pegarValoresModal()
+  })
+}

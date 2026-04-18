@@ -1,6 +1,6 @@
 import './styles/style.css';
 import { renderizarRenda } from './rendas/ui.js';
-
+import { inicializarRenda } from './rendas/logic.js';
 // Declaração de variaveis dos botões
 const botoesNav = document.querySelectorAll("#lista-navegacao button")
 let containerConteudoFilho2 = document.querySelector("#container-conteudo-filho-2")
@@ -10,6 +10,7 @@ botoesNav.forEach((botao) => {
         switch (botao.id) {
             case "btn-renda":
                 containerConteudoFilho2.innerHTML = renderizarRenda()
+                inicializarRenda()
                 break
             default:
         }
