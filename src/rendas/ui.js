@@ -1,6 +1,5 @@
-import { adicionarRenda, validarRenda, calcularTotalRenda } from "./logic.js"
-import { rendas } from "../data/store.js"
-let rendaEmEdicao = null
+
+
 
 // função que contem o template do header rendas
 function renderizarHeader() {
@@ -32,12 +31,12 @@ function renderizarHeader() {
   `
 }
 // templetes cards do header
-function renderizarCardsHeader(categoria, valorformat) {
+export function renderizarCardsHeader() {
   return `
-  <div class=" flex flex-col shadow-md rounded-2xl p-4 ${corCategoria(categoria)}">
-              <h2 class="text-sm text-blue-800">${categoria}</h2>
+  <div class=" flex flex-col shadow-md rounded-2xl p-4 ">
+              <h2 class="text-sm text-blue-800"></h2>
               <label for="" class="text-xl text-blue-800 font-bold"
-                >${valorformat}</label
+                ></label
               >
             </div>
   
@@ -158,20 +157,9 @@ function renderizarModal() {
   
   `
 }
-// função que chama todos os templentes de rendas
-export function renderizarRenda() {
-  return `
-    <section class="w-full h-full flex flex-col p-2 gap-2">
-      ${renderizarHeader()}
-      ${renderizarPainel()}
-      ${renderizarLista()}
-      ${renderizarModal()}   
-    </section>
-    
-    `
-}
+
 // função que contem o templete lista de cards
-function renderizarListaCards(itens, valorformat) {
+export function renderizarListaCards() {
   return `
   <div
           class="w-full h-20 bg-gray-200 rounded-[10px] gap-4 p-2 shadow-md flex rounded-md items-center justify-between"
@@ -179,34 +167,34 @@ function renderizarListaCards(itens, valorformat) {
           <div class="h-[30px] flex items-center gap-1 p-1">
             <h2 class="text-gray-400">Categoria:</h2>
             <span
-              class="border p-1 rounded-[10px] text-center text-gray-800 font-medium ${corCategoria(itens.categoria)}"
-              >${itens.categoria}</span
+              class="border p-1 rounded-[10px] text-center text-gray-800 font-medium "
+              ></span
             >
           </div>
           <div class="h-[30px] flex items-center gap-1 p-1">
             <h2 class="text-gray-400">Valor:</h2>
             <span
               class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
-              >${valorformat}</span
+              ></span
             >
           </div>
           <div class="h-[30px] flex items-center gap-1 p-1">
             <h2 class="text-gray-400">Data:</h2>
             <span
               class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
-              >${itens.data.split("-").reverse().join("/")}</span
+              ></span
             >
           </div>
           <div class="h-[30px] flex items-center gap-1 p-1">
             <h2 class="text-gray-400">Descrição:</h2>
             <span
               class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
-              >${itens.descricao}</span
+              ></span
             >
           </div>
           <div class="w-[110px] p-1 flex items-center justify-between">
             <button
-              id="btn-editar-${itens.id}"
+              id="btn-editar-"
               class="w-[50px] h-[30px] bg-blue-500 hover:bg-blue-400 text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d-editar"
             >
               <img
@@ -216,7 +204,7 @@ function renderizarListaCards(itens, valorformat) {
               />
             </button>
             <button
-              id="btn-deletar-${itens.id}"
+              id="btn-deletar-"
               class="w-[50px] h-[30px] bg-red-500 hover:bg-red-400 text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d-deletar"
             >
               <img
@@ -229,202 +217,44 @@ function renderizarListaCards(itens, valorformat) {
         </div>
   `
 }
-
-// função que mostra o modal cadastrar
-function btnMostrarModal({ btnNovaRenda, fundoEscuro, btnModelCadastrar }) {
-  // adicionar o evento no btn nova renda
-  btnNovaRenda.addEventListener("click", () => {
-    // retirar o hidden para aparecer o modal
-    fundoEscuro.classList.remove("hidden")
-    // Garante que quando o usuário abrir o modal pelo botão "Nova Renda", o modo de edição está desativado.
-    rendaEmEdicao = null
-    // modar o nome do botão para cadastrar
-    btnModelCadastrar.textContent = "Cadastrar"
-  })
+// função que chama todos os templentes de rendas
+export function renderizarRenda() {
+  return `
+    <section class="w-full h-full flex flex-col p-2 gap-2">
+      ${renderizarHeader()}
+      ${renderizarPainel()}
+      ${renderizarLista()}
+      ${renderizarModal()}   
+    </section>
+    
+    `
 }
 
-// função para editar as informações do card
-function btnEditar({ inputCategoria, inputValor, inputData, inputDescricao, fundoEscuro, btnModelCadastrar }) {
-  const indexEditar = rendas.findIndex((renda) => renda.id === rendaEmEdicao)
-  rendas[indexEditar].categoria = inputCategoria.value
-  rendas[indexEditar].valor = inputValor.value
-  rendas[indexEditar].data = inputData.value
-  rendas[indexEditar].descricao = inputDescricao.value
-  renderizarListaRenda()
-  fundoEscuro.classList.add("hidden")
-  rendaEmEdicao = null
-  btnModelCadastrar.textContent = "Cadastrar"
-}
-
-// função do botão cancelar no modal
-function btnFecharModal({ btnModelCancelar, fundoEscuro }) {
-  btnModelCancelar.addEventListener("click", () => {
-    fundoEscuro.classList.add("hidden")
-  })
-}
-// pegar os valores do modal
-function pegarValoresModal({ btnModelCadastrar, inputCategoria, inputValor, inputData, inputDescricao, fundoEscuro }) {
-  btnModelCadastrar.addEventListener("click", () => {
-    if (!validarRenda({ categoria: inputCategoria.value, valor: inputValor.value, data: inputData.value })) {
-      return
-    }
-
-    let fncRenda = adicionarRenda({ categoria: inputCategoria.value, valor: inputValor.value, data: inputData.value, descricao: inputDescricao.value })
-
-    if (rendaEmEdicao === null) {
-      rendas.push(fncRenda)
-      renderizarListaRenda()
-    } else {
-      // edição
-      btnEditar({ inputCategoria, inputValor, inputData, inputDescricao, fundoEscuro, btnModelCadastrar })
-    }
 
 
-
-  })
-}
-// função principal que controla o model, botões de: mostrar, fechar e cadastrar
-export function inicializarRenda() {
-  const btnNovaRenda = document.querySelector("#btn-nova-renda")
-  const fundoEscuro = document.querySelector("#fundo-escuro")
-  const btnModelCadastrar = document.querySelector("#btn-model-cadastrar")
-  const btnModelCancelar = document.querySelector("#btn-model-cancelar")
-  let inputCategoria = document.querySelector("#inputCategoria")
-  let inputValor = document.querySelector("#inputValor")
-  let inputData = document.querySelector("#inputData")
-  let inputDescricao = document.querySelector("#inputDescricao")
-
-  // mostrar model
-  btnMostrarModal({ btnNovaRenda, fundoEscuro, btnModelCadastrar })
-  // fecha model
-  btnFecharModal({ btnModelCancelar, fundoEscuro })
-  // pegar os valores do model
-  pegarValoresModal({ btnModelCadastrar, inputCategoria, inputValor, inputData, inputDescricao, fundoEscuro })
-}
-
-// funcão para pegar valores que colocar no cards
-function pegarValoresCards() {
-  let htmlCards = ""
-  rendas.forEach((itens) => {
-    let valorformat = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(itens.valor)
-    htmlCards += renderizarListaCards(itens, valorformat)
-  })
-  return htmlCards
-}
-
-function pegarValoresHeaderCards() {
-  let headerCards = ""
-  const resumoTotais = rendas.reduce((totais, itens) => {
-    const categoriaAtual = itens.categoria;
-    const valorAtual = Number(itens.valor);
-
-    if (!totais[categoriaAtual]) {
-      totais[categoriaAtual] = 0;
-    }
-
-    totais[categoriaAtual] += valorAtual;
-
-    return totais;
-  }, {});
-
-  Object.entries(resumoTotais).forEach(([categoria, valorTotal]) => {
-    let valorformat = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorTotal)
-    headerCards += renderizarCardsHeader(categoria, valorformat);
-  });
-
-  return headerCards;
-
-}
-
-function deletarCards() {
-  rendas.forEach((itens) => {
-    // identificar o id que vai ser deltado
-    const btnDeletar = document.querySelector(`#btn-deletar-${itens.id}`)
-    // adicionar o evento do botão delete
-    btnDeletar.addEventListener("click", () => {
-      // percorre o array rendas em busca do item clickado e guarda no index
-      const indexExcluir = rendas.findIndex((renda) => renda.id === itens.id)
-      // apaga o item na renda
-      rendas.splice(indexExcluir, 1)
-      // mostra a nova lista tualiazada
-      renderizarListaRenda()
-    })
-  })
-}
-
-function editarCards(btnModelCadastrar) {
-  rendas.forEach((itens) => {
-
-    // identificar o item que vai ser deletado
-    const btnEditar = document.querySelector(`#btn-editar-${itens.id}`)
-    // adicionar o evento do botão editar
-    btnEditar.addEventListener("click", () => {
-      // declaração de variaveis para ser usada dentro do modal
-      let inputCategoria = document.querySelector("#inputCategoria")
-      let inputValor = document.querySelector("#inputValor")
-      let inputData = document.querySelector("#inputData")
-      let inputDescricao = document.querySelector("#inputDescricao")
-      const fundoEscuro = document.querySelector("#fundo-escuro")
-      // percorrer o array rendas para encontrar o item para editar
-      const indexEditar = rendas.findIndex((renda) => renda.id === itens.id)
-      rendaEmEdicao = rendas[indexEditar].id
-      // abrir o modal
-      btnModelCadastrar.textContent = "Concluir Edição"
-      fundoEscuro.classList.remove("hidden")
-      // colocar as informações do card dentro do modal
-      inputCategoria.value = rendas[indexEditar].categoria
-      inputValor.value = rendas[indexEditar].valor
-      inputData.value = rendas[indexEditar].data
-      inputDescricao.value = rendas[indexEditar].descricao
-    })
-  })
-}
-
-// mostrar os cards na tela
-export function renderizarListaRenda() {
-  const containerLista = document.querySelector("#container-lista-rendas")
-  const btnModelCadastrar = document.querySelector("#btn-model-cadastrar")
-
-  // pegar os valores e colocar nos cards
-  let htmlCards = pegarValoresCards()
-  let headerCards = pegarValoresHeaderCards()
-  // exibir o total da renda no header
-  let totalRenda = document.querySelector("#total-Renda")
-  totalRenda.textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calcularTotalRenda())
-
-  const listaCardsHeader = document.querySelector("#lista-cards-header")
-  listaCardsHeader.innerHTML = headerCards
-
-  // importante: injeta todos os cards de uma vez no container, evitando perda de event listeners
-  containerLista.innerHTML = htmlCards
-  // array que vai percorrer o array procurando o id que vai ser deltado
-  deletarCards()
-  // função que edita os cards
-  editarCards(btnModelCadastrar)
-}
 // cores das categorias do card
-function corCategoria(categoria) {
-  switch (categoria) {
-    case "Salário":
-      return "bg-blue-200 text-blue-800"
-    case "Freelance":
-      return "bg-purple-200 text-purple-800"
-    case "Investimentos":
-      return "bg-yellow-200 text-yellow-800"
-    case "Hora Extra":
-      return "bg-orange-200 text-orange-800"
-    case "Comissão":
-      return "bg-pink-200 text-pink-800"
-    case "Aluguel Recebido":
-      return "bg-teal-200 text-teal-800"
-    case "Dividendos":
-      return "bg-green-200 text-green-800"
-    case "Presente":
-      return "bg-red-200 text-red-800"
-    case "Restituição":
-      return "bg-indigo-200 text-indigo-800"
-    case "Outros":
-      return "bg-gray-200 text-gray-800"
-    default:
-  }
-}
+// function corCategoria(categoria) {
+//   switch (categoria) {
+//     case "Salário":
+//       return "bg-blue-200 text-blue-800"
+//     case "Freelance":
+//       return "bg-purple-200 text-purple-800"
+//     case "Investimentos":
+//       return "bg-yellow-200 text-yellow-800"
+//     case "Hora Extra":
+//       return "bg-orange-200 text-orange-800"
+//     case "Comissão":
+//       return "bg-pink-200 text-pink-800"
+//     case "Aluguel Recebido":
+//       return "bg-teal-200 text-teal-800"
+//     case "Dividendos":
+//       return "bg-green-200 text-green-800"
+//     case "Presente":
+//       return "bg-red-200 text-red-800"
+//     case "Restituição":
+//       return "bg-indigo-200 text-indigo-800"
+//     case "Outros":
+//       return "bg-gray-200 text-gray-800"
+//     default:
+//   }
+// }
