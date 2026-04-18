@@ -1,8 +1,8 @@
 import { adicionarRenda } from "./logic.js"
-
+import { rendas } from "./../data/store.js"
 
 // função que contem o template do header rendas
-function renderizarHeader() {
+function templateHeader() {
   return `
   <div
           class="w-full h-[100px] bg-gray-200 rounded-[10px] flex items-center gap-4 p-2 shadow-md"
@@ -31,7 +31,7 @@ function renderizarHeader() {
   `
 }
 // templetes cards do header
-function renderizarCardsHeader() {
+function templateCardsHeader() {
   return `
   <div class=" flex flex-col shadow-md rounded-2xl p-4 ">
               <h2 class="text-sm text-blue-800"></h2>
@@ -43,7 +43,7 @@ function renderizarCardsHeader() {
   `
 }
 // função que contem o templete painel do rendas
-function renderizarPainel() {
+function templatePainel() {
   return `
   <div
           class="w-full h-[50px] text-green-800 bg-white p-2 flex items-center rounded-[10px] shadow-sm rounded-2xl border-l-4 border-green-800"
@@ -54,7 +54,7 @@ function renderizarPainel() {
   `
 }
 // função que contem o templete lista do rendas
-function renderizarLista() {
+function templateLista() {
   return `
   <div
           id="container-lista-rendas"
@@ -64,7 +64,7 @@ function renderizarLista() {
   `
 }
 // função que contem o templete modal do rendas
-function renderizarModal() {
+function templateModal() {
   return `
   <div
           id="fundo-escuro"
@@ -159,7 +159,7 @@ function renderizarModal() {
 }
 
 // função que contem o templete lista de cards
-function renderizarListaCards() {
+function templateListaCards(itens) {
   return `
   <div
           class="w-full h-20 bg-gray-200 rounded-[10px] gap-4 p-2 shadow-md flex rounded-md items-center justify-between"
@@ -168,28 +168,28 @@ function renderizarListaCards() {
             <h2 class="text-gray-400">Categoria:</h2>
             <span
               class="border p-1 rounded-[10px] text-center text-gray-800 font-medium "
-              ></span
+              >${itens.categoria}</span
             >
           </div>
           <div class="h-[30px] flex items-center gap-1 p-1">
             <h2 class="text-gray-400">Valor:</h2>
             <span
               class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
-              ></span
+              >${itens.valor}</span
             >
           </div>
           <div class="h-[30px] flex items-center gap-1 p-1">
             <h2 class="text-gray-400">Data:</h2>
             <span
               class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
-              ></span
+              >${itens.data}</span
             >
           </div>
           <div class="h-[30px] flex items-center gap-1 p-1">
             <h2 class="text-gray-400">Descrição:</h2>
             <span
               class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
-              ></span
+              >${itens.descricao}</span
             >
           </div>
           <div class="w-[110px] p-1 flex items-center justify-between">
@@ -218,13 +218,13 @@ function renderizarListaCards() {
   `
 }
 // função que chama todos os templentes de rendas
-export function renderizarRenda() {
+export function templatesRenda() {
   return `
     <section class="w-full h-full flex flex-col p-2 gap-2">
-      ${renderizarHeader()}
-      ${renderizarPainel()}
-      ${renderizarLista()}
-      ${renderizarModal()}
+      ${templateHeader()}
+      ${templatePainel()}
+      ${templateLista()}
+      ${templateModal()}
     </section>
     `
 }
@@ -276,15 +276,31 @@ export function eventosDoModal() {
     // função que joga para rendas no store.js
     // essa função se encontra no logic.js
     adicionarRenda(valoresModal)
-
+    listaDeRendas()
   })
 }
 // <---------------------|MODAL (FIM)|---------------------->
 
+
+// <---------------------|LISTA DE RENDAS (INICIO)|---------------------->
+function listaDeRendas() {
+
+  let containerListaRendas = document.querySelector("#container-lista-rendas")
+
+  let cardsListasRendas = rendas.map(itens => {
+    return templateListaCards(itens)
+  }).join("")
+
+  containerListaRendas.innerHTML = cardsListasRendas
+
+}
+// <---------------------|LISTA DE RENDAS (FIM)|---------------------->
+
+
+
 // <---------------------|NUCLEO GERAL (INICIO)|---------------------->
 export function inicializarRenda() {
   eventosDoModal()
-
+  listaDeRendas()
 }
-
 // <---------------------|NUCLEO GERAL (FIM)|---------------------->
