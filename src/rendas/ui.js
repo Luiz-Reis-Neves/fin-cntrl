@@ -31,7 +31,7 @@ function renderizarHeader() {
   `
 }
 // templetes cards do header
-export function renderizarCardsHeader() {
+function renderizarCardsHeader() {
   return `
   <div class=" flex flex-col shadow-md rounded-2xl p-4 ">
               <h2 class="text-sm text-blue-800"></h2>
@@ -159,7 +159,7 @@ function renderizarModal() {
 }
 
 // função que contem o templete lista de cards
-export function renderizarListaCards() {
+function renderizarListaCards() {
   return `
   <div
           class="w-full h-20 bg-gray-200 rounded-[10px] gap-4 p-2 shadow-md flex rounded-md items-center justify-between"
@@ -226,9 +226,11 @@ export function renderizarRenda() {
       ${renderizarLista()}
       ${renderizarModal()}
     </section>
-    
     `
 }
+
+// <---------------------|FUNÇÕES MODAL (INICIO)|---------------------->
+
 // quando clickar no "cadastrar renda" vai abrir o modal
 function abrirModal() {
   let fundoEscuro = document.querySelector("#fundo-escuro")
@@ -251,21 +253,38 @@ function pegarValoresModal() {
   return { categoria, valor, data, descricao };
 }
 
+// <---------------------|FUNÇÕES MODAL (FIM)|---------------------->
+
+// <---------------------|MODAL (INICIO)|---------------------->
 // funcionalidades do modal
 export function eventosDoModal() {
   let btnNovaRenda = document.querySelector("#btn-nova-renda")
   let btnModelCancelar = document.querySelector("#btn-model-cancelar")
   let btnModalCadastrar = document.querySelector("#btn-model-cadastrar")
 
+  // Botão abrir do modal
   btnNovaRenda.addEventListener("click", () => {
     abrirModal()
   })
-
+  // botão cancelar do modal
   btnModelCancelar.addEventListener("click", () => {
     fecharModal()
   })
-
+  // botão cadastrar do modal
   btnModalCadastrar.addEventListener("click", () => {
-    pegarValoresModal()
+    let valoresModal = pegarValoresModal()
+    // função que joga para rendas no store.js
+    // essa função se encontra no logic.js
+    adicionarRenda(valoresModal)
+
   })
 }
+// <---------------------|MODAL (FIM)|---------------------->
+
+// <---------------------|NUCLEO GERAL (INICIO)|---------------------->
+export function inicializarRenda() {
+  eventosDoModal()
+
+}
+
+// <---------------------|NUCLEO GERAL (FIM)|---------------------->

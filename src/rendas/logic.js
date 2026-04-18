@@ -1,10 +1,6 @@
 import { rendas } from "../data/store.js";
 import { eventosDoModal } from "./ui.js"
 
-
-
-
-
 export function adicionarRenda({ categoria, valor, data, descricao }) {
     let id = Date.now()
     let dadosDeRenda = {
@@ -14,12 +10,9 @@ export function adicionarRenda({ categoria, valor, data, descricao }) {
         data: data,
         descricao: descricao
     }
-    // rendas.push(dadosDeRenda)
+    rendas.push(dadosDeRenda)
     return rendas
+    // return console.table(rendas)
 }
 
 
-export function inicializarRenda() {
-    eventosDoModal()
-    // console.table(adicionarRenda())
-}
