@@ -230,7 +230,6 @@ export function templatesRenda() {
 }
 
 // <---------------------|FUNÇÕES MODAL (INICIO)|---------------------->
-
 // quando clickar no "cadastrar renda" vai abrir o modal
 function abrirModal() {
   let fundoEscuro = document.querySelector("#fundo-escuro")
@@ -252,7 +251,6 @@ function pegarValoresModal() {
   // Coloca tudo num pacote e entrega pra quem pediu
   return { categoria, valor, data, descricao };
 }
-
 // <---------------------|FUNÇÕES MODAL (FIM)|---------------------->
 
 // <---------------------|MODAL (INICIO)|---------------------->
@@ -276,31 +274,39 @@ export function eventosDoModal() {
     // função que joga para rendas no store.js
     // essa função se encontra no logic.js
     adicionarRenda(valoresModal)
-    listaDeRendas()
+    listaDeRendasCreate()
   })
 }
 // <---------------------|MODAL (FIM)|---------------------->
 
 
-// <---------------------|LISTA DE RENDAS (INICIO)|---------------------->
-function listaDeRendas() {
-
+// <---------------------| FUNÇÕES LISTA DE RENDAS (INICIO)|---------------------->
+function listaDeRendasCreate() {
   let containerListaRendas = document.querySelector("#container-lista-rendas")
-
   let cardsListasRendas = rendas.map(itens => {
     return templateListaCards(itens)
   }).join("")
-
   containerListaRendas.innerHTML = cardsListasRendas
-
 }
-// <---------------------|LISTA DE RENDAS (FIM)|---------------------->
 
+function listaDeRendasUpdate() {
+}
 
+function listaDeRendasDelete() {
+}
+// <---------------------| FUNÇÕES LISTA DE RENDAS (FIM)|---------------------->
+
+// <---------------------|  LISTA DE RENDAS (INICIO)|---------------------->
+function listaRendas() {
+  listaDeRendasCreate()
+  listaDeRendasUpdate()
+  listaDeRendasDelete()
+}
+// <---------------------|  LISTA DE RENDAS (FIM)|---------------------->
 
 // <---------------------|NUCLEO GERAL (INICIO)|---------------------->
 export function inicializarRenda() {
   eventosDoModal()
-  listaDeRendas()
+  listaRendas()
 }
 // <---------------------|NUCLEO GERAL (FIM)|---------------------->
