@@ -1,6 +1,6 @@
 import { adicionarRenda } from "./logic.js"
 import { rendas } from "./../data/store.js"
-
+let rendaEmEdicao = null
 // função que contem o template do header rendas
 function templateHeader() {
   return `
@@ -158,104 +158,7 @@ function templateModal() {
   `
 }
 
-function templateModalEditar() {
-  return `
-  <div
-          id="fundo-escuro"
-          class="w-full h-full bg-black/50 hidden fixed inset-0 z-50"
-        >
-          <div
-            id="formulario-cadastro-renda"
-            class="w-full h-full border flex items-center justify-center"
-          >
-            <form>
-              <div class="w-[400px] bg-white p-6 rounded shadow">
-                <h2 class="text-2xl font-bold mb-4">
-                  Editar Cadastro de Renda
-                </h2>
-                <div class="mb-4">
-                  <label for="inputCategoria" class="block text-gray-700"
-                    >Tipo de Renda</label
-                  >
-                  <select
-                    id="inputCategoria"
-                    name=""
-                    class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
-                  >
-                    <option disabled selected value="">
-                      Selecione uma opção
-                    </option>
-                    <option value="Salário">Salário</option>
-                    <option value="Freelance">Freelance</option>
-                    <option value="Investimentos">Investimentos</option>
-                    <option value="Hora Extra">Hora Extra</option>
-                    <option value="Comissão">Comissão</option>
-                    <option value="Aluguel Recebido">Aluguel Recebido</option>
-                    <option value="Dividendos">Dividendos</option>
-                    <option value="Presente">Presente</option>
-                    <option value="Restituição">Restituição</option>
-                    <option value="Outros">Outros</option>
-                  </select>
-                </div>
-                <div class="mb-4">
-                  <label for="inputValor" class="block text-gray-700"
-                    >Valor</label
-                  >
-                  <input
-                    type="number"
-                    id="inputValor"
-                    name="valor"
-                    class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
-                    placeholder="Digite o valor"
-                  />
-                </div>
-                <div class="mb-4">
-                  <label for="inputData" class="block text-gray-700"
-                    >Data de Recebimento</label
-                  >
-                  <input
-                    type="date"
-                    id="inputData"
-                    name="data"
-                    class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
-                  />
-                </div>
-                <div class="mb-4">
-                  <label for="inputDescricao" class="block text-gray-700"
-                    >Descrição</label
-                  >
-                  <input
-                    type="text"
-                    id="inputDescricao"
-                    name="descricao"
-                    class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
-                    placeholder="Digite uma descrição"
-                  />
-                </div>
 
-                <div class="flex justify-between gap-2">
-                  <button
-                    type="button"
-                    id="btn-model-cadastrar"
-                    class="w-full bg-green-800 text-white py-2 rounded hover:bg-green-700 active:scale-95 btn-3d"
-                  >
-                    Concluir Edição
-                  </button>
-                  <button
-                    type="button"
-                    id="btn-model-cancelar"
-                    class="w-full bg-red-800 text-white py-2 rounded hover:bg-red-700 btn-3d-cancelar"
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-  
-  `
-}
 
 // função que contem o templete lista de cards
 function templateListaCards(itens) {
@@ -293,7 +196,7 @@ function templateListaCards(itens) {
           </div>
           <div class="w-[110px] p-1 flex items-center justify-between">
             <button
-              id="btn-editar-"
+              id="btn-editar-${itens.id}"
               class="w-[50px] h-[30px] bg-blue-500 hover:bg-blue-400 text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d-editar"
             >
               <img
@@ -303,7 +206,7 @@ function templateListaCards(itens) {
               />
             </button>
             <button
-              id="btn-deletar-"
+              id="btn-deletar-${itens.id}"
               class="w-[50px] h-[30px] bg-red-500 hover:bg-red-400 text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d-deletar"
             >
               <img
@@ -369,12 +272,30 @@ export function eventosDoModal() {
   })
   // botão cadastrar do modal
   btnModalCadastrar.addEventListener("click", () => {
-    let valoresModal = pegarValoresModal()
-    // função que joga para rendas no store.js
-    // essa função se encontra no logic.js
-    adicionarRenda(valoresModal)
-    listaDeRendasRead()
-  })
+    let valoresModal = pegarValoresModal();
+
+    if (rendaEmEdicao !== null) {
+      // --- LÓGICA DE EDIÇÃO (Sobrescrever) ---
+      // 1. Acha o cara no array pelo ID que salvamos no clique do editar
+      const index = rendas.findIndex(r => String(r.id) === String(rendaEmEdicao));
+
+      if (index !== -1) {
+        // 2. Substitui os dados antigos pelos novos do modal
+        rendas[index] = { id: rendaEmEdicao, ...valoresModal };
+      }
+
+      // 3. Limpa o estado de edição para o próximo não bugar
+      rendaEmEdicao = null;
+      btnModalCadastrar.textContent = "Cadastrar";
+
+    } else {
+      // --- LÓGICA DE CADASTRO (Criar novo) ---
+      adicionarRenda(valoresModal);
+    }
+
+    listaRendas(); // O Maestro atualiza a tela
+    fecharModal();
+  });
 }
 // <---------------------|MODAL (FIM)|---------------------->
 
@@ -389,6 +310,28 @@ function listaDeRendasRead() {
 }
 
 function listaDeRendasUpdate() {
+  rendas.forEach(itens => {
+    const btnEditar = document.querySelector(`#btn-editar-${itens.id}`);
+    if (btnEditar) {
+
+      btnEditar.addEventListener("click", () => {
+        let inputCategoria = document.querySelector("#inputCategoria")
+        let inputValor = document.querySelector("#inputValor")
+        let inputData = document.querySelector("#inputData")
+        let inputDescricao = document.querySelector("#inputDescricao")
+
+        const indexEditar = rendas.findIndex((renda) => renda.id === itens.id)
+        rendaEmEdicao = rendas[indexEditar].id
+
+        abrirModal()
+
+        inputCategoria.value = rendas[indexEditar].categoria
+        inputValor.value = rendas[indexEditar].valor
+        inputData.value = rendas[indexEditar].data
+        inputDescricao.value = rendas[indexEditar].descricao
+      });
+    }
+  });
 }
 
 function listaDeRendasDelete() {
