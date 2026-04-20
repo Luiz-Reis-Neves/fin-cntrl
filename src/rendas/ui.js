@@ -153,6 +153,105 @@ function templateModal() {
           </div>
         </form>
           </div>
+  </div>
+  
+  `
+}
+
+function templateModalEditar() {
+  return `
+  <div
+          id="fundo-escuro"
+          class="w-full h-full bg-black/50 hidden fixed inset-0 z-50"
+        >
+          <div
+            id="formulario-cadastro-renda"
+            class="w-full h-full border flex items-center justify-center"
+          >
+            <form>
+              <div class="w-[400px] bg-white p-6 rounded shadow">
+                <h2 class="text-2xl font-bold mb-4">
+                  Editar Cadastro de Renda
+                </h2>
+                <div class="mb-4">
+                  <label for="inputCategoria" class="block text-gray-700"
+                    >Tipo de Renda</label
+                  >
+                  <select
+                    id="inputCategoria"
+                    name=""
+                    class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
+                  >
+                    <option disabled selected value="">
+                      Selecione uma opção
+                    </option>
+                    <option value="Salário">Salário</option>
+                    <option value="Freelance">Freelance</option>
+                    <option value="Investimentos">Investimentos</option>
+                    <option value="Hora Extra">Hora Extra</option>
+                    <option value="Comissão">Comissão</option>
+                    <option value="Aluguel Recebido">Aluguel Recebido</option>
+                    <option value="Dividendos">Dividendos</option>
+                    <option value="Presente">Presente</option>
+                    <option value="Restituição">Restituição</option>
+                    <option value="Outros">Outros</option>
+                  </select>
+                </div>
+                <div class="mb-4">
+                  <label for="inputValor" class="block text-gray-700"
+                    >Valor</label
+                  >
+                  <input
+                    type="number"
+                    id="inputValor"
+                    name="valor"
+                    class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
+                    placeholder="Digite o valor"
+                  />
+                </div>
+                <div class="mb-4">
+                  <label for="inputData" class="block text-gray-700"
+                    >Data de Recebimento</label
+                  >
+                  <input
+                    type="date"
+                    id="inputData"
+                    name="data"
+                    class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
+                  />
+                </div>
+                <div class="mb-4">
+                  <label for="inputDescricao" class="block text-gray-700"
+                    >Descrição</label
+                  >
+                  <input
+                    type="text"
+                    id="inputDescricao"
+                    name="descricao"
+                    class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
+                    placeholder="Digite uma descrição"
+                  />
+                </div>
+
+                <div class="flex justify-between gap-2">
+                  <button
+                    type="button"
+                    id="btn-model-cadastrar"
+                    class="w-full bg-green-800 text-white py-2 rounded hover:bg-green-700 active:scale-95 btn-3d"
+                  >
+                    Concluir Edição
+                  </button>
+                  <button
+                    type="button"
+                    id="btn-model-cancelar"
+                    class="w-full bg-red-800 text-white py-2 rounded hover:bg-red-700 btn-3d-cancelar"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
   
   `
@@ -274,14 +373,14 @@ export function eventosDoModal() {
     // função que joga para rendas no store.js
     // essa função se encontra no logic.js
     adicionarRenda(valoresModal)
-    listaDeRendasCreate()
+    listaDeRendasRead()
   })
 }
 // <---------------------|MODAL (FIM)|---------------------->
 
 
 // <---------------------| FUNÇÕES LISTA DE RENDAS (INICIO)|---------------------->
-function listaDeRendasCreate() {
+function listaDeRendasRead() {
   let containerListaRendas = document.querySelector("#container-lista-rendas")
   let cardsListasRendas = rendas.map(itens => {
     return templateListaCards(itens)
@@ -298,8 +397,11 @@ function listaDeRendasDelete() {
 
 // <---------------------|  LISTA DE RENDAS (INICIO)|---------------------->
 function listaRendas() {
-  listaDeRendasCreate()
+  // 1. READ: Lê o array 'rendas' e desenha os cards no HTML
+  listaDeRendasRead()
+  // 2. UPDATE: Procura os botões de editar que acabaram de ser criados e dá vida a eles
   listaDeRendasUpdate()
+  // 3. DELETE: Procura os botões de lixeira e dá vida a eles
   listaDeRendasDelete()
 }
 // <---------------------|  LISTA DE RENDAS (FIM)|---------------------->

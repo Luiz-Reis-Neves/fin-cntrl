@@ -6,7 +6,7 @@ export function adicionarRenda({ categoria, valor, data, descricao }) {
     let dadosDeRenda = {
         id: id,
         categoria: categoria,
-        valor: valor,
+        valor: Number(valor),
         data: data,
         descricao: descricao
     }
