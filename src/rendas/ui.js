@@ -1,4 +1,4 @@
-import { adicionarRenda } from "./logic.js"
+import { adicionarRenda, editarRenda } from "./logic.js"
 import { rendas } from "./../data/store.js"
 let rendaEmEdicao = null
 // função que contem o template do header rendas
@@ -270,30 +270,27 @@ export function eventosDoModal() {
   btnModelCancelar.addEventListener("click", () => {
     fecharModal()
   })
+
   // botão cadastrar do modal
+  // Esse trecho é o "Cérebro Decisor" do modal, que decide se fez uma edição ou um novo cadastro
   btnModalCadastrar.addEventListener("click", () => {
+    // [COLETA]: Chama a função que lê todos os inputs do modal e guarda em um objeto (ex: {valor: 100, ...})
     let valoresModal = pegarValoresModal();
-
+    // [DECISÃO]: Verifica se existe um ID guardado na variável. Se não for null, significa que estamos EDITANDO
     if (rendaEmEdicao !== null) {
-      // --- LÓGICA DE EDIÇÃO (Sobrescrever) ---
-      // 1. Acha o cara no array pelo ID que salvamos no clique do editar
-      const index = rendas.findIndex(r => String(r.id) === String(rendaEmEdicao));
-
-      if (index !== -1) {
-        // 2. Substitui os dados antigos pelos novos do modal
-        rendas[index] = { id: rendaEmEdicao, ...valoresModal };
-      }
-
-      // 3. Limpa o estado de edição para o próximo não bugar
+      // [EXECUÇÃO DO UPDATE]: Chama a função da lógica enviando o ID e os novos dados digitados
+      editarRenda(rendaEmEdicao, valoresModal);
+      // [RESET]: Limpa a variável de controle para que o próximo clique não tente editar o mesmo item
       rendaEmEdicao = null;
+      // [VISUAL]: Retorna o texto original do botão para "Cadastrar" (limpando o estado de edição)
       btnModalCadastrar.textContent = "Cadastrar";
-
     } else {
-      // --- LÓGICA DE CADASTRO (Criar novo) ---
+      // [EXECUÇÃO DO CREATE]: Se a variável era null, o sistema entende que é uma renda totalmente nova
       adicionarRenda(valoresModal);
     }
-
-    listaRendas(); // O Maestro atualiza a tela
+    // [ATUALIZAÇÃO]: Chama o Maestro para redesenhar a lista na tela com as novas informações
+    listaRendas();
+    // [FINALIZAÇÃO]: Executa a função que coloca a classe 'hidden' no modal, fechando a janela
     fecharModal();
   });
 }
@@ -310,25 +307,28 @@ function listaDeRendasRead() {
 }
 
 function listaDeRendasUpdate() {
+  // Seleciona o botão de "Cadastrar" que fica dentro do Modal para alterar o texto dele depois
+  let btnModalCadastrar = document.querySelector("#btn-model-cadastrar")
+  // [PERCORRE]: Entra no array de dados e executa o código abaixo para cada item (objeto) da lista
   rendas.forEach(itens => {
+    // [ACHA]: Busca no HTML o botão específico de editar desse item usando o ID único (ex: #btn-editar-1)
     const btnEditar = document.querySelector(`#btn-editar-${itens.id}`);
+    // Verifica se o botão realmente foi encontrado no HTML antes de tentar colocar o clique
     if (btnEditar) {
-
+      // [PREPARA]: Adiciona um "ouvidor" que fica esperando o usuário clicar no botão azul de editar
       btnEditar.addEventListener("click", () => {
-        let inputCategoria = document.querySelector("#inputCategoria")
-        let inputValor = document.querySelector("#inputValor")
-        let inputData = document.querySelector("#inputData")
-        let inputDescricao = document.querySelector("#inputDescricao")
+        // [ANOTAR]: Salva o ID do item clicado na variável global para o sistema saber quem será alterado no futuro
+        rendaEmEdicao = itens.id;
 
-        const indexEditar = rendas.findIndex((renda) => renda.id === itens.id)
-        rendaEmEdicao = rendas[indexEditar].id
-
-        abrirModal()
-
-        inputCategoria.value = rendas[indexEditar].categoria
-        inputValor.value = rendas[indexEditar].valor
-        inputData.value = rendas[indexEditar].data
-        inputDescricao.value = rendas[indexEditar].descricao
+        // Pega o valor da categoria do objeto atual e joga dentro do campo de seleção do modal
+        document.querySelector("#inputCategoria").value = itens.categoria;
+        document.querySelector("#inputValor").value = itens.valor;
+        document.querySelector("#inputData").value = itens.data;
+        document.querySelector("#inputDescricao").value = itens.descricao;
+        // Altera visualmente o texto do botão do modal de "Cadastrar" para "Concluir Edição"
+        btnModalCadastrar.textContent = "Concluir Edição";
+        // Executa a função que remove a classe 'hidden' e faz o modal aparecer na frente do usuário
+        abrirModal();
       });
     }
   });
