@@ -1,5 +1,5 @@
 import { rendas } from "../data/store.js";
-import { eventosDoModal } from "./ui.js"
+
 
 export function adicionarRenda({ categoria, valor, data, descricao }) {
     let id = Date.now()
@@ -16,6 +16,10 @@ export function adicionarRenda({ categoria, valor, data, descricao }) {
 }
 
 
+export function calcularTotalRenda() {
+    let total = rendas.reduce((acumulador, renda) => acumulador + Number(renda.valor), 0)
+    return total
+}
 
 export function editarRenda(id, novosDados) {
     // [DETETIVE]: Percorre o array 'rendas' para encontrar em qual posição (index) está o item com o ID enviado
@@ -31,4 +35,11 @@ export function editarRenda(id, novosDados) {
     }
     // Se o ID não existir no array, retorna 'false' indicando que nada foi alterado
     return false;
+}
+
+export function rendasDelete(itens) {
+    // percorre o array rendas em busca do item clickado e guarda no index
+    const indexExcluir = rendas.findIndex((renda) => renda.id === itens.id)
+    // apaga o item na renda
+    rendas.splice(indexExcluir, 1)
 }

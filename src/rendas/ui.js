@@ -1,4 +1,4 @@
-import { adicionarRenda, editarRenda } from "./logic.js"
+import { adicionarRenda, editarRenda, rendasDelete, calcularTotalRenda } from "./logic.js"
 import { rendas } from "./../data/store.js"
 let rendaEmEdicao = null
 // função que contem o template do header rendas
@@ -174,14 +174,14 @@ function templateListaCards(itens) {
             <h2 class="text-gray-400">Valor:</h2>
             <span
               class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
-              >${itens.valor}</span
+              >${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(itens.valor)}</span
             >
           </div>
           <div class="h-[30px] flex items-center gap-1 p-1">
             <h2 class="text-gray-400">Data:</h2>
             <span
               class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
-              >${itens.data}</span
+              >${itens.data.split("-").reverse().join("/")}</span
             >
           </div>
           <div class="h-[30px] flex items-center gap-1 p-1">
@@ -281,12 +281,15 @@ export function eventosDoModal() {
       rendaEmEdicao = null;
       // [VISUAL]: Retorna o texto original do botão para "Cadastrar" (limpando o estado de edição)
       btnModalCadastrar.textContent = "Cadastrar";
+
     } else {
       // [EXECUÇÃO DO CREATE]: Se a variável era null, o sistema entende que é uma renda totalmente nova
       adicionarRenda(valoresModal);
     }
     // [ATUALIZAÇÃO]: Chama o Maestro para redesenhar a lista na tela com as novas informações
     listaRendas();
+
+
     // [FINALIZAÇÃO]: Executa a função que coloca a classe 'hidden' no modal, fechando a janela
     fecharModal();
   });
@@ -295,12 +298,19 @@ export function eventosDoModal() {
 
 
 // <---------------------| FUNÇÕES LISTA DE RENDAS (INICIO)|---------------------->
+
 function listaDeRendasRead() {
+  // trackear o local onde vai ficar a lista de rendas
   let containerListaRendas = document.querySelector("#container-lista-rendas")
+  // percorrer banco de dado renda e entregas os itens para o templates de cards
   let cardsListasRendas = rendas.map(itens => {
     return templateListaCards(itens)
   }).join("")
+  // lançar a lista no html
   containerListaRendas.innerHTML = cardsListasRendas
+  // exibir o total da renda no header
+  let totalRenda = document.querySelector("#total-Renda")
+  totalRenda.textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calcularTotalRenda())
 }
 
 function listaDeRendasUpdate() {
@@ -335,10 +345,7 @@ function listaDeRendasDelete() {
   rendas.forEach(itens => {
     const btnDelete = document.querySelector(`#btn-deletar-${itens.id}`)
     btnDelete.addEventListener("click", () => {
-      // percorre o array rendas em busca do item clickado e guarda no index
-      const indexExcluir = rendas.findIndex((renda) => renda.id === itens.id)
-      // apaga o item na renda
-      rendas.splice(indexExcluir, 1)
+      rendasDelete(itens)
       listaRendas()
     })
 
@@ -354,6 +361,7 @@ function listaRendas() {
   listaDeRendasUpdate()
   // 3. DELETE: Procura os botões de lixeira e dá vida a eles
   listaDeRendasDelete()
+
 }
 // <---------------------|  LISTA DE RENDAS (FIM)|---------------------->
 
