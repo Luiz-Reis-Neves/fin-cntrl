@@ -306,7 +306,6 @@ export function eventosDoModal() {
     // [ATUALIZAÇÃO]: Chama o Maestro para redesenhar a lista na tela com as novas informações
     listaRendas();
 
-
     // [FINALIZAÇÃO]: Executa a função que coloca a classe 'hidden' no modal, fechando a janela
     fecharModal();
 
