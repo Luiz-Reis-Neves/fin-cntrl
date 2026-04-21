@@ -157,9 +157,6 @@ function templateModal() {
   
   `
 }
-
-
-
 // função que contem o templete lista de cards
 function templateListaCards(itens) {
   return `
@@ -335,6 +332,17 @@ function listaDeRendasUpdate() {
 }
 
 function listaDeRendasDelete() {
+  rendas.forEach(itens => {
+    const btnDelete = document.querySelector(`#btn-deletar-${itens.id}`)
+    btnDelete.addEventListener("click", () => {
+      // percorre o array rendas em busca do item clickado e guarda no index
+      const indexExcluir = rendas.findIndex((renda) => renda.id === itens.id)
+      // apaga o item na renda
+      rendas.splice(indexExcluir, 1)
+      listaRendas()
+    })
+
+  })
 }
 // <---------------------| FUNÇÕES LISTA DE RENDAS (FIM)|---------------------->
 
