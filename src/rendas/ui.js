@@ -1,4 +1,4 @@
-import { adicionarRenda, editarRenda, rendasDelete, calcularTotalRenda } from "./logic.js"
+import { adicionarRenda, editarRenda, rendasDelete, calcularTotalRenda, validarRenda } from "./logic.js"
 import { rendas } from "./../data/store.js"
 let rendaEmEdicao = null
 // função que contem o template do header rendas
@@ -166,7 +166,7 @@ function templateListaCards(itens) {
           <div class="h-[30px] flex items-center gap-1 p-1">
             <h2 class="text-gray-400">Categoria:</h2>
             <span
-              class="border p-1 rounded-[10px] text-center text-gray-800 font-medium "
+              class="border p-1 rounded-[10px] text-center ${corCategoria(itens.categoria)} font-medium "
               >${itens.categoria}</span
             >
           </div>
@@ -238,6 +238,10 @@ function abrirModal() {
 function fecharModal() {
   let fundoEscuro = document.querySelector("#fundo-escuro")
   fundoEscuro.classList.add("hidden")
+  // Sempre que fechar, limpa a sujeira visual e a memória fantasma
+  limparCampos()
+  rendaEmEdicao = null;
+  document.querySelector("#btn-model-cadastrar").textContent = "Cadastrar";
 }
 
 // pegar valores dos inputs do modal
@@ -249,6 +253,14 @@ function pegarValoresModal() {
 
   // Coloca tudo num pacote e entrega pra quem pediu
   return { categoria, valor, data, descricao };
+}
+
+// limpar campos do modal
+function limparCampos() {
+  document.querySelector("#inputCategoria").value = ""
+  document.querySelector("#inputValor").value = ""
+  document.querySelector("#inputData").value = ""
+  document.querySelector("#inputDescricao").value = ""
 }
 // <---------------------|FUNÇÕES MODAL (FIM)|---------------------->
 
@@ -273,6 +285,10 @@ export function eventosDoModal() {
   btnModalCadastrar.addEventListener("click", () => {
     // [COLETA]: Chama a função que lê todos os inputs do modal e guarda em um objeto (ex: {valor: 100, ...})
     let valoresModal = pegarValoresModal();
+    // validação
+    if (!validarRenda(valoresModal)) {
+      return
+    }
     // [DECISÃO]: Verifica se existe um ID guardado na variável. Se não for null, significa que estamos EDITANDO
     if (rendaEmEdicao !== null) {
       // [EXECUÇÃO DO UPDATE]: Chama a função da lógica enviando o ID e os novos dados digitados
@@ -286,12 +302,14 @@ export function eventosDoModal() {
       // [EXECUÇÃO DO CREATE]: Se a variável era null, o sistema entende que é uma renda totalmente nova
       adicionarRenda(valoresModal);
     }
+
     // [ATUALIZAÇÃO]: Chama o Maestro para redesenhar a lista na tela com as novas informações
     listaRendas();
 
 
     // [FINALIZAÇÃO]: Executa a função que coloca a classe 'hidden' no modal, fechando a janela
     fecharModal();
+
   });
 }
 // <---------------------|MODAL (FIM)|---------------------->
@@ -350,6 +368,33 @@ function listaDeRendasDelete() {
     })
 
   })
+}
+
+// cores das categorias do card
+function corCategoria(categoria) {
+  switch (categoria) {
+    case "Salário":
+      return "bg-blue-200 text-blue-800"
+    case "Freelance":
+      return "bg-purple-200 text-purple-800"
+    case "Investimentos":
+      return "bg-yellow-200 text-yellow-800"
+    case "Hora Extra":
+      return "bg-orange-200 text-orange-800"
+    case "Comissão":
+      return "bg-pink-200 text-pink-800"
+    case "Aluguel Recebido":
+      return "bg-teal-200 text-teal-800"
+    case "Dividendos":
+      return "bg-green-200 text-green-800"
+    case "Presente":
+      return "bg-red-200 text-red-800"
+    case "Restituição":
+      return "bg-indigo-200 text-indigo-800"
+    case "Outros":
+      return "bg-gray-200 text-gray-800"
+    default:
+  }
 }
 // <---------------------| FUNÇÕES LISTA DE RENDAS (FIM)|---------------------->
 
