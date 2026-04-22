@@ -46,9 +46,36 @@ function templateCardsHeader() {
 function templatePainel() {
   return `
   <div
-          class="w-full h-[50px] text-green-800 bg-white p-2 flex items-center rounded-[10px] shadow-sm rounded-2xl border-l-4 border-green-800"
+          class="w-full h-[50px] text-green-800 bg-white p-2 flex items-center justify-between rounded-[10px] shadow-sm rounded-2xl border-l-4 border-green-800"
         >
           <h1 class="text-xl font-semibold">Painel de Rendas</h1>
+
+          <div class="relative flex items-center gap-2">
+            <span
+              id="texto-mes-atual"
+              class="font-medium text-green-800 text-sm"
+              >Mês atual</span
+            >
+
+            <button
+              id="btn-abrir-calendario"
+              class="w-8 h-8 border flex items-center justify-center py-2 rounded hover:bg-green-100 active:scale-95 btn-3d-data"
+            >
+              <img
+                src="./src/assets/calendario.png"
+                class="w-7 h-7"
+                alt="Filtrar por mês"
+              />
+            </button>
+
+            <input
+              type="month"
+              id="input-filtro-mes"
+              class="absolute right-0 top-full opacity-0 w-1 h-1 pointer-events-none -z-10"
+            />
+          </div>
+
+          <input type="month" id="input-filtro-mes" class="hidden" />
         </div>
   
   `
@@ -226,6 +253,44 @@ export function templatesRenda() {
       ${templateModal()}
     </section>
     `
+}
+// funcionalidade do botão de data
+function btnData() {
+  const btnCalendario = document.querySelector("#btn-abrir-calendario");
+  const inputMes = document.querySelector("#input-filtro-mes");
+  const textoMesAtual = document.querySelector("#texto-mes-atual");
+
+  // --- LÓGICA DO MÊS ATUAL ---
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+  const dataFormatada = `${ano}-${mes}`; // Ex: 2026-04
+
+  // Inicializa os valores na tela
+  if (inputMes) {
+    inputMes.value = dataFormatada;
+    textoMesAtual.textContent = `${mes}/${ano}`;
+  }
+
+  // --- EVENTOS ---
+  // Abre o calendário ao clicar no ícone
+  btnCalendario.addEventListener("click", () => inputMes.showPicker());
+
+  // Atualiza tudo quando o usuário troca o mês
+  inputMes.addEventListener("change", (e) => {
+    const valorInput = e.target.value;
+
+    if (valorInput) {
+      // Se tem valor (ex: "2026-04")
+      const [anoSel, mesSel] = valorInput.split("-");
+      textoMesAtual.textContent = `${mesSel}/${anoSel}`;
+    } else {
+      // Se o usuário clicou em "Limpar"
+      textoMesAtual.textContent = "Selecione um mês";
+    }
+
+    listaRendas();
+  });
 }
 
 // <---------------------|FUNÇÕES MODAL (INICIO)|---------------------->
@@ -411,7 +476,8 @@ function listaRendas() {
 
 // <---------------------|NUCLEO GERAL (INICIO)|---------------------->
 export function inicializarRenda() {
-  eventosDoModal()
-  listaRendas()
+  eventosDoModal() // Configura os botões do modal
+  listaRendas() // Desenha a lista 
+  btnData() // Configura o seletor de mês e data atual
 }
 // <---------------------|NUCLEO GERAL (FIM)|---------------------->

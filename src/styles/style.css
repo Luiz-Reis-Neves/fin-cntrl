@@ -3,12 +3,12 @@
      font-family: "Roboto", sans-serif;
 }
 
-.btn-3d {
+.btn-3d,.btn-3d-data {
   box-shadow: 0 6px 0 #2d6b43;
   transition: all 0.1s ease;
 }
 
-.btn-3d:active {
+.btn-3d:active,.btn-3d-data:active {
   box-shadow: 0 2px 0 #2d6b43;
   transform: translateY(4px);
 }
@@ -34,6 +34,8 @@
   box-shadow: 0 2px 0 #1d4ed8;
   transform: translateY(4px);
 }
+
+
 
 ::-webkit-scrollbar {
   height: 4px;
