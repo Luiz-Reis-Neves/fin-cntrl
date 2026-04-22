@@ -459,13 +459,18 @@ function listaDeRendasUpdate() {
 }
 
 function listaDeRendasDelete() {
+  // Percorremos TODAS as rendas do banco
   rendas.forEach(itens => {
+    // Tentamos encontrar o botão na tela
     const btnDelete = document.querySelector(`#btn-deletar-${itens.id}`)
-    btnDelete.addEventListener("click", () => {
-      rendasDelete(itens)
-      listaRendas()
-    })
 
+    // [SEGURANÇA]: Só adicionamos o evento se o botão realmente existir na tela atual
+    if (btnDelete) {
+      btnDelete.addEventListener("click", () => {
+        rendasDelete(itens)
+        listaRendas()
+      })
+    }
   })
 }
 
