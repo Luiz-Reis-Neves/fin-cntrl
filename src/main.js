@@ -1,5 +1,6 @@
 import './styles/style.css';
 import { inicializarRenda, templatesRenda } from './rendas/ui.js';
+import { inicializarGastos, templatesGastos } from './gastos/ui.js';
 // Declaração de variaveis dos botões
 const botoesNav = document.querySelectorAll("#lista-navegacao button")
 let containerConteudoFilho2 = document.querySelector("#container-conteudo-filho-2")
@@ -10,6 +11,10 @@ botoesNav.forEach((botao) => {
             case "btn-renda":
                 containerConteudoFilho2.innerHTML = templatesRenda()
                 inicializarRenda()
+                break
+            case "btn-gastos":
+                containerConteudoFilho2.innerHTML = templatesGastos()
+                inicializarGastos()
                 break
             default:
         }
