@@ -254,44 +254,7 @@ export function templatesRenda() {
     </section>
     `
 }
-// funcionalidade do botão de data
-function btnData() {
-  const btnCalendario = document.querySelector("#btn-abrir-calendario");
-  const inputMes = document.querySelector("#input-filtro-mes");
-  const textoMesAtual = document.querySelector("#texto-mes-atual");
 
-  // --- LÓGICA DO MÊS ATUAL ---
-  const hoje = new Date();
-  const ano = hoje.getFullYear();
-  const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-  const dataFormatada = `${ano}-${mes}`; // Ex: 2026-04
-
-  // Inicializa os valores na tela
-  if (inputMes) {
-    inputMes.value = dataFormatada;
-    textoMesAtual.textContent = `${mes}/${ano}`;
-  }
-
-  // --- EVENTOS ---
-  // Abre o calendário ao clicar no ícone
-  btnCalendario.addEventListener("click", () => inputMes.showPicker());
-
-  // Atualiza tudo quando o usuário troca o mês
-  inputMes.addEventListener("change", (e) => {
-    const valorInput = e.target.value;
-
-    if (valorInput) {
-      // Se tem valor (ex: "2026-04")
-      const [anoSel, mesSel] = valorInput.split("-");
-      textoMesAtual.textContent = `${mesSel}/${anoSel}`;
-    } else {
-      // Se o usuário clicou em "Limpar"
-      textoMesAtual.textContent = "Selecione um mês";
-    }
-
-    listaRendas();
-  });
-}
 
 // <---------------------|FUNÇÕES MODAL (INICIO)|---------------------->
 // quando clickar no "cadastrar renda" vai abrir o modal
@@ -331,14 +294,22 @@ function limparCampos() {
 
 // <---------------------|MODAL (INICIO)|---------------------->
 // funcionalidades do modal
-export function eventosDoModal() {
+function eventosDoModal() {
   let btnNovaRenda = document.querySelector("#btn-nova-renda")
   let btnModelCancelar = document.querySelector("#btn-model-cancelar")
   let btnModalCadastrar = document.querySelector("#btn-model-cadastrar")
 
   // Botão abrir do modal
   btnNovaRenda.addEventListener("click", () => {
-    abrirModal()
+    // 1. Pega o valor que está selecionado no painel (ex: "2026-05")
+    let mesFiltro = document.querySelector("#input-filtro-mes").value;
+
+    // 2. Se tiver um mês no filtro, já injeta ele no modal no dia 01
+    if (mesFiltro) {
+      document.querySelector("#inputData").value = `${mesFiltro}-01`;
+    }
+
+    abrirModal();
   })
   // botão cancelar do modal
   btnModelCancelar.addEventListener("click", () => {
@@ -369,20 +340,7 @@ export function eventosDoModal() {
     }
 
     // --- NOVO: SINCRONIZAÇÃO DE FILTRO ---
-    // Pegamos o ano e mês da renda que acabou de ser salva (valoresModal.data é "YYYY-MM-DD")
-    const [ano, mes] = valoresModal.data.split("-");
-    const mesAnoRenda = `${ano}-${mes}`; // Formato: "YYYY-MM"
-
-    // Selecionamos os elementos do filtro no Painel
-    const inputFiltro = document.querySelector("#input-filtro-mes");
-    const textoFiltro = document.querySelector("#texto-mes-atual");
-
-    // Forçamos o filtro do painel a ir para o mês da renda que acabamos de mexer
-    // Assim, se você cadastrar em Maio, o app pula para Maio automaticamente!
-    if (inputFiltro) {
-      inputFiltro.value = mesAnoRenda;
-      textoFiltro.textContent = `${mes}/${ano}`;
-    }
+    sincFiltro(valoresModal.data)
     // -------------------------------------
 
     // [ATUALIZAÇÃO]: Chama o Maestro para redesenhar a lista na tela
@@ -394,6 +352,65 @@ export function eventosDoModal() {
   });
 }
 // <---------------------|MODAL (FIM)|---------------------->
+
+//<---------------------|FEATURE DATA (INICIO)|---------------------->
+
+function sincFiltro(dataDaRenda) {
+  // Agora usamos a variável que recebemos ali em cima
+  const [ano, mes] = dataDaRenda.split("-");
+  const mesAnoRenda = `${ano}-${mes}`; // Formato: "YYYY-MM"
+
+  // Selecionamos os elementos do filtro no Painel
+  const inputFiltro = document.querySelector("#input-filtro-mes");
+  const textoFiltro = document.querySelector("#texto-mes-atual");
+
+  // Forçamos o filtro do painel a ir para o mês da renda que acabamos de mexer
+  if (inputFiltro) {
+    inputFiltro.value = mesAnoRenda;
+    textoFiltro.textContent = `${mes}/${ano}`;
+  }
+}
+
+// funcionalidade do botão de data
+function btnData() {
+  const btnCalendario = document.querySelector("#btn-abrir-calendario");
+  const inputMes = document.querySelector("#input-filtro-mes");
+  const textoMesAtual = document.querySelector("#texto-mes-atual");
+
+  // --- LÓGICA DO MÊS ATUAL ---
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+  const dataFormatada = `${ano}-${mes}`; // Ex: 2026-04
+
+  // Inicializa os valores na tela
+  if (inputMes) {
+    inputMes.value = dataFormatada;
+    textoMesAtual.textContent = `${mes}/${ano}`;
+  }
+
+  // --- EVENTOS ---
+  // Abre o calendário ao clicar no ícone
+  btnCalendario.addEventListener("click", () => inputMes.showPicker());
+
+  // Atualiza tudo quando o usuário troca o mês
+  inputMes.addEventListener("change", (e) => {
+    const valorInput = e.target.value;
+
+    if (valorInput) {
+      // Se tem valor (ex: "2026-04")
+      const [anoSel, mesSel] = valorInput.split("-");
+      textoMesAtual.textContent = `${mesSel}/${anoSel}`;
+    } else {
+      // Se o usuário clicou em "Limpar"
+      textoMesAtual.textContent = "Selecione um mês";
+    }
+
+    listaRendas();
+  });
+}
+
+//<---------------------|FEATURE DATA (FIM)|---------------------->
 
 
 // <---------------------| FUNÇÕES LISTA DE RENDAS (INICIO)|---------------------->
