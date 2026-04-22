@@ -14,13 +14,13 @@
 }
 
 .btn-3d-cancelar,
-.btn-3d-deletar {
+.btn-3d-deletar,.btn-gasto-3d, .btn-3d-data-gasto {
   box-shadow: 0 6px 0 #6b0000;
   transition: all 0.1s ease;
 }
 
 .btn-3d-cancelar:active,
-.btn-3d-deletar:active {
+.btn-3d-deletar:active,.btn-gasto-3d:active, .btn-3d-data-gasto:active {
   box-shadow: 0 2px 0 #6b0000;
   transform: translateY(4px);
 }

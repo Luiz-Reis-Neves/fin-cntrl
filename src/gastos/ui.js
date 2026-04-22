@@ -13,14 +13,14 @@ function templateHeader() {
             <label
               id="total-Gasto"
               for=""
-              class="text-xl text-green-700 font-bold"
+              class="text-xl text-[#9F0712] font-bold"
             >
               R$ 0,00
             </label>
           </div>
           <button
             id="btn-nova-gastos"
-            class="w-[140px] h-[40px] bg-[#459464] hover:bg-[#3a7d54] text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d"
+            class="w-[140px] h-[40px] bg-[#9F0712] hover:bg-red-700 text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-gasto-3d"
           >
             + Novo Gasto
           </button>
@@ -33,23 +33,23 @@ function templateHeader() {
 function templatePainel() {
     return `
   <div
-          class="w-full h-[50px] text-green-800 bg-white p-2 flex items-center justify-between rounded-[10px] shadow-sm rounded-2xl border-l-4 border-green-800"
+          class="w-full h-[50px] text-[#9F0712] bg-white p-2 flex items-center justify-between rounded-[10px] shadow-sm rounded-2xl border-l-4 border-[#9F0712]"
         >
           <h1 class="text-xl font-semibold">Painel de Gastos</h1>
 
           <div class="relative flex items-center gap-2">
             <span
               id="texto-mes-atual"
-              class="font-medium text-green-800 text-sm"
+              class="font-medium text-[#9F0712] text-sm"
               >Mês atual</span
             >
 
             <button
               id="btn-abrir-calendario"
-              class="w-8 h-8 border flex items-center justify-center py-2 rounded hover:bg-green-100 active:scale-95 btn-3d-data"
+              class="w-8 h-8 border flex items-center justify-center py-2 rounded hover:bg-green-100 active:scale-95 btn-3d-data-gasto"
             >
               <img
-                src="./src/assets/calendario.png"
+                src="./src/assets/calendarioGastos.png"
                 class="w-7 h-7"
                 alt="Filtrar por mês"
               />
@@ -99,7 +99,7 @@ function templateModal() {
               <select
                 id="inputCategoria"
                 name=""
-                class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
+                class="w-full px-3 py-2 border-2 rounded-lg focus:border-[#9F0712] focus:outline-none"
               >
                 <option disabled selected value="">Selecione uma opção</option>
                 <option value="Aluguel / Prestação">Aluguel / Prestação</option>
@@ -116,6 +116,7 @@ function templateModal() {
                 <option value="Faculdade / Cursos">Faculdade / Cursos</option>
                 <option value="Fatura do Cartão de Crédito">Fatura do Cartão de Crédito</option>
                 <option value="Imprevistos">Imprevistos</option>
+                <option value="Pagamentos de Terceiros">Pagamentos de Terceiros</option>
                 <option value="Outros Gastos">Outros Gastos</option>
               </select>
             </div>
@@ -125,7 +126,7 @@ function templateModal() {
                 type="number"
                 id="inputValor"
                 name="valor"
-                class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
+                class="w-full px-3 py-2 border-2 rounded-lg focus:border-[#9F0712] focus:outline-none"
                 placeholder="Digite o valor"
               />
             </div>
@@ -137,7 +138,7 @@ function templateModal() {
                 type="date"
                 id="inputData"
                 name="data"
-                class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
+                class="w-full px-3 py-2 border-2 rounded-lg focus:border-[#9F0712] focus:outline-none"
               />
             </div>
             <div class="mb-4">
@@ -148,7 +149,7 @@ function templateModal() {
                 type="text"
                 id="inputDescricao"
                 name="descricao"
-                class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
+                class="w-full px-3 py-2 border-2 rounded-lg focus:border-[#9F0712] focus:outline-none"
                 placeholder="Digite uma descrição"
               />
             </div>
@@ -269,7 +270,7 @@ function corCategoriaGasto(categoria) {
         case "Outros Gastos":
             return "bg-gray-200 text-gray-800";
         default:
-            return "bg-gray-200 text-gray-800";
+            return "bg-gray-200 text-gray-400";
     }
 }
 // função que chama todos os templentes de gastos
