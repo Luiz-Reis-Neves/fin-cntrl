@@ -16,9 +16,8 @@ export function adicionarRenda({ categoria, valor, data, descricao }) {
 }
 
 
-export function calcularTotalRenda() {
-    let total = rendas.reduce((acumulador, renda) => acumulador + Number(renda.valor), 0)
-    return total
+export function calcularTotalRenda(lista = rendas) { // 'rendas' é o padrão caso não venha filtro
+    return lista.reduce((acc, item) => acc + Number(item.valor), 0)
 }
 
 export function editarRenda(id, novosDados) {

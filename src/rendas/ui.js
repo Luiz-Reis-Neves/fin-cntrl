@@ -348,32 +348,49 @@ export function eventosDoModal() {
   // botão cadastrar do modal
   // Esse trecho é o "Cérebro Decisor" do modal, que decide se fez uma edição ou um novo cadastro
   btnModalCadastrar.addEventListener("click", () => {
-    // [COLETA]: Chama a função que lê todos os inputs do modal e guarda em um objeto (ex: {valor: 100, ...})
+    // [COLETA]: Chama a função que lê todos os inputs do modal e guarda em um objeto
     let valoresModal = pegarValoresModal();
+
     // validação
     if (!validarRenda(valoresModal)) {
       return
     }
-    // [DECISÃO]: Verifica se existe um ID guardado na variável. Se não for null, significa que estamos EDITANDO
+
+    // [DECISÃO]: Verifica se existe um ID guardado na variável.
     if (rendaEmEdicao !== null) {
-      // [EXECUÇÃO DO UPDATE]: Chama a função da lógica enviando o ID e os novos dados digitados
+      // [EXECUÇÃO DO UPDATE]
       editarRenda(rendaEmEdicao, valoresModal);
-      // [RESET]: Limpa a variável de controle para que o próximo clique não tente editar o mesmo item
       rendaEmEdicao = null;
-      // [VISUAL]: Retorna o texto original do botão para "Cadastrar" (limpando o estado de edição)
       btnModalCadastrar.textContent = "Cadastrar";
 
     } else {
-      // [EXECUÇÃO DO CREATE]: Se a variável era null, o sistema entende que é uma renda totalmente nova
+      // [EXECUÇÃO DO CREATE]
       adicionarRenda(valoresModal);
     }
 
-    // [ATUALIZAÇÃO]: Chama o Maestro para redesenhar a lista na tela com as novas informações
+    // --- NOVO: SINCRONIZAÇÃO DE FILTRO ---
+    // Pegamos o ano e mês da renda que acabou de ser salva (valoresModal.data é "YYYY-MM-DD")
+    const [ano, mes] = valoresModal.data.split("-");
+    const mesAnoRenda = `${ano}-${mes}`; // Formato: "YYYY-MM"
+
+    // Selecionamos os elementos do filtro no Painel
+    const inputFiltro = document.querySelector("#input-filtro-mes");
+    const textoFiltro = document.querySelector("#texto-mes-atual");
+
+    // Forçamos o filtro do painel a ir para o mês da renda que acabamos de mexer
+    // Assim, se você cadastrar em Maio, o app pula para Maio automaticamente!
+    if (inputFiltro) {
+      inputFiltro.value = mesAnoRenda;
+      textoFiltro.textContent = `${mes}/${ano}`;
+    }
+    // -------------------------------------
+
+    // [ATUALIZAÇÃO]: Chama o Maestro para redesenhar a lista na tela
+    // Agora ele vai desenhar filtrando pelo mês que acabamos de setar acima!
     listaRendas();
 
-    // [FINALIZAÇÃO]: Executa a função que coloca a classe 'hidden' no modal, fechando a janela
+    // [FINALIZAÇÃO]: Fecha a janela
     fecharModal();
-
   });
 }
 // <---------------------|MODAL (FIM)|---------------------->
@@ -384,15 +401,33 @@ export function eventosDoModal() {
 function listaDeRendasRead() {
   // trackear o local onde vai ficar a lista de rendas
   let containerListaRendas = document.querySelector("#container-lista-rendas")
-  // percorrer banco de dado renda e entregas os itens para o templates de cards
-  let cardsListasRendas = rendas.map(itens => {
+
+  // NOVO: Pega o mês que está selecionado no input de data
+  const mesSelecionado = document.querySelector("#input-filtro-mes").value // ex: "2026-04"
+
+  // NOVO: Filtra o banco de dados antes de mandar para o template
+  // Se 'mesSelecionado' estiver vazio (quando você clica em limpar), ele ignora o filtro e mostra tudo
+  const rendasFiltradas = rendas.filter(item => {
+    if (!mesSelecionado) return true
+    return item.data.startsWith(mesSelecionado)
+  })
+
+  // percorrer o resultado FILTRADO e entregar os itens para o templates de cards
+  let cardsListasRendas = rendasFiltradas.map(itens => {
     return templateListaCards(itens)
   }).join("")
+
   // lançar a lista no html
   containerListaRendas.innerHTML = cardsListasRendas
+
   // exibir o total da renda no header
   let totalRenda = document.querySelector("#total-Renda")
-  totalRenda.textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calcularTotalRenda())
+
+  // AJUSTE: Passamos as rendas filtradas para o cálculo do total
+  // Assim o valor lá no topo reflete apenas o que o usuário está vendo no mês
+  const valorTotal = calcularTotalRenda(rendasFiltradas)
+
+  totalRenda.textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorTotal)
 }
 
 function listaDeRendasUpdate() {
