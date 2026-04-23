@@ -233,4 +233,15 @@ export function templatesDashboard() {
     ${templateCentroDashboard()}
     ${templateDespesasDashboard()}
     `
-} 
+}
+
+// <------------|FEATURE DATA (INICIO)|------------->
+
+
+
+// <------------|FEATURE DATA (FIM)|------------->
+
+
+export function inicializarDashboard() {
+
+}

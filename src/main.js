@@ -1,7 +1,7 @@
 import './styles/style.css';
 import { inicializarRenda, templatesRenda } from './rendas/ui.js';
 import { inicializarGastos, templatesGastos } from './gastos/ui.js';
-import { templatesDashboard } from './dashboard/ui.js';
+import { templatesDashboard, inicializarDashboard } from './dashboard/ui.js';
 // Declaração de variaveis dos botões
 const botoesNav = document.querySelectorAll("#lista-navegacao button")
 let containerConteudoFilho2 = document.querySelector("#container-conteudo-filho-2")
@@ -19,6 +19,7 @@ botoesNav.forEach((botao) => {
                 break
             case "btn-dashboard":
                 containerConteudoFilho2.innerHTML = templatesDashboard()
+                inicializarDashboard()
                 break
             default:
         }
