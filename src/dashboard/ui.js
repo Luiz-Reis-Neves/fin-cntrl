@@ -1,3 +1,4 @@
+import { rendas } from "../data/store.js";
 function templateHeaderDashboard() {
   return `
     <div class="w-full p-3">
@@ -31,52 +32,88 @@ function templateHeaderDashboard() {
               />
             </div>
 
-            <input type="month" id="input-filtro-mes" class="hidden" />
+            <input type="month" class="hidden" />
           </div>
         </div>
-    `
+    `;
 }
-
-function templateCardDashboard() {
+// <===========|TEMPLANTES CARDS (INICIO)|==============>
+// <===========|CARDS RENDAS (INICIO)|==============>
+function templateCardRenda() {
   return `
-    <div class="w-full h-auto p-3 flex justify-between gap-4">
           <div
-            class="h-[170px] flex-1 bg-white rounded-xl border border-gray-200 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-          >
-            <div
-              class="h-[170px] flex-1 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-5 flex flex-col justify-center"
+              class="h-[170px] flex-1 bg-white rounded-xl border border-gray-200 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             >
-              <h4 class="text-gray-500 font-medium">Fonte de Renda</h4>
-              <h1 class="text-3xl font-bold text-green-600">2.500,00</h1>
-              <p class="text-sm text-gray-400">Total recebido em Abril/2026</p>
-            </div>
+              <div
+                class="h-[170px] flex-1 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-5 flex flex-col justify-center"
+              >
+                <h4 class="text-gray-500 font-medium">Fonte de Renda</h4>
+                <h1 id="valor-renda-card" class="text-3xl font-bold text-green-600">0,00</h1>
+                <p class="text-sm text-gray-400">Total recebido <span class="data-dinamica-card">---</span></p>
+              </div>
           </div>
+  
+  `;
+}
+function cardRendas(mesISO) {
+  if (!mesISO) return;
 
+  // 1. Filtro e Soma (Lógica de Negócio)
+  const filtrados = rendas.filter(item => item.data?.startsWith(mesISO));
+
+  const totalRenda = filtrados.reduce((acc, item) => acc + (Number(item.valor) || 0), 0);
+
+  // 2. Atualização do Valor Principal
+  const h1Renda = document.getElementById('valor-renda-card');
+  if (h1Renda) {
+    h1Renda.innerText = totalRenda.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+  }
+
+  // 3. Atualização das Legendas (Visual)
+  const [ano, mes] = mesISO.split('-');
+  const mesesNomes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+  const legendaHumana = `${mesesNomes[parseInt(mes) - 1]} / ${ano}`;
+
+  document.querySelectorAll('.data-dinamica-card').forEach(el => {
+    el.innerText = legendaHumana;
+  });
+}
+// <===========|CARDS RENDAS (FIM)|==============>
+
+function templateCardGasto() {
+  return `
           <div
-            class="h-[170px] flex-1 bg-white rounded-xl border border-gray-200 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-          >
-            <div
-              class="h-[170px] flex-1 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-5 flex flex-col justify-center"
+              class="h-[170px] flex-1 bg-white rounded-xl border border-gray-200 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             >
-              <h4 class="text-gray-500 font-medium">Fonte de Gastos</h4>
-              <h1 class="text-3xl font-bold text-red-600">1.730,00</h1>
-              <p class="text-sm text-gray-400">Total gastos em Abril/2026</p>
-            </div>
+              <div
+                class="h-[170px] flex-1 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-5 flex flex-col justify-center"
+              >
+                <h4 class="text-gray-500 font-medium">Fonte de Gastos</h4>
+                <h1 class="text-3xl font-bold text-red-600">1.730,00</h1>
+                <p class="text-sm text-gray-400">Total gastos em Abril/2026</p>
+              </div>
           </div>
-
-          <div
-            class="h-[170px] flex-1 bg-white rounded-xl border border-gray-200 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-          >
-            <div
-              class="h-[170px] flex-1 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-5 flex flex-col justify-center"
+  
+  `;
+}
+function templateCardDisponivel() {
+  return `
+        <div
+              class="h-[170px] flex-1 bg-white rounded-xl border border-gray-200 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             >
-              <h4 class="text-gray-500 font-medium">Saldo Disponível</h4>
-              <h1 class="text-3xl font-bold text-green-600">770,00</h1>
-              <p class="text-sm text-gray-400">Disponível em Abril/2026</p>
-            </div>
-          </div>
-
-          <div
+              <div
+                class="h-[170px] flex-1 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-5 flex flex-col justify-center"
+              >
+                <h4 class="text-gray-500 font-medium">Saldo Disponível</h4>
+                <h1 class="text-3xl font-bold text-green-600">770,00</h1>
+                <p class="text-sm text-gray-400">Disponível em Abril/2026</p>
+              </div>
+        </div>
+`;
+}
+function templateCardCofrinho() {
+  return `
+        <div
             class="h-[170px] flex-1 bg-white rounded-xl border border-gray-200 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
           >
             <div
@@ -86,11 +123,23 @@ function templateCardDashboard() {
               <h1 class="text-3xl font-bold text-green-600">3.600,00</h1>
               <p class="text-sm text-gray-400">Total acumulado</p>
             </div>
-          </div>
         </div>
-    `
+  
+  `;
 }
-
+// <===========|TEMPLANTES CARDS MAIN (INICIO)|==============>
+function templateCardDashboard() {
+  return `
+    <div class="w-full h-auto p-3 flex justify-between gap-4">      
+    ${templateCardRenda()}
+    ${templateCardGasto()}      
+    ${templateCardDisponivel()}
+    ${templateCardCofrinho()}      
+    </div>
+    `;
+}
+// <===========|TEMPLANTES CARDS MAIN (FIM)|==============>
+// <===========|TEMPLANTES CARDS (FIM)|==============>
 function templateCentroDashboard() {
   return `
     <div class="w-full p-3 h-auto grid grid-cols-3 gap-4">
@@ -126,7 +175,7 @@ function templateCentroDashboard() {
             </div>
           </div>
         </div>
-    `
+    `;
 }
 
 function templateDespesasDashboard() {
@@ -223,7 +272,7 @@ function templateDespesasDashboard() {
           </div>
         </div>
     
-    `
+    `;
 }
 
 export function templatesDashboard() {
@@ -232,16 +281,37 @@ export function templatesDashboard() {
     ${templateCardDashboard()}
     ${templateCentroDashboard()}
     ${templateDespesasDashboard()}
-    `
+    `;
 }
 
-// <------------|FEATURE DATA (INICIO)|------------->
+// <------------| FEATURE DATA (INICIO) |------------->
 
+function configurarCalendario() {
+  const input = document.getElementById("input-filtro-mes");
+  const btn = document.getElementById("btn-abrir-calendario");
+  const textoHeader = document.getElementById("texto-mes-atual");
 
+  if (!input || !btn) return;
 
-// <------------|FEATURE DATA (FIM)|------------->
+  btn.onclick = () => input.showPicker();
 
+  input.onchange = (evento) => {
+    const valor = evento.target.value; // Ex: "2026-05"
+    const [ano, mes] = valor.split('-');
+
+    // Atualiza Header (isso você disse que já funciona)
+    if (textoHeader) textoHeader.innerText = `${mes}/${ano}`;
+
+    // PUXA A ATUALIZAÇÃO DOS CARDS
+    cardRendas(valor);
+  };
+
+  // Roda uma vez no início para o card não nascer com "2.500,00" fixo
+  if (input.value) cardRendas(input.value);
+}
+
+// <------------| FEATURE DATA (FIM) |------------->
 
 export function inicializarDashboard() {
-
+  configurarCalendario();
 }
