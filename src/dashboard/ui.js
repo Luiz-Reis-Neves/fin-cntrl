@@ -18,7 +18,7 @@ function templateHeaderDashboard() {
                 class="w-8 h-8 border flex items-center justify-center py-2 rounded hover:bg-green-100 active:scale-95 btn-3d-data"
               >
                 <img
-                  src="./public/assets/calendario.png"
+                  src="/fin-cntrl/assets/calendario.png"
                   class="w-7 h-7"
                   alt="Filtrar por mês"
                 />

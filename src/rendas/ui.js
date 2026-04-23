@@ -62,7 +62,7 @@ function templatePainel() {
               class="w-8 h-8 border flex items-center justify-center py-2 rounded hover:bg-green-100 active:scale-95 btn-3d-data"
             >
               <img
-                src="./public/assets/calendario.png"
+                src="/fin-cntrl/assets/calendario.png"
                 class="w-7 h-7"
                 alt="Filtrar por mês"
               />
@@ -224,7 +224,7 @@ function templateListaCards(itens) {
               class="w-[50px] h-[30px] bg-blue-500 hover:bg-blue-400 text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d-editar"
             >
               <img
-                src="./src/assets/botao-editar.png"
+                src="/fin-cntrl/assets/botao-editar.png"
                 class="w-auto h-auto"
                 alt=""
               />
@@ -234,7 +234,7 @@ function templateListaCards(itens) {
               class="w-[50px] h-[30px] bg-red-500 hover:bg-red-400 text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d-deletar"
             >
               <img
-                src="./src/assets/excluir.png"
+                src="/fin-cntrl/assets/excluir.png"
                 class="w-auto h-auto"
                 alt=""
               />
