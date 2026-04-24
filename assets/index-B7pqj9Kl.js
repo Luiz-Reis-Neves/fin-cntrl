@@ -1,4 +1,4 @@
-(function(){let e=document.createElement(`link`).relList;if(e&&e.supports&&e.supports(`modulepreload`))return;for(let e of document.querySelectorAll(`link[rel="modulepreload"]`))n(e);new MutationObserver(e=>{for(let t of e)if(t.type===`childList`)for(let e of t.addedNodes)e.tagName===`LINK`&&e.rel===`modulepreload`&&n(e)}).observe(document,{childList:!0,subtree:!0});function t(e){let t={};return e.integrity&&(t.integrity=e.integrity),e.referrerPolicy&&(t.referrerPolicy=e.referrerPolicy),e.crossOrigin===`use-credentials`?t.credentials=`include`:e.crossOrigin===`anonymous`?t.credentials=`omit`:t.credentials=`same-origin`,t}function n(e){if(e.ep)return;e.ep=!0;let n=t(e);fetch(e.href,n)}})();var e=[],t=[];function n({categoria:t,valor:n,data:r,descricao:i}){let a={id:Date.now(),categoria:t,valor:Number(n),data:r,descricao:i};return e.push(a),e}function r(t=e){return t.reduce((e,t)=>e+Number(t.valor),0)}function i(t,n){let r=e.findIndex(e=>String(e.id)===String(t));return r===-1?!1:(e[r]={id:t,...n},!0)}function a(t){let n=e.findIndex(e=>e.id===t.id);e.splice(n,1)}function o(e){return e===``?(alert(`Prencha o campo categoria`),!1):!0}function s(e){return e===``?(alert(`Preencha o campo valor`),!1):e<=0?(alert(`O campo valor tem que ser maior que zero`),!1):!0}function c(e){return e===``?(alert(`Preencha o campo data`),!1):!0}function l({categoria:e,valor:t,data:n}){let r=o(e),i=s(t),a=c(n);return!(!r||!i||!a)}var u=null;function ee(){return`
+(function(){let e=document.createElement(`link`).relList;if(e&&e.supports&&e.supports(`modulepreload`))return;for(let e of document.querySelectorAll(`link[rel="modulepreload"]`))n(e);new MutationObserver(e=>{for(let t of e)if(t.type===`childList`)for(let e of t.addedNodes)e.tagName===`LINK`&&e.rel===`modulepreload`&&n(e)}).observe(document,{childList:!0,subtree:!0});function t(e){let t={};return e.integrity&&(t.integrity=e.integrity),e.referrerPolicy&&(t.referrerPolicy=e.referrerPolicy),e.crossOrigin===`use-credentials`?t.credentials=`include`:e.crossOrigin===`anonymous`?t.credentials=`omit`:t.credentials=`same-origin`,t}function n(e){if(e.ep)return;e.ep=!0;let n=t(e);fetch(e.href,n)}})();var e=[],t=[];function n({categoria:t,valor:n,data:r,descricao:i}){let a={id:Date.now(),categoria:t,valor:Number(n),data:r,descricao:i};return e.push(a),e}function r(t=e){return t.reduce((e,t)=>e+Number(t.valor),0)}function i(t,n){let r=e.findIndex(e=>String(e.id)===String(t));return r===-1?!1:(e[r]={id:t,...n},!0)}function a(t){let n=e.findIndex(e=>e.id===t.id);e.splice(n,1)}function o(e){return e===``?(alert(`Prencha o campo categoria`),!1):!0}function s(e){return e===``?(alert(`Preencha o campo valor`),!1):e<=0?(alert(`O campo valor tem que ser maior que zero`),!1):!0}function c(e){return e===``?(alert(`Preencha o campo data`),!1):!0}function l({categoria:e,valor:t,data:n}){let r=o(e),i=s(t),a=c(n);return!(!r||!i||!a)}var u=null;function d(){return`
   <div
           class="w-full h-[100px] bg-gray-200 rounded-[10px] flex items-center gap-4 p-2 shadow-md"
         >
@@ -23,7 +23,7 @@
           </div>
         </div>
   
-  `}function te(){return`
+  `}function f(){return`
   <div
           class="w-full h-[50px] text-green-800 bg-white p-2 flex items-center justify-between rounded-[10px] shadow-sm rounded-2xl border-l-4 border-green-800"
         >
@@ -57,13 +57,13 @@
           <input type="month" id="input-filtro-mes" class="hidden" />
         </div>
   
-  `}function d(){return`
+  `}function p(){return`
   <div
           id="container-lista-rendas"
           class="w-full h-[400px] p-2 flex flex-col gap-2 overflow-y-auto bg-white rounded-[10px] shadow-2xl"
         ></div>
   
-  `}function f(){return`
+  `}function m(){return`
   <div
           id="fundo-escuro"
           class="w-full h-full bg-black/50 hidden fixed inset-0 z-50"
@@ -153,14 +153,14 @@
           </div>
   </div>
   
-  `}function p(e){return`
+  `}function h(e){return`
   <div
           class="w-full h-20 bg-gray-200 rounded-[10px] gap-4 p-2 shadow-md flex rounded-md items-center justify-between"
         >
           <div class="h-[30px] flex items-center gap-1 p-1">
             <h2 class="text-gray-400">Categoria:</h2>
             <span
-              class="border p-1 rounded-[10px] text-center ${b(e.categoria)} font-medium "
+              class="border p-1 rounded-[10px] text-center ${ae(e.categoria)} font-medium "
               >${e.categoria}</span
             >
           </div>
@@ -208,14 +208,14 @@
             </button>
           </div>
         </div>
-  `}function m(){return`
+  `}function g(){return`
     <section class="w-full h-full flex flex-col p-2 gap-2">
-      ${ee()}
-      ${te()}
       ${d()}
       ${f()}
+      ${p()}
+      ${m()}
     </section>
-    `}function h(){document.querySelector(`#fundo-escuro`).classList.remove(`hidden`)}function g(){document.querySelector(`#fundo-escuro`).classList.add(`hidden`),re(),u=null,document.querySelector(`#btn-model-cadastrar`).textContent=`Cadastrar`}function ne(){return{categoria:document.querySelector(`#inputCategoria`).value,valor:document.querySelector(`#inputValor`).value,data:document.querySelector(`#inputData`).value,descricao:document.querySelector(`#inputDescricao`).value}}function re(){document.querySelector(`#inputCategoria`).value=``,document.querySelector(`#inputValor`).value=``,document.querySelector(`#inputData`).value=``,document.querySelector(`#inputDescricao`).value=``}function ie(){let e=document.querySelector(`#btn-nova-renda`),t=document.querySelector(`#btn-model-cancelar`),r=document.querySelector(`#btn-model-cadastrar`);e.addEventListener(`click`,()=>{let e=document.querySelector(`#input-filtro-mes`).value;e&&(document.querySelector(`#inputData`).value=`${e}-01`),h()}),t.addEventListener(`click`,()=>{g()}),r.addEventListener(`click`,()=>{let e=ne();l(e)&&(u===null?n(e):(i(u,e),u=null,r.textContent=`Cadastrar`),ae(e.data),x(),g())})}function ae(e){let[t,n]=e.split(`-`),r=`${t}-${n}`,i=document.querySelector(`#input-filtro-mes`),a=document.querySelector(`#texto-mes-atual`);i&&(i.value=r,a.textContent=`${n}/${t}`)}function oe(){let e=document.querySelector(`#btn-abrir-calendario`),t=document.querySelector(`#input-filtro-mes`),n=document.querySelector(`#texto-mes-atual`),r=new Date,i=r.getFullYear(),a=String(r.getMonth()+1).padStart(2,`0`),o=`${i}-${a}`;t&&(t.value=o,n.textContent=`${a}/${i}`),e.addEventListener(`click`,()=>t.showPicker()),t.addEventListener(`change`,e=>{let t=e.target.value;if(t){let[e,r]=t.split(`-`);n.textContent=`${r}/${e}`}else n.textContent=`Selecione um mês`;x()})}function _(){let t=document.querySelector(`#container-lista-rendas`),n=document.querySelector(`#input-filtro-mes`).value,i=e.filter(e=>n?e.data.startsWith(n):!0);t.innerHTML=i.map(e=>p(e)).join(``);let a=document.querySelector(`#total-Renda`),o=r(i);a.textContent=new Intl.NumberFormat(`pt-BR`,{style:`currency`,currency:`BRL`}).format(o)}function v(){let t=document.querySelector(`#btn-model-cadastrar`);e.forEach(e=>{let n=document.querySelector(`#btn-editar-${e.id}`);n&&n.addEventListener(`click`,()=>{u=e.id,document.querySelector(`#inputCategoria`).value=e.categoria,document.querySelector(`#inputValor`).value=e.valor,document.querySelector(`#inputData`).value=e.data,document.querySelector(`#inputDescricao`).value=e.descricao,t.textContent=`Concluir Edição`,h()})})}function y(){e.forEach(e=>{let t=document.querySelector(`#btn-deletar-${e.id}`);t&&t.addEventListener(`click`,()=>{a(e),x()})})}function b(e){switch(e){case`Salário`:return`bg-blue-200 text-blue-800`;case`Freelance`:return`bg-purple-200 text-purple-800`;case`Investimentos`:return`bg-yellow-200 text-yellow-800`;case`Hora Extra`:return`bg-orange-200 text-orange-800`;case`Comissão`:return`bg-pink-200 text-pink-800`;case`Aluguel Recebido`:return`bg-teal-200 text-teal-800`;case`Dividendos`:return`bg-green-200 text-green-800`;case`Presente`:return`bg-red-200 text-red-800`;case`Restituição`:return`bg-indigo-200 text-indigo-800`;case`Outros`:return`bg-gray-200 text-gray-800`;default:}}function x(){_(),v(),y()}function S(){ie(),x(),oe()}function C({categoria:e,valor:n,data:r,descricao:i}){let a={id:Date.now(),categoria:e,valor:Number(n),data:r,descricao:i};return t.push(a),t}function w(e=t){return e.reduce((e,t)=>e+Number(t.valor),0)}function T(e,n){let r=t.findIndex(t=>String(t.id)===String(e));return r===-1?!1:(t[r]={id:e,...n},!0)}function E(e){let n=t.findIndex(t=>t.id===e.id);t.splice(n,1)}function D(e){return e===``?(alert(`Preencha o campo categoria`),!1):!0}function O(e){return e===``?(alert(`Preencha o campo valor`),!1):e<=0?(alert(`O campo valor tem que ser maior que zero`),!1):!0}function k(e){return e===``?(alert(`Preencha o campo data`),!1):!0}function A({categoria:e,valor:t,data:n}){let r=D(e),i=O(t),a=k(n);return!(!r||!i||!a)}var j=null;function M(){return`
+    `}function _(){document.querySelector(`#fundo-escuro`).classList.remove(`hidden`)}function v(){document.querySelector(`#fundo-escuro`).classList.add(`hidden`),y(),u=null,document.querySelector(`#btn-model-cadastrar`).textContent=`Cadastrar`}function ee(){return{categoria:document.querySelector(`#inputCategoria`).value,valor:document.querySelector(`#inputValor`).value,data:document.querySelector(`#inputData`).value,descricao:document.querySelector(`#inputDescricao`).value}}function y(){document.querySelector(`#inputCategoria`).value=``,document.querySelector(`#inputValor`).value=``,document.querySelector(`#inputData`).value=``,document.querySelector(`#inputDescricao`).value=``}function b(){let e=document.querySelector(`#btn-nova-renda`),t=document.querySelector(`#btn-model-cancelar`),r=document.querySelector(`#btn-model-cadastrar`);e.addEventListener(`click`,()=>{let e=document.querySelector(`#input-filtro-mes`).value;e&&(document.querySelector(`#inputData`).value=`${e}-01`),_()}),t.addEventListener(`click`,()=>{v()}),r.addEventListener(`click`,()=>{let e=ee();l(e)&&(u===null?n(e):(i(u,e),u=null,r.textContent=`Cadastrar`),x(e.data),S(),v())})}function x(e){let[t,n]=e.split(`-`),r=`${t}-${n}`,i=document.querySelector(`#input-filtro-mes`),a=document.querySelector(`#texto-mes-atual`);i&&(i.value=r,a.textContent=`${n}/${t}`)}function te(){let e=document.querySelector(`#btn-abrir-calendario`),t=document.querySelector(`#input-filtro-mes`),n=document.querySelector(`#texto-mes-atual`),r=new Date,i=r.getFullYear(),a=String(r.getMonth()+1).padStart(2,`0`),o=`${i}-${a}`;t&&(t.value=o,n.textContent=`${a}/${i}`),e.addEventListener(`click`,()=>t.showPicker()),t.addEventListener(`change`,e=>{let t=e.target.value;if(t){let[e,r]=t.split(`-`);n.textContent=`${r}/${e}`}else n.textContent=`Selecione um mês`;S()})}function ne(){let t=document.querySelector(`#container-lista-rendas`),n=document.querySelector(`#input-filtro-mes`).value,i=e.filter(e=>n?e.data.startsWith(n):!0);t.innerHTML=i.map(e=>h(e)).join(``);let a=document.querySelector(`#total-Renda`),o=r(i);a.textContent=new Intl.NumberFormat(`pt-BR`,{style:`currency`,currency:`BRL`}).format(o)}function re(){let t=document.querySelector(`#btn-model-cadastrar`);e.forEach(e=>{let n=document.querySelector(`#btn-editar-${e.id}`);n&&n.addEventListener(`click`,()=>{u=e.id,document.querySelector(`#inputCategoria`).value=e.categoria,document.querySelector(`#inputValor`).value=e.valor,document.querySelector(`#inputData`).value=e.data,document.querySelector(`#inputDescricao`).value=e.descricao,t.textContent=`Concluir Edição`,_()})})}function ie(){e.forEach(e=>{let t=document.querySelector(`#btn-deletar-${e.id}`);t&&t.addEventListener(`click`,()=>{a(e),S()})})}function ae(e){switch(e){case`Salário`:return`bg-blue-200 text-blue-800`;case`Freelance`:return`bg-purple-200 text-purple-800`;case`Investimentos`:return`bg-yellow-200 text-yellow-800`;case`Hora Extra`:return`bg-orange-200 text-orange-800`;case`Comissão`:return`bg-pink-200 text-pink-800`;case`Aluguel Recebido`:return`bg-teal-200 text-teal-800`;case`Dividendos`:return`bg-green-200 text-green-800`;case`Presente`:return`bg-red-200 text-red-800`;case`Restituição`:return`bg-indigo-200 text-indigo-800`;case`Outros`:return`bg-gray-200 text-gray-800`;default:}}function S(){ne(),re(),ie()}function oe(){b(),S(),te()}function C({categoria:e,valor:n,data:r,descricao:i}){let a={id:Date.now(),categoria:e,valor:Number(n),data:r,descricao:i};return t.push(a),t}function w(e=t){return e.reduce((e,t)=>e+Number(t.valor),0)}function T(e,n){let r=t.findIndex(t=>String(t.id)===String(e));return r===-1?!1:(t[r]={id:e,...n},!0)}function E(e){let n=t.findIndex(t=>t.id===e.id);t.splice(n,1)}function D(e){return e===``?(alert(`Preencha o campo categoria`),!1):!0}function O(e){return e===``?(alert(`Preencha o campo valor`),!1):e<=0?(alert(`O campo valor tem que ser maior que zero`),!1):!0}function k(e){return e===``?(alert(`Preencha o campo data`),!1):!0}function A({categoria:e,valor:t,data:n}){let r=D(e),i=O(t),a=k(n);return!(!r||!i||!a)}var j=null;function M(){return`
   <div
           class="w-full h-[100px] bg-gray-200 rounded-[10px] flex items-center gap-4 p-2 shadow-md"
         >
@@ -435,7 +435,7 @@
     ${P()}
     ${F()}
     </section>
-    `}function z(){document.querySelector(`#fundo-escuro`).classList.remove(`hidden`)}function B(){document.querySelector(`#fundo-escuro`).classList.add(`hidden`),H(),j=null,document.querySelector(`#btn-model-cadastrar`).textContent=`Cadastrar`}function V(){return{categoria:document.querySelector(`#inputCategoria`).value,valor:document.querySelector(`#inputValor`).value,data:document.querySelector(`#inputData`).value,descricao:document.querySelector(`#inputDescricao`).value}}function H(){document.querySelector(`#inputCategoria`).value=``,document.querySelector(`#inputValor`).value=``,document.querySelector(`#inputData`).value=``,document.querySelector(`#inputDescricao`).value=``}function U(){let e=document.querySelector(`#btn-nova-gastos`),t=document.querySelector(`#btn-model-cancelar`),n=document.querySelector(`#btn-model-cadastrar`);e.addEventListener(`click`,()=>{let e=document.querySelector(`#input-filtro-mes`).value;e&&(document.querySelector(`#inputData`).value=`${e}-01`),z()}),t.addEventListener(`click`,()=>{B()}),n.addEventListener(`click`,()=>{let e=V();A(e)&&(j===null?C(e):(T(j,e),j=null,n.textContent=`Cadastrar`),W(e.data),q(),B())})}function W(e){let[t,n]=e.split(`-`),r=`${t}-${n}`,i=document.querySelector(`#input-filtro-mes`),a=document.querySelector(`#texto-mes-atual`);i&&(i.value=r,a.textContent=`${n}/${t}`)}function se(){let e=document.querySelector(`#btn-abrir-calendario`),t=document.querySelector(`#input-filtro-mes`),n=document.querySelector(`#texto-mes-atual`),r=new Date,i=r.getFullYear(),a=String(r.getMonth()+1).padStart(2,`0`),o=`${i}-${a}`;t&&(t.value=o,n.textContent=`${a}/${i}`),e.addEventListener(`click`,()=>t.showPicker()),t.addEventListener(`change`,e=>{let t=e.target.value;if(t){let[e,r]=t.split(`-`);n.textContent=`${r}/${e}`}else n.textContent=`Selecione um mês`;q()})}function G(){let e=document.querySelector(`#container-lista-gastos`),n=document.querySelector(`#input-filtro-mes`).value,r=t.filter(e=>n?e.data.startsWith(n):!0);e.innerHTML=r.map(e=>I(e)).join(``);let i=document.querySelector(`#total-Gasto`),a=w(r);i.textContent=new Intl.NumberFormat(`pt-BR`,{style:`currency`,currency:`BRL`}).format(a)}function K(){let e=document.querySelector(`#btn-model-cadastrar`);t.forEach(t=>{let n=document.querySelector(`#btn-editar-gasto-${t.id}`);n&&n.addEventListener(`click`,()=>{j=t.id,document.querySelector(`#inputCategoria`).value=t.categoria,document.querySelector(`#inputValor`).value=t.valor,document.querySelector(`#inputData`).value=t.data,document.querySelector(`#inputDescricao`).value=t.descricao,e.textContent=`Concluir Edição`,z()})})}function ce(){t.forEach(e=>{let t=document.querySelector(`#btn-deletar-gasto-${e.id}`);t&&t.addEventListener(`click`,()=>{E(e),q()})})}function q(){G(),K(),ce()}function le(){U(),q(),se()}function ue(){return`
+    `}function z(){document.querySelector(`#fundo-escuro`).classList.remove(`hidden`)}function B(){document.querySelector(`#fundo-escuro`).classList.add(`hidden`),H(),j=null,document.querySelector(`#btn-model-cadastrar`).textContent=`Cadastrar`}function V(){return{categoria:document.querySelector(`#inputCategoria`).value,valor:document.querySelector(`#inputValor`).value,data:document.querySelector(`#inputData`).value,descricao:document.querySelector(`#inputDescricao`).value}}function H(){document.querySelector(`#inputCategoria`).value=``,document.querySelector(`#inputValor`).value=``,document.querySelector(`#inputData`).value=``,document.querySelector(`#inputDescricao`).value=``}function U(){let e=document.querySelector(`#btn-nova-gastos`),t=document.querySelector(`#btn-model-cancelar`),n=document.querySelector(`#btn-model-cadastrar`);e.addEventListener(`click`,()=>{let e=document.querySelector(`#input-filtro-mes`).value;e&&(document.querySelector(`#inputData`).value=`${e}-01`),z()}),t.addEventListener(`click`,()=>{B()}),n.addEventListener(`click`,()=>{let e=V();A(e)&&(j===null?C(e):(T(j,e),j=null,n.textContent=`Cadastrar`),W(e.data),q(),B())})}function W(e){let[t,n]=e.split(`-`),r=`${t}-${n}`,i=document.querySelector(`#input-filtro-mes`),a=document.querySelector(`#texto-mes-atual`);i&&(i.value=r,a.textContent=`${n}/${t}`)}function G(){let e=document.querySelector(`#btn-abrir-calendario`),t=document.querySelector(`#input-filtro-mes`),n=document.querySelector(`#texto-mes-atual`),r=new Date,i=r.getFullYear(),a=String(r.getMonth()+1).padStart(2,`0`),o=`${i}-${a}`;t&&(t.value=o,n.textContent=`${a}/${i}`),e.addEventListener(`click`,()=>t.showPicker()),t.addEventListener(`change`,e=>{let t=e.target.value;if(t){let[e,r]=t.split(`-`);n.textContent=`${r}/${e}`}else n.textContent=`Selecione um mês`;q()})}function K(){let e=document.querySelector(`#container-lista-gastos`),n=document.querySelector(`#input-filtro-mes`).value,r=t.filter(e=>n?e.data.startsWith(n):!0);e.innerHTML=r.map(e=>I(e)).join(``);let i=document.querySelector(`#total-Gasto`),a=w(r);i.textContent=new Intl.NumberFormat(`pt-BR`,{style:`currency`,currency:`BRL`}).format(a)}function se(){let e=document.querySelector(`#btn-model-cadastrar`);t.forEach(t=>{let n=document.querySelector(`#btn-editar-gasto-${t.id}`);n&&n.addEventListener(`click`,()=>{j=t.id,document.querySelector(`#inputCategoria`).value=t.categoria,document.querySelector(`#inputValor`).value=t.valor,document.querySelector(`#inputData`).value=t.data,document.querySelector(`#inputDescricao`).value=t.descricao,e.textContent=`Concluir Edição`,z()})})}function ce(){t.forEach(e=>{let t=document.querySelector(`#btn-deletar-gasto-${e.id}`);t&&t.addEventListener(`click`,()=>{E(e),q()})})}function q(){K(),se(),ce()}function le(){U(),q(),G()}function ue(){return`
     <div class="w-full p-3">
           <div
             class="w-full h-auto text-green-800 bg-white px-5 py-3 flex items-center justify-between rounded-[10px] shadow-sm rounded-2xl border-l-4 border-green-800"
@@ -597,102 +597,77 @@
         </div>
         
       </div>
-    `;n.innerHTML+=a})}function Ce(){return`
-    <div class="w-full h-auto p-3">
-          <div
-            class="col-span-3 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md p-5"
-          >
-            <div class="flex justify-between items-center mb-4">
-              <h3 class="text-gray-600 font-bold text-lg">
-                Resumo por Categoria
-              </h3>
-              <button
-                class="text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"
-                  ></path>
-                </svg>
-              </button>
-            </div>
-
-            <div
-              class="grid grid-cols-12 text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-300 pb-2 mb-2 px-2"
-            >
-              <div class="col-span-4">Categoria</div>
-              <div class="col-span-6">Descrição</div>
-              <div class="col-span-2 text-right">Total</div>
-            </div>
-
-            <div class="flex flex-col">
-              <div
-                class="grid grid-cols-12 items-center py-3 border-b border-gray-200/80 last:border-0 hover:bg-white/40 transition-colors rounded-lg px-2 -mx-2"
-              >
-                <div class="col-span-4 flex items-center gap-3">
-                  <div
-                    class="w-9 h-9 rounded-full bg-purple-200 text-purple-700 flex items-center justify-center font-bold text-sm shadow-sm"
-                  >
-                    A
-                  </div>
-                  <span class="font-semibold text-gray-700">Assinaturas</span>
-                </div>
-
-                <div class="col-span-6 text-sm text-gray-500 truncate pr-4">
-                  Netflix, Spotify, Crunchyroll
-                </div>
-
-                <div class="col-span-2 text-right font-bold text-red-600">
-                  - R$ 85,00
-                </div>
-              </div>
-
-              <div
-                class="grid grid-cols-12 items-center py-3 border-b border-gray-200/80 last:border-0 hover:bg-white/40 transition-colors rounded-lg px-2 -mx-2"
-              >
-                <div class="col-span-4 flex items-center gap-3">
-                  <div
-                    class="w-9 h-9 rounded-full bg-emerald-200 text-emerald-800 flex items-center justify-center font-bold text-sm shadow-sm"
-                  >
-                    S
-                  </div>
-                  <span class="font-semibold text-gray-700">Supermercado</span>
-                </div>
-                <div class="col-span-6 text-sm text-gray-500 truncate pr-4">
-                  Atacadão, Padaria, Feira
-                </div>
-                <div class="col-span-2 text-right font-bold text-red-600">
-                  - R$ 650,00
-                </div>
-              </div>
-
-              <div
-                class="grid grid-cols-12 items-center py-3 border-b border-gray-200/80 last:border-0 hover:bg-white/40 transition-colors rounded-lg px-2 -mx-2"
-              >
-                <div class="col-span-4 flex items-center gap-3">
-                  <div
-                    class="w-9 h-9 rounded-full bg-yellow-200 text-yellow-800 flex items-center justify-center font-bold text-sm shadow-sm"
-                  >
-                    C
-                  </div>
-                  <span class="font-semibold text-gray-700"
-                    >Contas da Casa</span
-                  >
-                </div>
-                <div class="col-span-6 text-sm text-gray-500 truncate pr-4">
-                  Energia, Água, Internet
-                </div>
-                <div class="col-span-2 text-right font-bold text-red-600">
-                  - R$ 320,00
-                </div>
-              </div>
-            </div>
+    `;n.innerHTML+=a})}function Ce(n){if(!n)return;let r=document.getElementById(`lista-gestao-rendas`);if(!r)return;let i=e.filter(e=>e.data?.startsWith(n)),a=t.filter(e=>e.data?.startsWith(n));if(r.innerHTML=``,i.length===0){r.innerHTML=`<div class="py-4 text-center text-gray-500 text-sm italic">Nenhuma renda cadastrada neste mês.</div>`;return}i.sort((e,t)=>e.data.localeCompare(t.data));let o=[`bg-purple-200 text-purple-700`,`bg-emerald-200 text-emerald-800`,`bg-blue-200 text-blue-800`,`bg-yellow-200 text-yellow-800`,`bg-pink-200 text-pink-800`],s=new Set;i.forEach((e,t)=>{let n=a.filter(t=>t.data===e.data);n.forEach(e=>s.add(e));let i=n.reduce((e,t)=>e+(Number(t.valor)||0),0),c=Number(e.valor)-i,l=c>=0?`text-emerald-600`:`text-red-600`,[u,d,f]=e.data.split(`-`),p=e.descricao||`Renda`,m=p.charAt(0).toUpperCase(),h=o[t%o.length],g=n.map(e=>e.categoria||e.descricao).join(`, `);g||=`<span class="italic text-gray-400">Nenhum gasto neste dia.</span>`;let _=`
+      <div class="grid grid-cols-12 items-center py-3 border-b border-gray-200/80 last:border-0 hover:bg-white/40 transition-colors rounded-lg px-2 -mx-2">
+        
+        <div class="col-span-4 flex items-center gap-3">
+          <div class="${h} w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm shadow-sm shrink-0">
+            ${m}
+          </div>
+          <div class="flex flex-col overflow-hidden">
+            <span class="font-semibold text-gray-700 truncate">${p}</span>
+            <span class="text-[10px] text-gray-400 font-medium">Dia ${f}/${d}</span>
           </div>
         </div>
-    
-    `}function we(){return`
+
+        <div class="col-span-6 text-sm text-gray-500 truncate pr-4">
+          ${g}
+        </div>
+
+        <div class="col-span-2 text-right flex flex-col items-end">
+          <span class="font-bold ${l} whitespace-nowrap">
+            R$ ${c.toLocaleString(`pt-BR`,{minimumFractionDigits:2})}
+          </span>
+        </div>
+
+      </div>
+    `;r.innerHTML+=_});let c=a.filter(e=>!s.has(e));if(c.length>0){let e=c.reduce((e,t)=>e+(Number(t.valor)||0),0),t=`
+      <div class="grid grid-cols-12 items-center py-3 border-b border-red-200 bg-red-50/50 mt-2 rounded-lg px-2 -mx-2">
+        <div class="col-span-4 flex items-center gap-3">
+          <div class="bg-red-200 text-red-800 w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm shadow-sm shrink-0">
+            ⚠️
+          </div>
+          <div class="flex flex-col">
+            <span class="font-semibold text-red-700 truncate">Outros Dias</span>
+            <span class="text-[10px] text-red-400 font-medium">Sem renda vinculada</span>
+          </div>
+        </div>
+        <div class="col-span-6 text-sm text-red-500/80 truncate pr-4">
+          ${c.map(e=>e.categoria||e.descricao).join(`, `)}
+        </div>
+        <div class="col-span-2 text-right flex flex-col items-end">
+          <span class="font-bold text-red-600 whitespace-nowrap">
+            - R$ ${e.toLocaleString(`pt-BR`,{minimumFractionDigits:2})}
+          </span>
+        </div>
+      </div>
+    `;r.innerHTML+=t}}function we(){return`
+    <div class="w-full h-auto p-3">
+      <div class="col-span-3 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md p-5">
+        
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-gray-600 font-bold text-lg">Gestão de Salários (Potinhos)</h3>
+          <button class="text-gray-400 hover:text-gray-600 transition-colors">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-12 text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-300 pb-2 mb-2 px-2">
+          <div class="col-span-4">Renda / Pote</div>
+          <div class="col-span-6">Despesas Pagas (Mesmo Dia)</div>
+          <div class="col-span-2 text-right">Saldo Restante</div>
+        </div>
+
+        <div id="lista-gestao-rendas" class="flex flex-col">
+        </div>
+
+      </div>
+    </div>
+  `}function Q(){return`
     ${ue()}
     ${_e()}
     ${ve()}
-    ${Ce()}
-    `}function Q(){let e=document.getElementById(`input-filtro-mes`),t=document.getElementById(`btn-abrir-calendario`),n=document.getElementById(`texto-mes-atual`);!e||!t||(t.onclick=()=>e.showPicker(),e.onchange=e=>{let t=e.target.value,[r,i]=t.split(`-`);n&&(n.innerText=`${i}/${r}`),J(t),pe(t),he(t),ye(t),be(t),xe(t),Se(t)},e.value&&J(e.value))}function Te(){Q()}var Ee=document.querySelectorAll(`#lista-navegacao button`),$=document.querySelector(`#container-conteudo-filho-2`);Ee.forEach(e=>{e.addEventListener(`click`,()=>{switch(e.id){case`btn-renda`:$.innerHTML=m(),S();break;case`btn-gastos`:$.innerHTML=R(),le();break;case`btn-dashboard`:$.innerHTML=we(),Te();break;default:}})});
+    ${we()}
+    `}function Te(){let e=document.getElementById(`input-filtro-mes`),t=document.getElementById(`btn-abrir-calendario`),n=document.getElementById(`texto-mes-atual`);!e||!t||(t.onclick=()=>e.showPicker(),e.onchange=e=>{let t=e.target.value,[r,i]=t.split(`-`);n&&(n.innerText=`${i}/${r}`),J(t),pe(t),he(t),ye(t),be(t),xe(t),Se(t),Ce(t)},e.value&&J(e.value))}function Ee(){Te()}var De=document.querySelectorAll(`#lista-navegacao button`),$=document.querySelector(`#container-conteudo-filho-2`);De.forEach(e=>{e.addEventListener(`click`,()=>{switch(e.id){case`btn-renda`:$.innerHTML=g(),oe();break;case`btn-gastos`:$.innerHTML=R(),le();break;case`btn-dashboard`:$.innerHTML=Q(),Ee();break;default:}})});
