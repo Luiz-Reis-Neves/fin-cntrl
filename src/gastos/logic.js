@@ -1,5 +1,5 @@
 import { gastos } from "../data/store.js"; // Lembre-se de criar o array 'gastos' no store.js!
-
+import { salvarDados } from "../data/store.js";
 export function adicionarGasto({ categoria, valor, data, descricao }) {
     let id = Date.now()
     let dadosDeGasto = {
@@ -10,6 +10,7 @@ export function adicionarGasto({ categoria, valor, data, descricao }) {
         descricao: descricao
     }
     gastos.push(dadosDeGasto)
+    salvarDados();
     return gastos
     // return console.table(gastos)
 }

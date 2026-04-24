@@ -676,103 +676,146 @@ function atualizarTopDespesas(mesISO) {
   });
 }
 
+function atualizarGestaoPorRenda(mesISO) {
+  if (!mesISO) return;
+
+  const container = document.getElementById('lista-gestao-rendas');
+  if (!container) return;
+
+  // 1. Pega os dados do mês
+  const rendasMes = rendas.filter(item => item.data?.startsWith(mesISO));
+  const gastosMes = gastos.filter(item => item.data?.startsWith(mesISO));
+
+  container.innerHTML = '';
+
+  if (rendasMes.length === 0) {
+    container.innerHTML = '<div class="py-4 text-center text-gray-500 text-sm italic">Nenhuma renda cadastrada neste mês.</div>';
+    return;
+  }
+
+  // Ordena as rendas do início para o fim do mês
+  rendasMes.sort((a, b) => a.data.localeCompare(b.data));
+
+  const coresBolinhas = [
+    'bg-purple-200 text-purple-700',
+    'bg-emerald-200 text-emerald-800',
+    'bg-blue-200 text-blue-800',
+    'bg-yellow-200 text-yellow-800',
+    'bg-pink-200 text-pink-800'
+  ];
+
+  const gastosJaListados = new Set();
+
+  // 2. CRIA OS POTINHOS (CRUZANDO AS DATAS)
+  rendasMes.forEach((renda, index) => {
+    // FILTRO MÁGICO: Só pega os gastos do MESMO DIA da renda
+    const gastosDestaRenda = gastosMes.filter(g => g.data === renda.data);
+    gastosDestaRenda.forEach(g => gastosJaListados.add(g));
+
+    // Cálculos
+    const totalGasto = gastosDestaRenda.reduce((acc, g) => acc + (Number(g.valor) || 0), 0);
+    const saldoRestante = Number(renda.valor) - totalGasto;
+    const corSaldo = saldoRestante >= 0 ? 'text-emerald-600' : 'text-red-600';
+
+    // Formatação visual
+    const [ano, mes, dia] = renda.data.split('-');
+    const nomeRenda = renda.descricao || 'Renda';
+    const primeiraLetra = nomeRenda.charAt(0).toUpperCase();
+    const corClass = coresBolinhas[index % coresBolinhas.length];
+
+    // Junta o nome das contas pagas (Ex: "Netflix, Spotify, Luz")
+    let descricoesGastos = gastosDestaRenda.map(g => g.categoria || g.descricao).join(', ');
+    if (!descricoesGastos) descricoesGastos = '<span class="italic text-gray-400">Nenhum gasto neste dia.</span>';
+
+    const rowHTML = `
+      <div class="grid grid-cols-12 items-center py-3 border-b border-gray-200/80 last:border-0 hover:bg-white/40 transition-colors rounded-lg px-2 -mx-2">
+        
+        <div class="col-span-4 flex items-center gap-3">
+          <div class="${corClass} w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm shadow-sm shrink-0">
+            ${primeiraLetra}
+          </div>
+          <div class="flex flex-col overflow-hidden">
+            <span class="font-semibold text-gray-700 truncate">${nomeRenda}</span>
+            <span class="text-[10px] text-gray-400 font-medium">Dia ${dia}/${mes}</span>
+          </div>
+        </div>
+
+        <div class="col-span-6 text-sm text-gray-500 truncate pr-4">
+          ${descricoesGastos}
+        </div>
+
+        <div class="col-span-2 text-right flex flex-col items-end">
+          <span class="font-bold ${corSaldo} whitespace-nowrap">
+            R$ ${saldoRestante.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+          </span>
+        </div>
+
+      </div>
+    `;
+
+    container.innerHTML += rowHTML;
+  });
+
+  // 3. POTE DE SEGURANÇA: Contas que ficaram de fora (Dias sem Renda)
+  const gastosSobrando = gastosMes.filter(g => !gastosJaListados.has(g));
+
+  if (gastosSobrando.length > 0) {
+    const totalSobrando = gastosSobrando.reduce((acc, g) => acc + (Number(g.valor) || 0), 0);
+    const descricoesSobrando = gastosSobrando.map(g => g.categoria || g.descricao).join(', ');
+
+    const rowSobrandoHTML = `
+      <div class="grid grid-cols-12 items-center py-3 border-b border-red-200 bg-red-50/50 mt-2 rounded-lg px-2 -mx-2">
+        <div class="col-span-4 flex items-center gap-3">
+          <div class="bg-red-200 text-red-800 w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm shadow-sm shrink-0">
+            ⚠️
+          </div>
+          <div class="flex flex-col">
+            <span class="font-semibold text-red-700 truncate">Outros Dias</span>
+            <span class="text-[10px] text-red-400 font-medium">Sem renda vinculada</span>
+          </div>
+        </div>
+        <div class="col-span-6 text-sm text-red-500/80 truncate pr-4">
+          ${descricoesSobrando}
+        </div>
+        <div class="col-span-2 text-right flex flex-col items-end">
+          <span class="font-bold text-red-600 whitespace-nowrap">
+            - R$ ${totalSobrando.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+          </span>
+        </div>
+      </div>
+    `;
+    container.innerHTML += rowSobrandoHTML;
+  }
+}
+
 // <==================|GRAFICOS FIM|=========================>
 
 function templateDespesasDashboard() {
   return `
     <div class="w-full h-auto p-3">
-          <div
-            class="col-span-3 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md p-5"
-          >
-            <div class="flex justify-between items-center mb-4">
-              <h3 class="text-gray-600 font-bold text-lg">
-                Resumo por Categoria
-              </h3>
-              <button
-                class="text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"
-                  ></path>
-                </svg>
-              </button>
-            </div>
-
-            <div
-              class="grid grid-cols-12 text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-300 pb-2 mb-2 px-2"
-            >
-              <div class="col-span-4">Categoria</div>
-              <div class="col-span-6">Descrição</div>
-              <div class="col-span-2 text-right">Total</div>
-            </div>
-
-            <div class="flex flex-col">
-              <div
-                class="grid grid-cols-12 items-center py-3 border-b border-gray-200/80 last:border-0 hover:bg-white/40 transition-colors rounded-lg px-2 -mx-2"
-              >
-                <div class="col-span-4 flex items-center gap-3">
-                  <div
-                    class="w-9 h-9 rounded-full bg-purple-200 text-purple-700 flex items-center justify-center font-bold text-sm shadow-sm"
-                  >
-                    A
-                  </div>
-                  <span class="font-semibold text-gray-700">Assinaturas</span>
-                </div>
-
-                <div class="col-span-6 text-sm text-gray-500 truncate pr-4">
-                  Netflix, Spotify, Crunchyroll
-                </div>
-
-                <div class="col-span-2 text-right font-bold text-red-600">
-                  - R$ 85,00
-                </div>
-              </div>
-
-              <div
-                class="grid grid-cols-12 items-center py-3 border-b border-gray-200/80 last:border-0 hover:bg-white/40 transition-colors rounded-lg px-2 -mx-2"
-              >
-                <div class="col-span-4 flex items-center gap-3">
-                  <div
-                    class="w-9 h-9 rounded-full bg-emerald-200 text-emerald-800 flex items-center justify-center font-bold text-sm shadow-sm"
-                  >
-                    S
-                  </div>
-                  <span class="font-semibold text-gray-700">Supermercado</span>
-                </div>
-                <div class="col-span-6 text-sm text-gray-500 truncate pr-4">
-                  Atacadão, Padaria, Feira
-                </div>
-                <div class="col-span-2 text-right font-bold text-red-600">
-                  - R$ 650,00
-                </div>
-              </div>
-
-              <div
-                class="grid grid-cols-12 items-center py-3 border-b border-gray-200/80 last:border-0 hover:bg-white/40 transition-colors rounded-lg px-2 -mx-2"
-              >
-                <div class="col-span-4 flex items-center gap-3">
-                  <div
-                    class="w-9 h-9 rounded-full bg-yellow-200 text-yellow-800 flex items-center justify-center font-bold text-sm shadow-sm"
-                  >
-                    C
-                  </div>
-                  <span class="font-semibold text-gray-700"
-                    >Contas da Casa</span
-                  >
-                </div>
-                <div class="col-span-6 text-sm text-gray-500 truncate pr-4">
-                  Energia, Água, Internet
-                </div>
-                <div class="col-span-2 text-right font-bold text-red-600">
-                  - R$ 320,00
-                </div>
-              </div>
-            </div>
-          </div>
+      <div class="col-span-3 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md p-5">
+        
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-gray-600 font-bold text-lg">Gestão de Salários (Potinhos)</h3>
+          <button class="text-gray-400 hover:text-gray-600 transition-colors">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+            </svg>
+          </button>
         </div>
-    
-    `;
+
+        <div class="grid grid-cols-12 text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-300 pb-2 mb-2 px-2">
+          <div class="col-span-4">Renda / Pote</div>
+          <div class="col-span-6">Despesas Pagas (Mesmo Dia)</div>
+          <div class="col-span-2 text-right">Saldo Restante</div>
+        </div>
+
+        <div id="lista-gestao-rendas" class="flex flex-col">
+        </div>
+
+      </div>
+    </div>
+  `;
 }
 
 export function templatesDashboard() {
@@ -796,20 +839,23 @@ function configurarCalendario() {
   btn.onclick = () => input.showPicker();
 
   input.onchange = (evento) => {
-    const valor = evento.target.value; // Ex: "2026-05"
+    const valor = evento.target.value; // Pega o mês selecionado (Ex: "2026-04")
     const [ano, mes] = valor.split("-");
 
-    // Atualiza Header (isso você disse que já funciona)
+    // 1. Atualiza o texto do mês no cabeçalho
     if (textoHeader) textoHeader.innerText = `${mes}/${ano}`;
 
-    // PUXA A ATUALIZAÇÃO DOS CARDS
-    cardRendas(valor);
-    cardGastos(valor);
-    cardSaldo(valor);
-    atualizarGrafico(valor);
+    // 2. ATUALIZA TODOS OS CARDS E GRÁFICOS DA TELA:
+    cardRendas(valor);              // Atualiza o número de Renda Total
+    cardGastos(valor);              // Atualiza o número de Gasto Total
+    cardSaldo(valor);               // Atualiza o número de Saldo Total
+    atualizarGrafico(valor);        // Atualiza o Gráfico Principal de Barras
     atualizarMiniGrafico1(valor);
-    atualizarMiniGrafico2(valor);
-    atualizarTopDespesas(valor);
+    atualizarMiniGrafico2(valor)   // Atualiza o Gráfico de Rosca
+    atualizarTopDespesas(valor);    // Atualiza a listinha do Top 3
+
+    // 3. E finalmente, chama a nossa nova função dos Potinhos por Data! 👇
+    atualizarGestaoPorRenda(valor);
   };
 
   // Roda uma vez no início para o card não nascer com "2.500,00" fixo

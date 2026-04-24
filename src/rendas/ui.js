@@ -1,5 +1,6 @@
 import { adicionarRenda, editarRenda, rendasDelete, calcularTotalRenda, validarRenda } from "./logic.js"
 import { rendas } from "./../data/store.js"
+import { salvarDados } from "../data/store.js";
 let rendaEmEdicao = null
 // função que contem o template do header rendas
 function templateHeader() {
@@ -338,6 +339,8 @@ function eventosDoModal() {
       // [EXECUÇÃO DO CREATE]
       adicionarRenda(valoresModal);
     }
+
+
 
     // --- NOVO: SINCRONIZAÇÃO DE FILTRO ---
     sincFiltro(valoresModal.data)

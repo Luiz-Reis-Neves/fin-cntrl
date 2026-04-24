@@ -1,10 +1,18 @@
+import { carregarDados } from './data/store.js';
 import './styles/style.css';
 import { inicializarRenda, templatesRenda } from './rendas/ui.js';
 import { inicializarGastos, templatesGastos } from './gastos/ui.js';
 import { templatesDashboard, inicializarDashboard } from './dashboard/ui.js';
+
+
+
 // Declaração de variaveis dos botões
 const botoesNav = document.querySelectorAll("#lista-navegacao button")
 let containerConteudoFilho2 = document.querySelector("#container-conteudo-filho-2")
+
+// 👉 2. Carrega os dados salvos no navegador AGORA!
+carregarDados();
+
 // add eventos de click para cada botão
 botoesNav.forEach((botao) => {
     botao.addEventListener("click", () => {

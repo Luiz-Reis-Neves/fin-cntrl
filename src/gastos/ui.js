@@ -1,4 +1,5 @@
 import { adicionarGasto, calcularTotalGasto, editarGasto, gastosDelete, validarGasto } from "./logic.js";
+import { salvarDados } from "../data/store.js";
 import { gastos } from "./../data/store.js"
 
 // função que contem o template do header gastos

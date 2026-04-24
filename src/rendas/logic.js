@@ -1,5 +1,5 @@
 import { rendas } from "../data/store.js";
-
+import { salvarDados } from "../data/store.js";
 
 export function adicionarRenda({ categoria, valor, data, descricao }) {
     let id = Date.now()
@@ -11,6 +11,7 @@ export function adicionarRenda({ categoria, valor, data, descricao }) {
         descricao: descricao
     }
     rendas.push(dadosDeRenda)
+    salvarDados();
     return rendas
     // return console.table(rendas)
 }
