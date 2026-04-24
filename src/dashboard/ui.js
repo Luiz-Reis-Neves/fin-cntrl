@@ -216,10 +216,12 @@ function templateCentroDashboard() {
             class="h-[400px] col-span-2 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-4"
           >
             <h3 class="text-gray-500 font-medium mb-2">Graficos de Gastos</h3>
-
+  
             <div
-              class="w-full h-[330px] border border-gray-300 rounded-2xl bg-white/50"
-            ></div>
+              class="w-full h-[330px] border border-gray-300 rounded-2xl bg-white/50 p-2"
+            >
+            <canvas id="meuGraficoGastos"></canvas>
+            </div>
           </div>
 
           <div class="col-span-1 flex flex-col gap-4">
@@ -227,6 +229,7 @@ function templateCentroDashboard() {
               <div
                 class="bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl shadow-md border border-gray-300 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-4 flex flex-col"
               >
+              
                 <h3 class="text-gray-500 font-medium mb-2">Mini Gráfico 1</h3>
               </div>
 
@@ -245,6 +248,108 @@ function templateCentroDashboard() {
           </div>
         </div>
     `;
+}
+
+// Variável global para guardar o gráfico atual. 
+// Isso é MUITO IMPORTANTE para podermos apagá-lo antes de desenhar o do próximo mês!
+// Variável global para guardar o gráfico atual. (Não remova!)
+let graficoAtual = null;
+
+function atualizarGrafico(mesISO) {
+  if (!mesISO) return;
+
+  // 1. Pega só os gastos do mês selecionado (Lógica original, perfeita)
+  const gastosDoMes = gastos.filter(item => item.data?.startsWith(mesISO));
+
+  // 2. Agrupa os valores por Categoria (Lógica original, perfeita)
+  const totaisPorCategoria = {};
+  gastosDoMes.forEach(gasto => {
+    const cat = gasto.categoria || "Outros";
+    if (totaisPorCategoria[cat]) {
+      totaisPorCategoria[cat] += Number(gasto.valor);
+    } else {
+      totaisPorCategoria[cat] = Number(gasto.valor);
+    }
+  });
+
+  // 3. Separa os Nomes (Labels) e os Valores (Data) (Lógica original, perfeita)
+  const nomesCategorias = Object.keys(totaisPorCategoria);
+  const valoresCategorias = Object.values(totaisPorCategoria);
+
+  // 4. Desenha o Gráfico!
+  const canvas = document.getElementById('meuGraficoGastos');
+  if (!canvas) return; // Proteção para evitar erros
+
+  // Se já existir um gráfico, destrói para criar o novo do próximo mês (Não remova!)
+  if (graficoAtual) {
+    graficoAtual.destroy();
+  }
+
+  // Cria o novo gráfico - VERSÃO EM BARRAS
+  graficoAtual = new Chart(canvas, {
+    type: 'bar', // MUDANÇA: 'doughnut' para 'bar'
+    data: {
+      labels: nomesCategorias, // Categorias no eixo X
+      datasets: [{
+        label: 'Total Gasto (R$)', // Rótulo do conjunto de dados
+        data: valoresCategorias, // Valores no eixo Y
+        // Mantemos as cores bonitinhas para cada barra
+        backgroundColor: [
+          '#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899'
+        ],
+        borderWidth: 0,
+        borderRadius: 5, // Um toque sutil: deixa o topo das barras arredondado
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false // MUDANÇA: Ocultamos a legenda, pois os nomes já estão no eixo X
+        },
+        tooltip: { // Configuração do balãozinho de informações ao passar o mouse
+          callbacks: {
+            label: function (context) {
+              return ' ' + context.formattedValue + ' Gasto';
+            }
+          }
+        }
+      },
+      // MUDANÇA IMPORTANTE: Configurando os eixos (scales)
+      scales: {
+        y: { // Eixo Y (Valores)
+          beginAtZero: true, // Garante que comece do 0
+          title: {
+            display: true,
+            text: 'Total Gasto (R$)', // Título do eixo Y (like example's "(habitantes/km²)")
+            font: {
+              size: 14,
+              weight: 'bold'
+            }
+          },
+          ticks: { // Formatar os valores do eixo Y para dinheiro (R$)
+            callback: function (value, index, values) {
+              return 'R$ ' + value.toLocaleString('pt-BR');
+            }
+          }
+        },
+        x: { // Eixo X (Categorias)
+          title: {
+            display: true,
+            text: 'Categorias de Gastos', // Título do eixo X
+            font: {
+              size: 14,
+              weight: 'bold'
+            }
+          },
+          grid: {
+            display: false // Tira as linhas de grade verticais para ficar mais clean
+          }
+        }
+      }
+    }
+  });
 }
 
 function templateDespesasDashboard() {
@@ -375,6 +480,7 @@ function configurarCalendario() {
     cardRendas(valor);
     cardGastos(valor)
     cardSaldo(valor)
+    atualizarGrafico(valor)
   };
 
   // Roda uma vez no início para o card não nascer com "2.500,00" fixo
