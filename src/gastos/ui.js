@@ -201,7 +201,7 @@ function templateListaCardsGastos(itens) {
             <h2 class="text-gray-400">Data:</h2>
             <span
               class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
-              >${itens.data.split("-").reverse().join("/")},${itens.data}</span
+              >${itens.data.split("-").reverse().join("/")}</span
             >
           </div>
           <div class="h-[30px] flex items-center gap-1 p-1">

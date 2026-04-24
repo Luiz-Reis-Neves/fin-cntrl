@@ -1,4 +1,5 @@
 import { rendas } from "../data/store.js";
+import { gastos } from "../data/store.js";
 function templateHeaderDashboard() {
   return `
     <div class="w-full p-3">
@@ -37,6 +38,8 @@ function templateHeaderDashboard() {
         </div>
     `;
 }
+
+
 // <===========|TEMPLANTES CARDS (INICIO)|==============>
 // <===========|CARDS RENDAS (INICIO)|==============>
 function templateCardRenda() {
@@ -55,6 +58,7 @@ function templateCardRenda() {
   
   `;
 }
+
 function cardRendas(mesISO) {
   if (!mesISO) return;
 
@@ -79,7 +83,7 @@ function cardRendas(mesISO) {
   });
 }
 // <===========|CARDS RENDAS (FIM)|==============>
-
+// <===========|CARDS GASTOS (INICIO)|==============>
 function templateCardGasto() {
   return `
           <div
@@ -89,13 +93,38 @@ function templateCardGasto() {
                 class="h-[170px] flex-1 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-5 flex flex-col justify-center"
               >
                 <h4 class="text-gray-500 font-medium">Fonte de Gastos</h4>
-                <h1 class="text-3xl font-bold text-red-600">1.730,00</h1>
-                <p class="text-sm text-gray-400">Total gastos em Abril/2026</p>
+                <h1 id="valor-gasto-card" class="text-3xl font-bold text-red-600">0,00</h1>
+                <p class="text-sm text-gray-400">Total gastos <span class="data-dinamica-card">---</span></p>
               </div>
           </div>
   
   `;
 }
+function cardGastos(mesISO) {
+  if (!mesISO) return;
+
+  // 1. Filtro e Soma (Lógica de Negócio)
+  const filtrados = gastos.filter(item => item.data?.startsWith(mesISO));
+
+  const totalGasto = filtrados.reduce((acc, item) => acc + (Number(item.valor) || 0), 0);
+
+  // 2. Atualização do Valor Principal
+  const h1Gasto = document.getElementById('valor-gasto-card');
+  if (h1Gasto) {
+    h1Gasto.innerText = totalGasto.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+  }
+
+  // 3. Atualização das Legendas (Visual)
+  const [ano, mes] = mesISO.split('-');
+  const mesesNomes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+  const legendaHumana = `${mesesNomes[parseInt(mes) - 1]} / ${ano}`;
+
+  document.querySelectorAll('.data-dinamica-card').forEach(el => {
+    el.innerText = legendaHumana;
+  });
+}
+// <===========|CARDS GASTOS (FIM)|==============>
+// <===========|CARDS SOLDO DISPONIVEL (INICIO)|==============>
 function templateCardDisponivel() {
   return `
         <div
@@ -105,12 +134,52 @@ function templateCardDisponivel() {
                 class="h-[170px] flex-1 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-5 flex flex-col justify-center"
               >
                 <h4 class="text-gray-500 font-medium">Saldo Disponível</h4>
-                <h1 class="text-3xl font-bold text-green-600">770,00</h1>
-                <p class="text-sm text-gray-400">Disponível em Abril/2026</p>
+                <h1 id="valor-saldo-card" class="text-3xl font-bold text-green-600">0,00</h1>
+                <p class="text-sm text-gray-400">Disponível em <span class="data-dinamica-card">---</span></p>
               </div>
         </div>
 `;
 }
+
+function cardSaldo(mesISO) {
+  if (!mesISO) return;
+
+  // 1. Calcula o total de RENDAS do mês
+  let rendasFiltradas = rendas.filter(item => item.data?.startsWith(mesISO));
+  let totalRenda = rendasFiltradas.reduce((acc, item) => acc + (Number(item.valor) || 0), 0);
+
+  // 2. Calcula o total de GASTOS do mês (usando o array de gastos!)
+  let gastosFiltrados = gastos.filter(item => item.data?.startsWith(mesISO));
+  let totalGasto = gastosFiltrados.reduce((acc, item) => acc + (Number(item.valor) || 0), 0);
+
+  // 3. Faz a matemática real
+  let resul = totalRenda - totalGasto;
+
+  // 4. Atualização do Valor Principal na Tela
+  let h1Saldo = document.getElementById('valor-saldo-card');
+
+  if (h1Saldo) {
+    h1Saldo.innerText = resul.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+
+    // Bônus: Muda a cor do texto se o saldo ficar negativo
+    if (resul < 0) {
+      h1Saldo.classList.replace('text-green-600', 'text-red-600');
+    } else {
+      h1Saldo.classList.replace('text-red-600', 'text-green-600');
+    }
+  }
+
+  // 5. Atualização das Legendas (Visual)
+  const [ano, mes] = mesISO.split('-');
+  const mesesNomes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+  const legendaHumana = `${mesesNomes[parseInt(mes) - 1]} / ${ano}`;
+
+  document.querySelectorAll('.data-dinamica-card').forEach(el => {
+    el.innerText = legendaHumana;
+  });
+}
+// <===========|CARDS SOLDO DISPONIVEL (FIM)|==============>
+
 function templateCardCofrinho() {
   return `
         <div
@@ -304,6 +373,8 @@ function configurarCalendario() {
 
     // PUXA A ATUALIZAÇÃO DOS CARDS
     cardRendas(valor);
+    cardGastos(valor)
+    cardSaldo(valor)
   };
 
   // Roda uma vez no início para o card não nascer com "2.500,00" fixo
