@@ -160,7 +160,7 @@
           <div class="h-[30px] flex items-center gap-1 p-1">
             <h2 class="text-gray-400">Categoria:</h2>
             <span
-              class="border p-1 rounded-[10px] text-center ${oe(e.categoria)} font-medium "
+              class="border p-1 rounded-[10px] text-center ${se(e.categoria)} font-medium "
               >${e.categoria}</span
             >
           </div>
@@ -208,14 +208,14 @@
             </button>
           </div>
         </div>
-  `}function v(){return`
+  `}function ee(){return`
     <section class="w-full h-full flex flex-col p-2 gap-2">
       ${p()}
       ${m()}
       ${h()}
       ${g()}
     </section>
-    `}function y(){document.querySelector(`#fundo-escuro`).classList.remove(`hidden`)}function b(){document.querySelector(`#fundo-escuro`).classList.add(`hidden`),S(),f=null,document.querySelector(`#btn-model-cadastrar`).textContent=`Cadastrar`}function x(){return{categoria:document.querySelector(`#inputCategoria`).value,valor:document.querySelector(`#inputValor`).value,data:document.querySelector(`#inputData`).value,descricao:document.querySelector(`#inputDescricao`).value}}function S(){document.querySelector(`#inputCategoria`).value=``,document.querySelector(`#inputValor`).value=``,document.querySelector(`#inputData`).value=``,document.querySelector(`#inputDescricao`).value=``}function ee(){let e=document.querySelector(`#btn-nova-renda`),t=document.querySelector(`#btn-model-cancelar`),n=document.querySelector(`#btn-model-cadastrar`);e.addEventListener(`click`,()=>{let e=document.querySelector(`#input-filtro-mes`).value;e&&(document.querySelector(`#inputData`).value=`${e}-01`),y()}),t.addEventListener(`click`,()=>{b()}),n.addEventListener(`click`,()=>{let e=x();d(e)&&(f===null?i(e):(o(f,e),f=null,n.textContent=`Cadastrar`),te(e.data),C(),b())})}function te(e){let[t,n]=e.split(`-`),r=`${t}-${n}`,i=document.querySelector(`#input-filtro-mes`),a=document.querySelector(`#texto-mes-atual`);i&&(i.value=r,a.textContent=`${n}/${t}`)}function ne(){let e=document.querySelector(`#btn-abrir-calendario`),t=document.querySelector(`#input-filtro-mes`),n=document.querySelector(`#texto-mes-atual`),r=new Date,i=r.getFullYear(),a=String(r.getMonth()+1).padStart(2,`0`),o=`${i}-${a}`;t&&(t.value=o,n.textContent=`${a}/${i}`),e.addEventListener(`click`,()=>t.showPicker()),t.addEventListener(`change`,e=>{let t=e.target.value;if(t){let[e,r]=t.split(`-`);n.textContent=`${r}/${e}`}else n.textContent=`Selecione um mês`;C()})}function re(){let t=document.querySelector(`#container-lista-rendas`),n=document.querySelector(`#input-filtro-mes`).value,r=e.filter(e=>n?e.data.startsWith(n):!0);t.innerHTML=r.map(e=>_(e)).join(``);let i=document.querySelector(`#total-Renda`),o=a(r);i.textContent=new Intl.NumberFormat(`pt-BR`,{style:`currency`,currency:`BRL`}).format(o)}function ie(){let t=document.querySelector(`#btn-model-cadastrar`);e.forEach(e=>{let n=document.querySelector(`#btn-editar-${e.id}`);n&&n.addEventListener(`click`,()=>{f=e.id,document.querySelector(`#inputCategoria`).value=e.categoria,document.querySelector(`#inputValor`).value=e.valor,document.querySelector(`#inputData`).value=e.data,document.querySelector(`#inputDescricao`).value=e.descricao,t.textContent=`Concluir Edição`,y()})})}function ae(){e.forEach(e=>{let t=document.querySelector(`#btn-deletar-${e.id}`);t&&t.addEventListener(`click`,()=>{s(e),C()})})}function oe(e){switch(e){case`Salário`:return`bg-blue-200 text-blue-800`;case`Freelance`:return`bg-purple-200 text-purple-800`;case`Investimentos`:return`bg-yellow-200 text-yellow-800`;case`Hora Extra`:return`bg-orange-200 text-orange-800`;case`Comissão`:return`bg-pink-200 text-pink-800`;case`Aluguel Recebido`:return`bg-teal-200 text-teal-800`;case`Dividendos`:return`bg-green-200 text-green-800`;case`Presente`:return`bg-red-200 text-red-800`;case`Restituição`:return`bg-indigo-200 text-indigo-800`;case`Outros`:return`bg-gray-200 text-gray-800`;default:}}function C(){re(),ie(),ae()}function w(){ee(),C(),ne()}function T({categoria:e,valor:r,data:i,descricao:a}){let o={id:Date.now(),categoria:e,valor:Number(r),data:i,descricao:a};return t.push(o),n(),t}function E(e=t){return e.reduce((e,t)=>e+Number(t.valor),0)}function D(e,n){let r=t.findIndex(t=>String(t.id)===String(e));return r===-1?!1:(t[r]={id:e,...n},!0)}function O(e){let n=t.findIndex(t=>t.id===e.id);t.splice(n,1)}function k(e){return e===``?(alert(`Preencha o campo categoria`),!1):!0}function A(e){return e===``?(alert(`Preencha o campo valor`),!1):e<=0?(alert(`O campo valor tem que ser maior que zero`),!1):!0}function j(e){return e===``?(alert(`Preencha o campo data`),!1):!0}function M({categoria:e,valor:t,data:n}){let r=k(e),i=A(t),a=j(n);return!(!r||!i||!a)}var N=null;function P(){return`
+    `}function v(){document.querySelector(`#fundo-escuro`).classList.remove(`hidden`)}function y(){document.querySelector(`#fundo-escuro`).classList.add(`hidden`),x(),f=null,document.querySelector(`#btn-model-cadastrar`).textContent=`Cadastrar`}function b(){return{categoria:document.querySelector(`#inputCategoria`).value,valor:document.querySelector(`#inputValor`).value,data:document.querySelector(`#inputData`).value,descricao:document.querySelector(`#inputDescricao`).value}}function x(){document.querySelector(`#inputCategoria`).value=``,document.querySelector(`#inputValor`).value=``,document.querySelector(`#inputData`).value=``,document.querySelector(`#inputDescricao`).value=``}function te(){let e=document.querySelector(`#btn-nova-renda`),t=document.querySelector(`#btn-model-cancelar`),n=document.querySelector(`#btn-model-cadastrar`);e.addEventListener(`click`,()=>{let e=document.querySelector(`#input-filtro-mes`).value;e&&(document.querySelector(`#inputData`).value=`${e}-01`),v()}),t.addEventListener(`click`,()=>{y()}),n.addEventListener(`click`,()=>{let e=b();d(e)&&(f===null?i(e):(o(f,e),f=null,n.textContent=`Cadastrar`),ne(e.data),S(),y())})}function ne(e){let[t,n]=e.split(`-`),r=`${t}-${n}`,i=document.querySelector(`#input-filtro-mes`),a=document.querySelector(`#texto-mes-atual`);i&&(i.value=r,a.textContent=`${n}/${t}`)}function re(){let e=document.querySelector(`#btn-abrir-calendario`),t=document.querySelector(`#input-filtro-mes`),n=document.querySelector(`#texto-mes-atual`),r=new Date,i=r.getFullYear(),a=String(r.getMonth()+1).padStart(2,`0`),o=`${i}-${a}`;t&&(t.value=o,n.textContent=`${a}/${i}`),e.addEventListener(`click`,()=>t.showPicker()),t.addEventListener(`change`,e=>{let t=e.target.value;if(t){let[e,r]=t.split(`-`);n.textContent=`${r}/${e}`}else n.textContent=`Selecione um mês`;S()})}function ie(){let t=document.querySelector(`#container-lista-rendas`),n=document.querySelector(`#input-filtro-mes`).value,r=e.filter(e=>n?e.data.startsWith(n):!0);t.innerHTML=r.map(e=>_(e)).join(``);let i=document.querySelector(`#total-Renda`),o=a(r);i.textContent=new Intl.NumberFormat(`pt-BR`,{style:`currency`,currency:`BRL`}).format(o)}function ae(){let t=document.querySelector(`#btn-model-cadastrar`);e.forEach(e=>{let n=document.querySelector(`#btn-editar-${e.id}`);n&&n.addEventListener(`click`,()=>{f=e.id,document.querySelector(`#inputCategoria`).value=e.categoria,document.querySelector(`#inputValor`).value=e.valor,document.querySelector(`#inputData`).value=e.data,document.querySelector(`#inputDescricao`).value=e.descricao,t.textContent=`Concluir Edição`,v()})})}function oe(){e.forEach(e=>{let t=document.querySelector(`#btn-deletar-${e.id}`);t&&t.addEventListener(`click`,()=>{s(e),S()})})}function se(e){switch(e){case`Salário`:return`bg-blue-200 text-blue-800`;case`Freelance`:return`bg-purple-200 text-purple-800`;case`Investimentos`:return`bg-yellow-200 text-yellow-800`;case`Hora Extra`:return`bg-orange-200 text-orange-800`;case`Comissão`:return`bg-pink-200 text-pink-800`;case`Aluguel Recebido`:return`bg-teal-200 text-teal-800`;case`Dividendos`:return`bg-green-200 text-green-800`;case`Presente`:return`bg-red-200 text-red-800`;case`Restituição`:return`bg-indigo-200 text-indigo-800`;case`Outros`:return`bg-gray-200 text-gray-800`;default:}}function S(){ie(),ae(),oe()}function ce(){te(),S(),re()}function C({categoria:e,valor:r,data:i,descricao:a}){let o={id:Date.now(),categoria:e,valor:Number(r),data:i,descricao:a};return t.push(o),n(),t}function w(e=t){return e.reduce((e,t)=>e+Number(t.valor),0)}function T(e,n){let r=t.findIndex(t=>String(t.id)===String(e));return r===-1?!1:(t[r]={id:e,...n},!0)}function E(e){let n=t.findIndex(t=>t.id===e.id);t.splice(n,1)}function D(e){return e===``?(alert(`Preencha o campo categoria`),!1):!0}function O(e){return e===``?(alert(`Preencha o campo valor`),!1):e<=0?(alert(`O campo valor tem que ser maior que zero`),!1):!0}function k(e){return e===``?(alert(`Preencha o campo data`),!1):!0}function A({categoria:e,valor:t,data:n}){let r=D(e),i=O(t),a=k(n);return!(!r||!i||!a)}var j=null;function M(){return`
   <div
           class="w-full h-[100px] bg-gray-200 rounded-[10px] flex items-center gap-4 p-2 shadow-md"
         >
@@ -237,7 +237,7 @@
           </button>
         </div>
   
-  `}function F(){return`
+  `}function N(){return`
   <div
           class="w-full h-[50px] text-[#9F0712] bg-white p-2 flex items-center justify-between rounded-[10px] shadow-sm rounded-2xl border-l-4 border-[#9F0712]"
         >
@@ -271,13 +271,13 @@
           <input type="month" id="input-filtro-mes" class="hidden" />
         </div>
   
-  `}function I(){return`
+  `}function P(){return`
   <div
           id="container-lista-gastos"
           class="w-full h-[400px] p-2 flex flex-col gap-2 overflow-y-auto bg-white rounded-[10px] shadow-2xl"
         ></div>
   
-  `}function L(){return`
+  `}function F(){return`
   <div
           id="fundo-escuro"
           class="w-full h-full bg-black/50 hidden fixed inset-0 z-50"
@@ -373,14 +373,14 @@
           </div>
   </div>
   
-  `}function R(e){return`
+  `}function I(e){return`
   <div
           class="w-full h-20 bg-gray-200 rounded-[10px] gap-4 p-2 shadow-md flex rounded-md items-center justify-between"
         >
           <div class="h-[30px] flex items-center gap-1 p-1">
             <h2 class="text-gray-400">Categoria:</h2>
             <span
-              class="border p-1 rounded-[10px] text-center ${z(e.categoria)} font-medium "
+              class="border p-1 rounded-[10px] text-center ${L(e.categoria)} font-medium "
               >${e.categoria}</span
             >
           </div>
@@ -428,14 +428,14 @@
             </button>
           </div>
         </div>
-  `}function z(e){switch(e){case`Aluguel / Prestação`:return`bg-slate-200 text-slate-800`;case`Conta de Luz`:return`bg-yellow-200 text-yellow-800`;case`Conta de Água`:return`bg-cyan-200 text-cyan-800`;case`Internet`:return`bg-sky-200 text-sky-800`;case`Conta de Telefone`:return`bg-blue-200 text-blue-800`;case`Supermercado`:return`bg-emerald-200 text-emerald-800`;case`Restaurante / Delivery`:return`bg-orange-200 text-orange-800`;case`Combustível`:return`bg-red-200 text-red-800`;case`Aplicativos (Uber/99)`:return`bg-stone-200 text-stone-800`;case`Assinaturas (Netflix, Spotify, etc.)`:return`bg-purple-200 text-purple-800`;case`Lazer / Saídas`:return`bg-fuchsia-200 text-fuchsia-800`;case`Faculdade / Cursos`:return`bg-indigo-200 text-indigo-800`;case`Fatura do Cartão de Crédito`:return`bg-rose-200 text-rose-800`;case`Imprevistos`:return`bg-amber-200 text-amber-800`;case`Outros Gastos`:return`bg-gray-200 text-gray-800`;default:return`bg-gray-200 text-gray-400`}}function B(){return`
+  `}function L(e){switch(e){case`Aluguel / Prestação`:return`bg-slate-200 text-slate-800`;case`Conta de Luz`:return`bg-yellow-200 text-yellow-800`;case`Conta de Água`:return`bg-cyan-200 text-cyan-800`;case`Internet`:return`bg-sky-200 text-sky-800`;case`Conta de Telefone`:return`bg-blue-200 text-blue-800`;case`Supermercado`:return`bg-emerald-200 text-emerald-800`;case`Restaurante / Delivery`:return`bg-orange-200 text-orange-800`;case`Combustível`:return`bg-red-200 text-red-800`;case`Aplicativos (Uber/99)`:return`bg-stone-200 text-stone-800`;case`Assinaturas (Netflix, Spotify, etc.)`:return`bg-purple-200 text-purple-800`;case`Lazer / Saídas`:return`bg-fuchsia-200 text-fuchsia-800`;case`Faculdade / Cursos`:return`bg-indigo-200 text-indigo-800`;case`Fatura do Cartão de Crédito`:return`bg-rose-200 text-rose-800`;case`Imprevistos`:return`bg-amber-200 text-amber-800`;case`Outros Gastos`:return`bg-gray-200 text-gray-800`;default:return`bg-gray-200 text-gray-400`}}function R(){return`
     <section class="w-full h-full flex flex-col p-2 gap-2">
+    ${M()}
+    ${N()}
     ${P()}
     ${F()}
-    ${I()}
-    ${L()}
     </section>
-    `}function V(){document.querySelector(`#fundo-escuro`).classList.remove(`hidden`)}function H(){document.querySelector(`#fundo-escuro`).classList.add(`hidden`),W(),N=null,document.querySelector(`#btn-model-cadastrar`).textContent=`Cadastrar`}function U(){return{categoria:document.querySelector(`#inputCategoria`).value,valor:document.querySelector(`#inputValor`).value,data:document.querySelector(`#inputData`).value,descricao:document.querySelector(`#inputDescricao`).value}}function W(){document.querySelector(`#inputCategoria`).value=``,document.querySelector(`#inputValor`).value=``,document.querySelector(`#inputData`).value=``,document.querySelector(`#inputDescricao`).value=``}function G(){let e=document.querySelector(`#btn-nova-gastos`),t=document.querySelector(`#btn-model-cancelar`),n=document.querySelector(`#btn-model-cadastrar`);e.addEventListener(`click`,()=>{let e=document.querySelector(`#input-filtro-mes`).value;e&&(document.querySelector(`#inputData`).value=`${e}-01`),V()}),t.addEventListener(`click`,()=>{H()}),n.addEventListener(`click`,()=>{let e=U();M(e)&&(N===null?T(e):(D(N,e),N=null,n.textContent=`Cadastrar`),K(e.data),q(),H())})}function K(e){let[t,n]=e.split(`-`),r=`${t}-${n}`,i=document.querySelector(`#input-filtro-mes`),a=document.querySelector(`#texto-mes-atual`);i&&(i.value=r,a.textContent=`${n}/${t}`)}function se(){let e=document.querySelector(`#btn-abrir-calendario`),t=document.querySelector(`#input-filtro-mes`),n=document.querySelector(`#texto-mes-atual`),r=new Date,i=r.getFullYear(),a=String(r.getMonth()+1).padStart(2,`0`),o=`${i}-${a}`;t&&(t.value=o,n.textContent=`${a}/${i}`),e.addEventListener(`click`,()=>t.showPicker()),t.addEventListener(`change`,e=>{let t=e.target.value;if(t){let[e,r]=t.split(`-`);n.textContent=`${r}/${e}`}else n.textContent=`Selecione um mês`;q()})}function ce(){let e=document.querySelector(`#container-lista-gastos`),n=document.querySelector(`#input-filtro-mes`).value,r=t.filter(e=>n?e.data.startsWith(n):!0);e.innerHTML=r.map(e=>R(e)).join(``);let i=document.querySelector(`#total-Gasto`),a=E(r);i.textContent=new Intl.NumberFormat(`pt-BR`,{style:`currency`,currency:`BRL`}).format(a)}function le(){let e=document.querySelector(`#btn-model-cadastrar`);t.forEach(t=>{let n=document.querySelector(`#btn-editar-gasto-${t.id}`);n&&n.addEventListener(`click`,()=>{N=t.id,document.querySelector(`#inputCategoria`).value=t.categoria,document.querySelector(`#inputValor`).value=t.valor,document.querySelector(`#inputData`).value=t.data,document.querySelector(`#inputDescricao`).value=t.descricao,e.textContent=`Concluir Edição`,V()})})}function ue(){t.forEach(e=>{let t=document.querySelector(`#btn-deletar-gasto-${e.id}`);t&&t.addEventListener(`click`,()=>{O(e),q()})})}function q(){ce(),le(),ue()}function de(){G(),q(),se()}function fe(){return`
+    `}function z(){document.querySelector(`#fundo-escuro`).classList.remove(`hidden`)}function B(){document.querySelector(`#fundo-escuro`).classList.add(`hidden`),H(),j=null,document.querySelector(`#btn-model-cadastrar`).textContent=`Cadastrar`}function V(){return{categoria:document.querySelector(`#inputCategoria`).value,valor:document.querySelector(`#inputValor`).value,data:document.querySelector(`#inputData`).value,descricao:document.querySelector(`#inputDescricao`).value}}function H(){document.querySelector(`#inputCategoria`).value=``,document.querySelector(`#inputValor`).value=``,document.querySelector(`#inputData`).value=``,document.querySelector(`#inputDescricao`).value=``}function U(){let e=document.querySelector(`#btn-nova-gastos`),t=document.querySelector(`#btn-model-cancelar`),n=document.querySelector(`#btn-model-cadastrar`);e.addEventListener(`click`,()=>{let e=document.querySelector(`#input-filtro-mes`).value;e&&(document.querySelector(`#inputData`).value=`${e}-01`),z()}),t.addEventListener(`click`,()=>{B()}),n.addEventListener(`click`,()=>{let e=V();A(e)&&(j===null?C(e):(T(j,e),j=null,n.textContent=`Cadastrar`),W(e.data),K(),B())})}function W(e){let[t,n]=e.split(`-`),r=`${t}-${n}`,i=document.querySelector(`#input-filtro-mes`),a=document.querySelector(`#texto-mes-atual`);i&&(i.value=r,a.textContent=`${n}/${t}`)}function G(){let e=document.querySelector(`#btn-abrir-calendario`),t=document.querySelector(`#input-filtro-mes`),n=document.querySelector(`#texto-mes-atual`),r=new Date,i=r.getFullYear(),a=String(r.getMonth()+1).padStart(2,`0`),o=`${i}-${a}`;t&&(t.value=o,n.textContent=`${a}/${i}`),e.addEventListener(`click`,()=>t.showPicker()),t.addEventListener(`change`,e=>{let t=e.target.value;if(t){let[e,r]=t.split(`-`);n.textContent=`${r}/${e}`}else n.textContent=`Selecione um mês`;K()})}function le(){let e=document.querySelector(`#container-lista-gastos`),n=document.querySelector(`#input-filtro-mes`).value,r=t.filter(e=>n?e.data.startsWith(n):!0);e.innerHTML=r.map(e=>I(e)).join(``);let i=document.querySelector(`#total-Gasto`),a=w(r);i.textContent=new Intl.NumberFormat(`pt-BR`,{style:`currency`,currency:`BRL`}).format(a)}function ue(){let e=document.querySelector(`#btn-model-cadastrar`);t.forEach(t=>{let n=document.querySelector(`#btn-editar-gasto-${t.id}`);n&&n.addEventListener(`click`,()=>{j=t.id,document.querySelector(`#inputCategoria`).value=t.categoria,document.querySelector(`#inputValor`).value=t.valor,document.querySelector(`#inputData`).value=t.data,document.querySelector(`#inputDescricao`).value=t.descricao,e.textContent=`Concluir Edição`,z()})})}function de(){t.forEach(e=>{let t=document.querySelector(`#btn-deletar-gasto-${e.id}`);t&&t.addEventListener(`click`,()=>{E(e),K()})})}function K(){le(),ue(),de()}function fe(){U(),K(),G()}function pe(){return`
     <div class="w-full p-3">
           <div
             class="w-full h-auto text-green-800 bg-white px-5 py-3 flex items-center justify-between rounded-[10px] shadow-sm rounded-2xl border-l-4 border-green-800"
@@ -470,7 +470,7 @@
             <input type="month" class="hidden" />
           </div>
         </div>
-    `}function pe(){return`
+    `}function me(){return`
           <div
               class="h-[170px] flex-1 bg-white rounded-xl border border-gray-200 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             >
@@ -483,7 +483,7 @@
               </div>
           </div>
   
-  `}function J(t){if(!t)return;let n=e.filter(e=>e.data?.startsWith(t)).reduce((e,t)=>e+(Number(t.valor)||0),0),r=document.getElementById(`valor-renda-card`);r&&(r.innerText=n.toLocaleString(`pt-BR`,{minimumFractionDigits:2}));let[i,a]=t.split(`-`),o=`${[`Janeiro`,`Fevereiro`,`Março`,`Abril`,`Maio`,`Junho`,`Julho`,`Agosto`,`Setembro`,`Outubro`,`Novembro`,`Dezembro`][parseInt(a)-1]} / ${i}`;document.querySelectorAll(`.data-dinamica-card`).forEach(e=>{e.innerText=o})}function me(){return`
+  `}function q(t){if(!t)return;let n=e.filter(e=>e.data?.startsWith(t)).reduce((e,t)=>e+(Number(t.valor)||0),0),r=document.getElementById(`valor-renda-card`);r&&(r.innerText=n.toLocaleString(`pt-BR`,{minimumFractionDigits:2}));let[i,a]=t.split(`-`),o=`${[`Janeiro`,`Fevereiro`,`Março`,`Abril`,`Maio`,`Junho`,`Julho`,`Agosto`,`Setembro`,`Outubro`,`Novembro`,`Dezembro`][parseInt(a)-1]} / ${i}`;document.querySelectorAll(`.data-dinamica-card`).forEach(e=>{e.innerText=o})}function he(){return`
           <div
               class="h-[170px] flex-1 bg-white rounded-xl border border-gray-200 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             >
@@ -496,7 +496,7 @@
               </div>
           </div>
   
-  `}function he(e){if(!e)return;let n=t.filter(t=>t.data?.startsWith(e)).reduce((e,t)=>e+(Number(t.valor)||0),0),r=document.getElementById(`valor-gasto-card`);r&&(r.innerText=n.toLocaleString(`pt-BR`,{minimumFractionDigits:2}));let[i,a]=e.split(`-`),o=`${[`Janeiro`,`Fevereiro`,`Março`,`Abril`,`Maio`,`Junho`,`Julho`,`Agosto`,`Setembro`,`Outubro`,`Novembro`,`Dezembro`][parseInt(a)-1]} / ${i}`;document.querySelectorAll(`.data-dinamica-card`).forEach(e=>{e.innerText=o})}function ge(){return`
+  `}function ge(e){if(!e)return;let n=t.filter(t=>t.data?.startsWith(e)).reduce((e,t)=>e+(Number(t.valor)||0),0),r=document.getElementById(`valor-gasto-card`);r&&(r.innerText=n.toLocaleString(`pt-BR`,{minimumFractionDigits:2}));let[i,a]=e.split(`-`),o=`${[`Janeiro`,`Fevereiro`,`Março`,`Abril`,`Maio`,`Junho`,`Julho`,`Agosto`,`Setembro`,`Outubro`,`Novembro`,`Dezembro`][parseInt(a)-1]} / ${i}`;document.querySelectorAll(`.data-dinamica-card`).forEach(e=>{e.innerText=o})}function _e(){return`
         <div
               class="h-[170px] flex-1 bg-white rounded-xl border border-gray-200 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             >
@@ -508,7 +508,7 @@
                 <p class="text-sm text-gray-400">Disponível em <span class="data-dinamica-card">---</span></p>
               </div>
         </div>
-`}function _e(n){if(!n)return;let r=e.filter(e=>e.data?.startsWith(n)).reduce((e,t)=>e+(Number(t.valor)||0),0)-t.filter(e=>e.data?.startsWith(n)).reduce((e,t)=>e+(Number(t.valor)||0),0),i=document.getElementById(`valor-saldo-card`);i&&(i.innerText=r.toLocaleString(`pt-BR`,{minimumFractionDigits:2}),r<0?i.classList.replace(`text-green-600`,`text-red-600`):i.classList.replace(`text-red-600`,`text-green-600`));let[a,o]=n.split(`-`),s=`${[`Janeiro`,`Fevereiro`,`Março`,`Abril`,`Maio`,`Junho`,`Julho`,`Agosto`,`Setembro`,`Outubro`,`Novembro`,`Dezembro`][parseInt(o)-1]} / ${a}`;document.querySelectorAll(`.data-dinamica-card`).forEach(e=>{e.innerText=s})}function ve(){return`
+`}function ve(n){if(!n)return;let r=e.filter(e=>e.data?.startsWith(n)).reduce((e,t)=>e+(Number(t.valor)||0),0)-t.filter(e=>e.data?.startsWith(n)).reduce((e,t)=>e+(Number(t.valor)||0),0),i=document.getElementById(`valor-saldo-card`);i&&(i.innerText=r.toLocaleString(`pt-BR`,{minimumFractionDigits:2}),r<0?i.classList.replace(`text-green-600`,`text-red-600`):i.classList.replace(`text-red-600`,`text-green-600`));let[a,o]=n.split(`-`),s=`${[`Janeiro`,`Fevereiro`,`Março`,`Abril`,`Maio`,`Junho`,`Julho`,`Agosto`,`Setembro`,`Outubro`,`Novembro`,`Dezembro`][parseInt(o)-1]} / ${a}`;document.querySelectorAll(`.data-dinamica-card`).forEach(e=>{e.innerText=s})}function ye(){return`
         <div
             class="h-[170px] flex-1 bg-white rounded-xl border border-gray-200 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
           >
@@ -521,14 +521,14 @@
             </div>
         </div>
   
-  `}function ye(){return`
+  `}function be(){return`
     <div class="w-full h-auto p-3 flex justify-between gap-4">      
-    ${pe()}
-    ${me()}      
-    ${ge()}
-    ${ve()}      
+    ${me()}
+    ${he()}      
+    ${_e()}
+    ${ye()}      
     </div>
-    `}function be(){return`
+    `}function xe(){return`
     <div class="w-full p-3 h-auto grid grid-cols-3 gap-4">
           <div
             class="h-[400px] col-span-2 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-4"
@@ -584,7 +584,7 @@
             </div>
           </div>
         </div>
-    `}var Y=null;function xe(e){if(!e)return;let n=t.filter(t=>t.data?.startsWith(e)),r={};n.forEach(e=>{let t=e.categoria||`Outros`;r[t]?r[t]+=Number(e.valor):r[t]=Number(e.valor)});let i=Object.keys(r),a=Object.values(r),o=document.getElementById(`meuGraficoGastos`);o&&(Y&&Y.destroy(),Y=new Chart(o,{type:`bar`,data:{labels:i,datasets:[{label:`Total Gasto (R$)`,data:a,backgroundColor:[`#EF4444`,`#F59E0B`,`#10B981`,`#3B82F6`,`#8B5CF6`,`#EC4899`],borderWidth:0,borderRadius:5}]},options:{responsive:!0,maintainAspectRatio:!1,plugins:{legend:{display:!1},tooltip:{callbacks:{label:function(e){return` `+e.formattedValue+` Gasto`}}}},scales:{y:{beginAtZero:!0,title:{display:!0,text:`Total Gasto (R$)`,font:{size:14,weight:`bold`}},ticks:{callback:function(e,t,n){return`R$ `+e.toLocaleString(`pt-BR`)}}},x:{title:{display:!0,text:`Categorias de Gastos`,font:{size:14,weight:`bold`}},grid:{display:!1}}}}}))}var X=null;function Se(n){if(!n)return;let r=e.filter(e=>e.data?.startsWith(n)).reduce((e,t)=>e+(Number(t.valor)||0),0),i=t.filter(e=>e.data?.startsWith(n)).reduce((e,t)=>e+(Number(t.valor)||0),0),a=r-i;a<0&&(a=0);let o=document.getElementById(`graficoProporcao`);if(!o)return;X&&X.destroy();let s=[`Gastos`,`Disponível`],c=[i,a],l=[`#EF4444`,`#10B981`];r===0&&i===0&&(s=[`Sem movimentação`],c=[1],l=[`#D1D5DB`]),X=new Chart(o,{type:`doughnut`,data:{labels:s,datasets:[{data:c,backgroundColor:l,borderWidth:0,cutout:`75%`}]},options:{responsive:!0,maintainAspectRatio:!1,layout:{padding:0},plugins:{legend:{display:!1},tooltip:{displayColors:!1,bodyFont:{size:11},padding:8,callbacks:{title:function(){return null},label:function(e){return e.label===`Sem movimentação`?`Sem dados`:`${e.label}: R$ ${e.raw.toLocaleString(`pt-BR`,{minimumFractionDigits:2})}`}}}}}})}var Z=null;function Q(e){if(!e)return;let[n,r]=e.split(`-`),i=[],a=[],o=[`Jan`,`Fev`,`Mar`,`Abr`,`Mai`,`Jun`,`Jul`,`Ago`,`Set`,`Out`,`Nov`,`Dez`];for(let e=3;e>=0;e--){let t=new Date(n,r-1-e,1),s=t.getFullYear(),c=String(t.getMonth()+1).padStart(2,`0`);a.push(`${s}-${c}`),i.push(o[t.getMonth()])}let s=a.map(e=>t.filter(t=>t.data?.startsWith(e)).reduce((e,t)=>e+(Number(t.valor)||0),0)),c=document.getElementById(`graficoEvolucao`);c&&(Z&&Z.destroy(),Z=new Chart(c,{type:`line`,data:{labels:i,datasets:[{data:s,borderColor:`#EF4444`,backgroundColor:`rgba(239, 68, 68, 0.1)`,borderWidth:2,fill:!0,tension:.4,pointRadius:3}]},options:{responsive:!0,maintainAspectRatio:!1,plugins:{legend:{display:!1},tooltip:{displayColors:!1,callbacks:{label:function(e){return`Gastos: R$ ${e.raw.toLocaleString(`pt-BR`,{minimumFractionDigits:2})}`}}}},scales:{x:{grid:{display:!1}},y:{display:!1,beginAtZero:!0}}}}))}function Ce(e){if(!e)return;let n=document.getElementById(`lista-top-despesas`);if(!n)return;let r=t.filter(t=>t.data?.startsWith(e)).sort((e,t)=>Number(t.valor)-Number(e.valor)).slice(0,3);if(n.innerHTML=``,r.length===0){n.innerHTML=`<p class="text-sm text-gray-400 text-center mt-4">Nenhum gasto neste mês.</p>`;return}r.forEach((e,t)=>{let r=t===0,i=r?`text-red-600 font-bold text-sm`:`text-red-500 font-medium text-sm`,a=`
+    `}var J=null;function Se(e){if(!e)return;let n=t.filter(t=>t.data?.startsWith(e)),r={};n.forEach(e=>{let t=e.categoria||`Outros`;r[t]?r[t]+=Number(e.valor):r[t]=Number(e.valor)});let i=Object.keys(r),a=Object.values(r),o=document.getElementById(`meuGraficoGastos`);o&&(J&&J.destroy(),J=new Chart(o,{type:`bar`,data:{labels:i,datasets:[{label:`Total Gasto (R$)`,data:a,backgroundColor:[`#EF4444`,`#F59E0B`,`#10B981`,`#3B82F6`,`#8B5CF6`,`#EC4899`],borderWidth:0,borderRadius:5}]},options:{responsive:!0,maintainAspectRatio:!1,plugins:{legend:{display:!1},tooltip:{callbacks:{label:function(e){return` `+e.formattedValue+` Gasto`}}}},scales:{y:{beginAtZero:!0,title:{display:!0,text:`Total Gasto (R$)`,font:{size:14,weight:`bold`}},ticks:{callback:function(e,t,n){return`R$ `+e.toLocaleString(`pt-BR`)}}},x:{title:{display:!0,text:`Categorias de Gastos`,font:{size:14,weight:`bold`}},grid:{display:!1}}}}}))}var Y=null;function Ce(n){if(!n)return;let r=e.filter(e=>e.data?.startsWith(n)).reduce((e,t)=>e+(Number(t.valor)||0),0),i=t.filter(e=>e.data?.startsWith(n)).reduce((e,t)=>e+(Number(t.valor)||0),0),a=r-i;a<0&&(a=0);let o=document.getElementById(`graficoProporcao`);if(!o)return;Y&&Y.destroy();let s=[`Gastos`,`Disponível`],c=[i,a],l=[`#EF4444`,`#10B981`];r===0&&i===0&&(s=[`Sem movimentação`],c=[1],l=[`#D1D5DB`]),Y=new Chart(o,{type:`doughnut`,data:{labels:s,datasets:[{data:c,backgroundColor:l,borderWidth:0,cutout:`75%`}]},options:{responsive:!0,maintainAspectRatio:!1,layout:{padding:0},plugins:{legend:{display:!1},tooltip:{displayColors:!1,bodyFont:{size:11},padding:8,callbacks:{title:function(){return null},label:function(e){return e.label===`Sem movimentação`?`Sem dados`:`${e.label}: R$ ${e.raw.toLocaleString(`pt-BR`,{minimumFractionDigits:2})}`}}}}}})}var X=null;function we(e){if(!e)return;let[n,r]=e.split(`-`),i=[],a=[],o=[`Jan`,`Fev`,`Mar`,`Abr`,`Mai`,`Jun`,`Jul`,`Ago`,`Set`,`Out`,`Nov`,`Dez`];for(let e=3;e>=0;e--){let t=new Date(n,r-1-e,1),s=t.getFullYear(),c=String(t.getMonth()+1).padStart(2,`0`);a.push(`${s}-${c}`),i.push(o[t.getMonth()])}let s=a.map(e=>t.filter(t=>t.data?.startsWith(e)).reduce((e,t)=>e+(Number(t.valor)||0),0)),c=document.getElementById(`graficoEvolucao`);c&&(X&&X.destroy(),X=new Chart(c,{type:`line`,data:{labels:i,datasets:[{data:s,borderColor:`#EF4444`,backgroundColor:`rgba(239, 68, 68, 0.1)`,borderWidth:2,fill:!0,tension:.4,pointRadius:3}]},options:{responsive:!0,maintainAspectRatio:!1,plugins:{legend:{display:!1},tooltip:{displayColors:!1,callbacks:{label:function(e){return`Gastos: R$ ${e.raw.toLocaleString(`pt-BR`,{minimumFractionDigits:2})}`}}}},scales:{x:{grid:{display:!1}},y:{display:!1,beginAtZero:!0}}}}))}function Te(e){if(!e)return;let n=document.getElementById(`lista-top-despesas`);if(!n)return;let r=t.filter(t=>t.data?.startsWith(e)).sort((e,t)=>Number(t.valor)-Number(e.valor)).slice(0,3);if(n.innerHTML=``,r.length===0){n.innerHTML=`<p class="text-sm text-gray-400 text-center mt-4">Nenhum gasto neste mês.</p>`;return}r.forEach((e,t)=>{let r=t===0,i=r?`text-red-600 font-bold text-sm`:`text-red-500 font-medium text-sm`,a=`
       <div class="flex flex-col border-b border-gray-200 pb-1 mb-1 last:border-0 last:mb-0 last:pb-0">
         
         <div class="flex items-center  text-gray-600 text-xs ">
@@ -597,7 +597,7 @@
         </div>
         
       </div>
-    `;n.innerHTML+=a})}function we(n){if(!n)return;let r=document.getElementById(`lista-gestao-rendas`);if(!r)return;let i=e.filter(e=>e.data?.startsWith(n)),a=t.filter(e=>e.data?.startsWith(n));if(r.innerHTML=``,i.length===0){r.innerHTML=`<div class="py-4 text-center text-gray-500 text-sm italic">Nenhuma renda cadastrada neste mês.</div>`;return}i.sort((e,t)=>e.data.localeCompare(t.data));let o=[`bg-purple-200 text-purple-700`,`bg-emerald-200 text-emerald-800`,`bg-blue-200 text-blue-800`,`bg-yellow-200 text-yellow-800`,`bg-pink-200 text-pink-800`],s=new Set;i.forEach((e,t)=>{let n=a.filter(t=>t.data===e.data);n.forEach(e=>s.add(e));let i=n.reduce((e,t)=>e+(Number(t.valor)||0),0),c=Number(e.valor)-i,l=c>=0?`text-emerald-600`:`text-red-600`,[u,d,f]=e.data.split(`-`),p=e.descricao||`Renda`,m=p.charAt(0).toUpperCase(),h=o[t%o.length],g=n.map(e=>e.categoria||e.descricao).join(`, `);g||=`<span class="italic text-gray-400">Nenhum gasto neste dia.</span>`;let _=`
+    `;n.innerHTML+=a})}function Ee(n){if(!n)return;let r=document.getElementById(`lista-gestao-rendas`);if(!r)return;let i=e.filter(e=>e.data?.startsWith(n)),a=t.filter(e=>e.data?.startsWith(n));if(r.innerHTML=``,i.length===0){r.innerHTML=`<div class="py-4 text-center text-gray-500 text-sm italic">Nenhuma renda cadastrada neste mês.</div>`;return}i.sort((e,t)=>e.data.localeCompare(t.data));let o=[`bg-purple-200 text-purple-700`,`bg-emerald-200 text-emerald-800`,`bg-blue-200 text-blue-800`,`bg-yellow-200 text-yellow-800`,`bg-pink-200 text-pink-800`],s=new Set;i.forEach((e,t)=>{let n=a.filter(t=>t.data===e.data);n.forEach(e=>s.add(e));let i=n.reduce((e,t)=>e+(Number(t.valor)||0),0),c=Number(e.valor)-i,l=c>=0?`text-emerald-600`:`text-red-600`,[u,d,f]=e.data.split(`-`),p=e.descricao||`Renda`,m=p.charAt(0).toUpperCase(),h=o[t%o.length],g=n.map(e=>e.categoria||e.descricao).join(`, `);g||=`<span class="italic text-gray-400">Nenhum gasto neste dia.</span>`;let _=`
       <div class="grid grid-cols-12 items-center py-3 border-b border-gray-200/80 last:border-0 hover:bg-white/40 transition-colors rounded-lg px-2 -mx-2">
         
         <div class="col-span-4 flex items-center gap-3">
@@ -641,7 +641,7 @@
           </span>
         </div>
       </div>
-    `;r.innerHTML+=t}}function Te(){return`
+    `;r.innerHTML+=t}}function De(){return`
     <div class="w-full h-auto p-3">
       <div class="col-span-3 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md p-5">
         
@@ -665,9 +665,9 @@
 
       </div>
     </div>
-  `}function Ee(){return`
-    ${fe()}
-    ${ye()}
+  `}function Z(){return`
+    ${pe()}
     ${be()}
-    ${Te()}
-    `}function De(){let e=document.getElementById(`input-filtro-mes`),t=document.getElementById(`btn-abrir-calendario`),n=document.getElementById(`texto-mes-atual`);!e||!t||(t.onclick=()=>e.showPicker(),e.onchange=e=>{let t=e.target.value,[r,i]=t.split(`-`);n&&(n.innerText=`${i}/${r}`),J(t),he(t),_e(t),xe(t),Se(t),Q(t),Ce(t),we(t)},e.value&&J(e.value))}function Oe(){De()}var ke=document.querySelectorAll(`#lista-navegacao button`),$=document.querySelector(`#container-conteudo-filho-2`);r(),ke.forEach(e=>{e.addEventListener(`click`,()=>{switch(e.id){case`btn-renda`:$.innerHTML=v(),w();break;case`btn-gastos`:$.innerHTML=B(),de();break;case`btn-dashboard`:$.innerHTML=Ee(),Oe();break;default:}})});
+    ${xe()}
+    ${De()}
+    `}function Oe(){let e=document.getElementById(`input-filtro-mes`),t=document.getElementById(`btn-abrir-calendario`),n=document.getElementById(`texto-mes-atual`);!e||!t||(t.onclick=()=>e.showPicker(),e.onchange=e=>{let t=e.target.value,[r,i]=t.split(`-`);n&&(n.innerText=`${i}/${r}`),q(t),ge(t),ve(t),Se(t),Ce(t),we(t),Te(t),Ee(t)},e.value&&q(e.value))}function ke(){Oe()}var Ae=document.querySelectorAll(`#lista-navegacao button`),Q=document.querySelector(`#container-conteudo-filho-2`),$=document.getElementById(`input-arquivo-backup`);r(),Ae.forEach(e=>{e.addEventListener(`click`,()=>{switch(e.id){case`btn-renda`:Q.innerHTML=ee(),ce();break;case`btn-gastos`:Q.innerHTML=R(),fe();break;case`btn-dashboard`:Q.innerHTML=Z(),ke();break;case`btn-exportar`:je();break;case`btn-importar`:$&&$.click();break;default:}})});function je(){let n=JSON.stringify({rendas:e,gastos:t},null,2),r=new Blob([n],{type:`application/json`}),i=URL.createObjectURL(r),a=document.createElement(`a`);a.href=i,a.download=`backup-financeiro-${new Date().toISOString().split(`T`)[0]}.json`,document.body.appendChild(a),a.click(),document.body.removeChild(a)}$&&$.addEventListener(`change`,r=>{let i=r.target.files[0];if(!i)return;let a=new FileReader;a.onload=function(r){try{let i=JSON.parse(r.target.result);i.rendas&&i.gastos?(e.length=0,e.push(...i.rendas),t.length=0,t.push(...i.gastos),n(),alert(`🎉 Backup restaurado com sucesso!`),window.location.reload()):alert(`❌ Erro: O arquivo selecionado não é um backup válido do nosso sistema.`)}catch{alert(`❌ Erro ao ler o arquivo. Ele pode estar corrompido.`)}},a.readAsText(i),r.target.value=``});
