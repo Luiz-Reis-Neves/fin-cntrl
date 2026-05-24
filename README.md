@@ -11,7 +11,6 @@ Aplicação de gerenciamento de finanças pessoais — controle de rendas, gasto
 - Cadastro de rendas e gastos
 - Criação e gerenciamento de cofrinhos
 - Dashboard com estatísticas e gráficos
-- Interface responsiva
 
 ## 🛠️ Tecnologias
 
