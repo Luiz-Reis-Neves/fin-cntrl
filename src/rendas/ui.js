@@ -1,6 +1,6 @@
 import { adicionarRenda, editarRenda, rendasDelete, calcularTotalRenda, validarRenda } from "./logic.js"
-import { rendas } from "./../data/store.js"
-import { salvarDados } from "../data/store.js";
+import { rendas, escaparHTML } from "./../data/store.js"
+import { templateFiltros, lerFiltros, aplicarFiltros, iniciarFiltros, limparFiltrosExtras } from "../filtros.js"
 let rendaEmEdicao = null
 // função que contem o template do header rendas
 function templateHeader() {
@@ -76,7 +76,6 @@ function templatePainel() {
             />
           </div>
 
-          <input type="month" id="input-filtro-mes" class="hidden" />
         </div>
   
   `
@@ -132,6 +131,8 @@ function templateModal() {
               <label for="inputValor" class="block text-gray-700">Valor</label>
               <input
                 type="number"
+                step="0.01"
+                min="0"
                 id="inputValor"
                 name="valor"
                 class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
@@ -195,7 +196,7 @@ function templateListaCards(itens) {
             <h2 class="text-gray-400">Categoria:</h2>
             <span
               class="border p-1 rounded-[10px] text-center ${corCategoria(itens.categoria)} font-medium "
-              >${itens.categoria}</span
+              >${escaparHTML(itens.categoria)}</span
             >
           </div>
           <div class="h-[30px] flex items-center gap-1 p-1">
@@ -216,7 +217,7 @@ function templateListaCards(itens) {
             <h2 class="text-gray-400">Descrição:</h2>
             <span
               class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
-              >${itens.descricao}</span
+              >${escaparHTML(itens.descricao)}</span
             >
           </div>
           <div class="w-[110px] p-1 flex items-center justify-between">
@@ -250,6 +251,7 @@ export function templatesRenda() {
     <section class="w-full h-full flex flex-col p-2 gap-2">
       ${templateHeader()}
       ${templatePainel()}
+      ${templateFiltros("receber", "focus:border-green-700")}
       ${templateLista()}
       ${templateModal()}
     </section>
@@ -344,6 +346,7 @@ function eventosDoModal() {
 
     // --- NOVO: SINCRONIZAÇÃO DE FILTRO ---
     sincFiltro(valoresModal.data)
+    limparFiltrosExtras()
     // -------------------------------------
 
     // [ATUALIZAÇÃO]: Chama o Maestro para redesenhar a lista na tela
@@ -422,15 +425,8 @@ function listaDeRendasRead() {
   // trackear o local onde vai ficar a lista de rendas
   let containerListaRendas = document.querySelector("#container-lista-rendas")
 
-  // NOVO: Pega o mês que está selecionado no input de data
-  const mesSelecionado = document.querySelector("#input-filtro-mes").value // ex: "2026-04"
-
-  // NOVO: Filtra o banco de dados antes de mandar para o template
-  // Se 'mesSelecionado' estiver vazio (quando você clica em limpar), ele ignora o filtro e mostra tudo
-  const rendasFiltradas = rendas.filter(item => {
-    if (!mesSelecionado) return true
-    return item.data.startsWith(mesSelecionado)
-  })
+  // Filtra (mês, categoria, período) e ordena conforme a barra de filtros
+  const rendasFiltradas = aplicarFiltros(rendas, lerFiltros())
 
   // percorrer o resultado FILTRADO e entregar os itens para o templates de cards
   let cardsListasRendas = rendasFiltradas.map(itens => {
@@ -487,6 +483,7 @@ function listaDeRendasDelete() {
     // [SEGURANÇA]: Só adicionamos o evento se o botão realmente existir na tela atual
     if (btnDelete) {
       btnDelete.addEventListener("click", () => {
+        if (!confirm(`Excluir "${itens.categoria}" de ${itens.data.split("-").reverse().join("/")}?`)) return
         rendasDelete(itens)
         listaRendas()
       })
@@ -518,6 +515,7 @@ function corCategoria(categoria) {
     case "Outros":
       return "bg-gray-200 text-gray-800"
     default:
+      return "bg-gray-200 text-gray-400"
   }
 }
 // <---------------------| FUNÇÕES LISTA DE RENDAS (FIM)|---------------------->
@@ -537,7 +535,8 @@ function listaRendas() {
 // <---------------------|NUCLEO GERAL (INICIO)|---------------------->
 export function inicializarRenda() {
   eventosDoModal() // Configura os botões do modal
-  listaRendas() // Desenha a lista 
-  btnData() // Configura o seletor de mês e data atual
+  iniciarFiltros(listaRendas) // Categoria, período e ordenação
+  btnData() // Configura o seletor de mês ANTES de desenhar a lista, senão o filtro está vazio e mostra tudo
+  listaRendas() // Desenha a lista (já filtrada pelo mês atual)
 }
 // <---------------------|NUCLEO GERAL (FIM)|---------------------->

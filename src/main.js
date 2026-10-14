@@ -81,7 +81,7 @@ if (inputArquivoBackup) {
             try {
                 const dadosRecuperados = JSON.parse(e.target.result);
 
-                if (dadosRecuperados.rendas && dadosRecuperados.gastos) {
+                if (Array.isArray(dadosRecuperados.rendas) && Array.isArray(dadosRecuperados.gastos)) {
                     rendas.length = 0;
                     rendas.push(...dadosRecuperados.rendas);
 
@@ -106,3 +106,6 @@ if (inputArquivoBackup) {
         evento.target.value = '';
     });
 }
+
+// Abre o app direto no Dashboard (antes a tela começava em branco)
+document.getElementById("btn-dashboard").click();

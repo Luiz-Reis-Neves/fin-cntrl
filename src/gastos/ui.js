@@ -1,6 +1,6 @@
 import { adicionarGasto, calcularTotalGasto, editarGasto, gastosDelete, validarGasto } from "./logic.js";
-import { salvarDados } from "../data/store.js";
-import { gastos } from "./../data/store.js"
+import { gastos, escaparHTML } from "./../data/store.js"
+import { templateFiltros, lerFiltros, aplicarFiltros, iniciarFiltros, limparFiltrosExtras } from "../filtros.js"
 
 // função que contem o template do header gastos
 let gastoEmEdicao = null;
@@ -63,7 +63,6 @@ function templatePainel() {
             />
           </div>
 
-          <input type="month" id="input-filtro-mes" class="hidden" />
         </div>
   
   `;
@@ -125,6 +124,8 @@ function templateModal() {
               <label for="inputValor" class="block text-gray-700">Valor</label>
               <input
                 type="number"
+                step="0.01"
+                min="0"
                 id="inputValor"
                 name="valor"
                 class="w-full px-3 py-2 border-2 rounded-lg focus:border-[#9F0712] focus:outline-none"
@@ -133,7 +134,7 @@ function templateModal() {
             </div>
             <div class="mb-4">
               <label for="inputData" class="block text-gray-700"
-                >Data de Recebimento</label
+                >Data do Gasto</label
               >
               <input
                 type="date"
@@ -188,7 +189,7 @@ function templateListaCardsGastos(itens) {
             <h2 class="text-gray-400">Categoria:</h2>
             <span
               class="border p-1 rounded-[10px] text-center ${corCategoriaGasto(itens.categoria)} font-medium "
-              >${itens.categoria}</span
+              >${escaparHTML(itens.categoria)}</span
             >
           </div>
           <div class="h-[30px] flex items-center gap-1 p-1">
@@ -209,7 +210,7 @@ function templateListaCardsGastos(itens) {
             <h2 class="text-gray-400">Descrição:</h2>
             <span
               class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
-              >${itens.descricao}</span
+              >${escaparHTML(itens.descricao)}</span
             >
           </div>
           <div class="w-[110px] p-1 flex items-center justify-between">
@@ -280,6 +281,7 @@ export function templatesGastos() {
     <section class="w-full h-full flex flex-col p-2 gap-2">
     ${templateHeader()}
     ${templatePainel()}
+    ${templateFiltros("pagar", "focus:border-[#9F0712]")}
     ${templateLista()}
     ${templateModal()}
     </section>
@@ -374,6 +376,7 @@ function eventosDoModal() {
 
     // --- NOVO: SINCRONIZAÇÃO DE FILTRO ---
     sincFiltro(valoresModal.data)
+    limparFiltrosExtras()
     // -------------------------------------
 
     // [ATUALIZAÇÃO]: Chama o Maestro para redesenhar a lista na tela
@@ -449,14 +452,8 @@ function listaDeGastosRead() {
   // trackear o local onde vai ficar a lista de gastos
   let containerListaGastos = document.querySelector("#container-lista-gastos")
 
-  // NOVO: Pega o mês que está selecionado no input de data
-  const mesSelecionado = document.querySelector("#input-filtro-mes").value // ex: "2026-04"
-
-  // NOVO: Filtra o banco de dados antes de mandar para o template
-  const gastosFiltrados = gastos.filter(item => {
-    if (!mesSelecionado) return true
-    return item.data.startsWith(mesSelecionado)
-  })
+  // Filtra (mês, categoria, período) e ordena conforme a barra de filtros
+  const gastosFiltrados = aplicarFiltros(gastos, lerFiltros())
 
   // percorrer o resultado FILTRADO e entregar os itens para o template de cards de gastos
   let cardsListasGastos = gastosFiltrados.map(itens => {
@@ -516,6 +513,7 @@ function listaDeGastosDelete() {
     // [SEGURANÇA]: Só adicionamos o evento se o botão existir
     if (btnDelete) {
       btnDelete.addEventListener("click", () => {
+        if (!confirm(`Excluir "${itens.categoria}" de ${itens.data.split("-").reverse().join("/")}?`)) return
         gastosDelete(itens) // Deleta do banco
         listaGastos() // Redesenha a tela
       })
@@ -540,7 +538,8 @@ function listaGastos() {
 // <---------------------|NUCLEO GERAL (INICIO)|---------------------->
 export function inicializarGastos() {
   eventosDoModal() // Configura os botões do modal de gastos
-  listaGastos()    // Desenha a lista de gastos na tela
-  btnData()        // Configura o seletor de mês e data atual
+  iniciarFiltros(listaGastos) // Categoria, período e ordenação
+  btnData()        // Configura o seletor de mês ANTES de desenhar a lista, senão o filtro está vazio e mostra tudo
+  listaGastos()    // Desenha a lista de gastos na tela (já filtrada pelo mês atual)
 }
 // <---------------------|NUCLEO GERAL (FIM)|---------------------->
