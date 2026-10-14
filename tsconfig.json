@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    // Vite compila o código; o tsc só verifica os tipos
+    "noEmit": true,
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": ["vite/client"],
+
+    // Exigido pelo Vite (cada arquivo é compilado isoladamente)
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": true,
+
+    // Migração gradual: arquivos .js continuam funcionando ao lado dos .ts
+    "allowJs": true,
+    "checkJs": false,
+
+    // Verificação rigorosa
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}
