@@ -7,19 +7,41 @@ export function salvarDados() {
     localStorage.setItem('meusGastos', JSON.stringify(gastos));
 }
 
+// Lê uma lista do localStorage sem quebrar o app se o conteúdo estiver corrompido
+function lerLista(chave) {
+    try {
+        const lista = JSON.parse(localStorage.getItem(chave));
+        return Array.isArray(lista) ? lista : null;
+    } catch (erro) {
+        console.error(`Dados corrompidos em "${chave}"`, erro);
+        return null;
+    }
+}
+
 // Função para CARREGAR os dados quando o app abre
 export function carregarDados() {
-    const rendasSalvas = localStorage.getItem('minhasRendas');
-    const gastosSalvos = localStorage.getItem('meusGastos');
+    const rendasSalvas = lerLista('minhasRendas');
+    const gastosSalvos = lerLista('meusGastos');
 
     // Se tiver dados salvos, substitui as listas vazias por eles
     if (rendasSalvas) {
         rendas.length = 0; // Limpa a array original sem quebrar a conexão com os outros arquivos
-        rendas.push(...JSON.parse(rendasSalvas));
+        rendas.push(...rendasSalvas);
     }
 
     if (gastosSalvos) {
         gastos.length = 0;
-        gastos.push(...JSON.parse(gastosSalvos));
+        gastos.push(...gastosSalvos);
     }
+}
+
+// Escapa texto digitado pelo usuário antes de colocar dentro de innerHTML
+// (sem isso, uma descrição com "<" quebra o layout do card)
+export function escaparHTML(texto) {
+    return String(texto ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
 }

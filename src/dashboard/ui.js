@@ -1,5 +1,6 @@
-import { rendas } from "../data/store.js";
-import { gastos } from "../data/store.js";
+import Chart from "chart.js/auto";
+import { rendas, gastos, escaparHTML } from "../data/store.js";
+
 function templateHeaderDashboard() {
   return `
     <div class="w-full p-3">
@@ -33,7 +34,6 @@ function templateHeaderDashboard() {
               />
             </div>
 
-            <input type="month" class="hidden" />
           </div>
         </div>
     `;
@@ -245,7 +245,7 @@ function templateCardCofrinho() {
               class="h-[170px] flex-1 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-5 flex flex-col justify-center"
             >
               <h4 class="text-gray-500 font-medium">Cofrinho</h4>
-              <h1 class="text-3xl font-bold text-green-600">3.600,00</h1>
+              <h1 class="text-3xl font-bold text-gray-400">Em breve</h1>
               <p class="text-sm text-gray-400">Total acumulado</p>
             </div>
         </div>
@@ -663,7 +663,7 @@ function atualizarTopDespesas(mesISO) {
         
         <div class="flex items-center  text-gray-600 text-xs ">
           <span class="text-sm">${iconeRanking}</span>
-          <span class="truncate">${gasto.categoria || 'Outros'}</span>
+          <span class="truncate">${escaparHTML(gasto.categoria || 'Outros')}</span>
         </div>
         
         <div class="${corTexto} pl-5">
@@ -709,7 +709,8 @@ function atualizarGestaoPorRenda(mesISO) {
   // 2. CRIA OS POTINHOS (CRUZANDO AS DATAS)
   rendasMes.forEach((renda, index) => {
     // FILTRO MÁGICO: Só pega os gastos do MESMO DIA da renda
-    const gastosDestaRenda = gastosMes.filter(g => g.data === renda.data);
+    // (se tiver 2 rendas no mesmo dia, o gasto fica só na primeira, pra não contar duas vezes)
+    const gastosDestaRenda = gastosMes.filter(g => g.data === renda.data && !gastosJaListados.has(g));
     gastosDestaRenda.forEach(g => gastosJaListados.add(g));
 
     // Cálculos
@@ -719,12 +720,13 @@ function atualizarGestaoPorRenda(mesISO) {
 
     // Formatação visual
     const [ano, mes, dia] = renda.data.split('-');
-    const nomeRenda = renda.descricao || 'Renda';
-    const primeiraLetra = nomeRenda.charAt(0).toUpperCase();
+    const nomeOriginal = renda.descricao || renda.categoria || 'Renda';
+    const nomeRenda = escaparHTML(nomeOriginal);
+    const primeiraLetra = escaparHTML(nomeOriginal.charAt(0).toUpperCase());
     const corClass = coresBolinhas[index % coresBolinhas.length];
 
     // Junta o nome das contas pagas (Ex: "Netflix, Spotify, Luz")
-    let descricoesGastos = gastosDestaRenda.map(g => g.categoria || g.descricao).join(', ');
+    let descricoesGastos = gastosDestaRenda.map(g => escaparHTML(g.categoria || g.descricao)).join(', ');
     if (!descricoesGastos) descricoesGastos = '<span class="italic text-gray-400">Nenhum gasto neste dia.</span>';
 
     const rowHTML = `
@@ -761,7 +763,7 @@ function atualizarGestaoPorRenda(mesISO) {
 
   if (gastosSobrando.length > 0) {
     const totalSobrando = gastosSobrando.reduce((acc, g) => acc + (Number(g.valor) || 0), 0);
-    const descricoesSobrando = gastosSobrando.map(g => g.categoria || g.descricao).join(', ');
+    const descricoesSobrando = gastosSobrando.map(g => escaparHTML(g.categoria || g.descricao)).join(', ');
 
     const rowSobrandoHTML = `
       <div class="grid grid-cols-12 items-center py-3 border-b border-red-200 bg-red-50/50 mt-2 rounded-lg px-2 -mx-2">
@@ -829,37 +831,39 @@ export function templatesDashboard() {
 
 // <------------| FEATURE DATA (INICIO) |------------->
 
+// Redesenha todos os cards e gráficos para o mês escolhido (ex: "2026-04")
+function atualizarDashboard(mesISO) {
+  if (!mesISO) return;
+
+  const [ano, mes] = mesISO.split("-");
+  const textoHeader = document.getElementById("texto-mes-atual");
+  if (textoHeader) textoHeader.innerText = `${mes}/${ano}`;
+
+  cardRendas(mesISO);              // Atualiza o número de Renda Total
+  cardGastos(mesISO);              // Atualiza o número de Gasto Total
+  cardSaldo(mesISO);               // Atualiza o número de Saldo Total
+  atualizarGrafico(mesISO);        // Atualiza o Gráfico Principal de Barras
+  atualizarMiniGrafico1(mesISO);   // Atualiza o Gráfico de Rosca
+  atualizarMiniGrafico2(mesISO);   // Atualiza o Gráfico de Evolução
+  atualizarTopDespesas(mesISO);    // Atualiza a listinha do Top 3
+  atualizarGestaoPorRenda(mesISO); // Atualiza os Potinhos por Data
+}
+
 function configurarCalendario() {
   const input = document.getElementById("input-filtro-mes");
   const btn = document.getElementById("btn-abrir-calendario");
-  const textoHeader = document.getElementById("texto-mes-atual");
 
   if (!input || !btn) return;
 
   btn.onclick = () => input.showPicker();
 
-  input.onchange = (evento) => {
-    const valor = evento.target.value; // Pega o mês selecionado (Ex: "2026-04")
-    const [ano, mes] = valor.split("-");
+  // Se o usuário clicar em "Limpar" o valor fica vazio, então ignoramos
+  input.onchange = (evento) => atualizarDashboard(evento.target.value);
 
-    // 1. Atualiza o texto do mês no cabeçalho
-    if (textoHeader) textoHeader.innerText = `${mes}/${ano}`;
-
-    // 2. ATUALIZA TODOS OS CARDS E GRÁFICOS DA TELA:
-    cardRendas(valor);              // Atualiza o número de Renda Total
-    cardGastos(valor);              // Atualiza o número de Gasto Total
-    cardSaldo(valor);               // Atualiza o número de Saldo Total
-    atualizarGrafico(valor);        // Atualiza o Gráfico Principal de Barras
-    atualizarMiniGrafico1(valor);
-    atualizarMiniGrafico2(valor)   // Atualiza o Gráfico de Rosca
-    atualizarTopDespesas(valor);    // Atualiza a listinha do Top 3
-
-    // 3. E finalmente, chama a nossa nova função dos Potinhos por Data! 👇
-    atualizarGestaoPorRenda(valor);
-  };
-
-  // Roda uma vez no início para o card não nascer com "2.500,00" fixo
-  if (input.value) cardRendas(input.value);
+  // Já abre no mês atual, em vez de tudo zerado esperando escolher um mês
+  const hoje = new Date();
+  input.value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}`;
+  atualizarDashboard(input.value);
 }
 
 // <------------| FEATURE DATA (FIM) |------------->
