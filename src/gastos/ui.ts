@@ -1,4 +1,5 @@
-import { adicionarGasto, calcularTotalGasto, editarGasto, gastosDelete, validarGasto } from "./logic.js";
+import { adicionarGasto, calcularTotalGasto, editarGasto, gastosDelete } from "./logic.ts";
+import { validarGasto } from "./validador.ts";
 import { gastos, escaparHTML } from "./../data/store.js"
 import { templateFiltros, lerFiltros, aplicarFiltros, iniciarFiltros, limparFiltrosExtras } from "../filtros.js"
 

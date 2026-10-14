@@ -2,7 +2,7 @@
 import { carregarDados, salvarDados, rendas, gastos } from './data/store.js';
 import './styles/style.css';
 import { inicializarRenda, templatesRenda } from './rendas/ui.js';
-import { inicializarGastos, templatesGastos } from './gastos/ui.js';
+import { inicializarGastos, templatesGastos } from './gastos/ui.ts';
 import { templatesDashboard, inicializarDashboard } from './dashboard/ui.js';
 
 // Declaração de variaveis dos botões
