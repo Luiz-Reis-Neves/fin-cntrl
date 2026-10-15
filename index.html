@@ -12,108 +12,106 @@
       rel="stylesheet"
     />
     <script type="module" src="./src/main.js"></script>
-    <title>controle financeiro</title>
+    <title>Fin-Cntrl · Controle financeiro</title>
   </head>
-  <body class="bg-gray-100">
-    <!-- Container principal -->
-    <div id="container-pai" class="w-full flex min-h-screen">
+  <body class="bg-gray-50">
+    <div id="container-pai" class="min-h-screen md:flex">
+      <!-- Barra superior (só no celular) -->
+      <header
+        class="md:hidden sticky top-0 z-30 h-14 px-4 flex items-center justify-between bg-green-800 text-white shadow"
+      >
+        <div class="flex items-center gap-2">
+          <span class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center font-bold text-sm">R$</span>
+          <span class="font-semibold">Fin-Cntrl</span>
+        </div>
+        <button
+          id="btn-menu"
+          type="button"
+          aria-label="Abrir menu"
+          aria-controls="container-menu-filho-1"
+          aria-expanded="false"
+          class="w-10 h-10 -mr-2 rounded-lg flex items-center justify-center hover:bg-white/10"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </header>
+      <div id="fundo-menu" class="fixed inset-0 z-30 bg-black/40 hidden md:hidden"></div>
+
       <!-- Menu de navegação -->
       <nav
         id="container-menu-filho-1"
-        class="w-[240px] bg-green-800 text-white p-2 flex flex-col"
+        class="fixed inset-y-0 left-0 z-40 w-64 shrink-0 -translate-x-full transition-transform duration-200 md:translate-x-0 md:sticky md:top-0 md:h-screen bg-green-800 text-white p-4 flex flex-col"
       >
-        <ul
-          id="lista-navegacao"
-          class="w-full flex flex-col gap-4 mt-10 text-lg"
-        >
+        <div class="flex items-center gap-3 px-2 pt-2 pb-6">
+          <span class="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center font-bold">R$</span>
+          <div class="leading-tight">
+            <p class="font-semibold text-lg">Fin-Cntrl</p>
+            <p class="text-xs text-white/60">Controle financeiro</p>
+          </div>
+        </div>
+
+        <ul id="lista-navegacao" class="w-full flex flex-col gap-1">
           <li>
             <button
               id="btn-dashboard"
-              class="w-full text-sm gap-1 p-1 flex text-left items-center hover:bg-green-700 text-white rounded hover:scale-105 transition-transform duration-200 active:scale-95"
+              class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-left text-white/90 hover:bg-white/10 hover:text-white transition-colors"
             >
               <img src="./public/assets/apartment.png" alt="" class="w-5 h-5" />
-              <span class="mt-1">Dashboard</span>
+              <span>Dashboard</span>
             </button>
           </li>
           <li>
             <button
               id="btn-renda"
-              class="w-full gap-1 text-sm p-1 flex items-center text-left hover:bg-green-700 text-white rounded hover:scale-105 transition-transform duration-200 active:scale-95"
+              class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-left text-white/90 hover:bg-white/10 hover:text-white transition-colors"
             >
-              <img src="./public/assets//money.png" alt="" class="w-5 h-5" />
-              <span class="mt-1">Renda</span>
+              <img src="./public/assets/money.png" alt="" class="w-5 h-5" />
+              <span>Renda</span>
             </button>
           </li>
-          <li class="w-full flex items-center gap-1">
+          <li>
             <button
               id="btn-gastos"
-              class="w-full gap-1 text-sm p-1 flex items-center text-left hover:bg-green-700 text-white rounded hover:scale-105 transition-transform duration-200 active:scale-95"
+              class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-left text-white/90 hover:bg-white/10 hover:text-white transition-colors"
             >
-              <img
-                src="./public/assets//bar-chart.png"
-                alt=""
-                class="w-5 h-5"
-              />
-              <span class="mt-1">Gastos</span>
+              <img src="./public/assets/bar-chart.png" alt="" class="w-5 h-5" />
+              <span>Gastos</span>
             </button>
           </li>
-          <li class="w-full flex items-center gap-1">
+          <li>
             <button
               id="btn-cofrinho"
-              class="w-full gap-1 text-sm p-1 flex items-center text-left hover:bg-green-700 text-white rounded hover:scale-105 transition-transform duration-200 active:scale-95"
+              class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-left text-white/90 hover:bg-white/10 hover:text-white transition-colors"
             >
-              <img
-                src="./public/assets//piggy-bank.png"
-                alt=""
-                class="w-5 h-5"
-              />
-              <span class="mt-1">Cofrinho</span>
+              <img src="./public/assets/piggy-bank.png" alt="" class="w-5 h-5" />
+              <span>Cofrinho</span>
             </button>
           </li>
 
-          <div class="h-px bg-green-700 w-full my-2 rounded-full"></div>
+          <li class="h-px bg-white/15 my-3" role="separator"></li>
 
-          <li class="w-full flex items-center gap-1">
+          <li>
             <button
               id="btn-exportar"
-              class="w-full gap-1 text-sm p-1 flex items-center text-left hover:bg-green-700 text-white rounded hover:scale-105 transition-transform duration-200 active:scale-95"
+              class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-left text-white/90 hover:bg-white/10 hover:text-white transition-colors"
             >
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                ></path>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
               </svg>
-              <span class="mt-1">Exportar Backup</span>
+              <span>Exportar Backup</span>
             </button>
           </li>
-
-          <li class="w-full flex items-center gap-1">
+          <li>
             <button
               id="btn-importar"
-              class="w-full gap-1 text-sm p-1 flex items-center text-left hover:bg-green-700 text-white rounded hover:scale-105 transition-transform duration-200 active:scale-95"
+              class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-left text-white/90 hover:bg-white/10 hover:text-white transition-colors"
             >
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-                ></path>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
               </svg>
-              <span class="mt-1">Importar Backup</span>
+              <span>Importar Backup</span>
             </button>
           </li>
         </ul>
@@ -124,13 +122,10 @@
           class="hidden"
         />
       </nav>
-      <!-- Menu de navegação fim -->
 
       <!-- Conteúdo principal -->
-      <main id="container-conteudo-filho-2" class="w-[100%] bg-gray-50"></main>
-      <!-- Conteúdo principal fim -->
+      <main id="container-conteudo-filho-2" class="flex-1 min-w-0 bg-gray-50"></main>
     </div>
-    <!-- container principal fim -->
   </body>
 </html>
 <!-- flex items-center -->

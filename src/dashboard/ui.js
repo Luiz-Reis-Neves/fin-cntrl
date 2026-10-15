@@ -1,42 +1,34 @@
 import Chart from "chart.js/auto";
 import { rendas, gastos } from "../data/store.js";
 import { escaparHTML } from "../dom.ts";
+import { categoriaGasto } from "../gastos/categorias.ts";
+
+const formatoMoeda = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
 function templateHeaderDashboard() {
   return `
-    <div class="w-full p-3">
-          <div
-            class="w-full h-auto text-green-800 bg-white px-5 py-3 flex items-center justify-between rounded-[10px] shadow-sm rounded-2xl border-l-4 border-green-800"
-          >
-            <h1 class="text-xl font-semibold">Dashboard</h1>
-
-            <div class="relative flex items-center gap-2">
-              <span
-                id="texto-mes-atual"
-                class="font-medium text-green-800 text-sm"
-                >Mês atual</span
-              >
-
-              <button
-                id="btn-abrir-calendario"
-                class="w-8 h-8 border flex items-center justify-center py-2 rounded hover:bg-green-100 active:scale-95 btn-3d-data"
-              >
-                <img
-                  src="/fin-cntrl/assets/calendario.png"
-                  class="w-7 h-7"
-                  alt="Filtrar por mês"
-                />
-              </button>
-
-              <input
-                type="month"
-                id="input-filtro-mes"
-                class="absolute right-0 top-full opacity-0 w-1 h-1 pointer-events-none -z-10"
-              />
-            </div>
-
-          </div>
-        </div>
+    <header class="bg-white rounded-2xl shadow-sm border border-gray-100 border-l-4 border-l-green-700 p-4 md:p-5 flex flex-col sm:flex-row sm:items-center gap-3">
+      <div class="flex-1">
+        <h1 class="text-2xl font-semibold text-gray-800">Dashboard</h1>
+        <p class="text-sm text-gray-500">Resumo das suas finanças no mês</p>
+      </div>
+      <div class="relative">
+        <button
+          type="button"
+          id="btn-abrir-calendario"
+          aria-label="Escolher mês"
+          class="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-200 text-sm font-medium text-green-700 hover:bg-green-50 transition-colors"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          <span id="texto-mes-atual">Mês atual</span>
+        </button>
+        <input
+          type="month"
+          id="input-filtro-mes"
+          class="absolute right-0 top-full opacity-0 w-1 h-1 pointer-events-none -z-10"
+        />
+      </div>
+    </header>
     `;
 }
 
@@ -44,18 +36,14 @@ function templateHeaderDashboard() {
 // <===========|CARDS RENDAS (INICIO)|==============>
 function templateCardRenda() {
   return `
-          <div
-              class="h-[170px] flex-1 bg-white rounded-xl border border-gray-200 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-            >
-              <div
-                class="h-[170px] flex-1 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-5 flex flex-col justify-center"
-              >
-                <h4 class="text-gray-500 font-medium">Fonte de Renda</h4>
-                <h1 id="valor-renda-card" class="text-3xl font-bold text-green-600">0,00</h1>
-                <p class="text-sm text-gray-400">Total recebido <span class="data-dinamica-card">---</span></p>
-              </div>
-          </div>
-  
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col gap-1">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-medium text-gray-500">Rendas</h2>
+        <span class="w-9 h-9 rounded-xl flex items-center justify-center bg-green-50 text-green-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg></span>
+      </div>
+      <p id="valor-renda-card" class="text-2xl xl:text-3xl font-bold tabular-nums text-green-600">R$ 0,00</p>
+      <p class="text-xs text-gray-400">Total recebido em <span class="data-dinamica-card">---</span></p>
+    </div>
   `;
 }
 
@@ -73,9 +61,7 @@ function cardRendas(mesISO) {
   // 2. Atualização do Valor Principal
   const h1Renda = document.getElementById("valor-renda-card");
   if (h1Renda) {
-    h1Renda.innerText = totalRenda.toLocaleString("pt-BR", {
-      minimumFractionDigits: 2,
-    });
+    h1Renda.innerText = formatoMoeda.format(totalRenda);
   }
 
   // 3. Atualização das Legendas (Visual)
@@ -104,18 +90,14 @@ function cardRendas(mesISO) {
 // <===========|CARDS GASTOS (INICIO)|==============>
 function templateCardGasto() {
   return `
-          <div
-              class="h-[170px] flex-1 bg-white rounded-xl border border-gray-200 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-            >
-              <div
-                class="h-[170px] flex-1 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-5 flex flex-col justify-center"
-              >
-                <h4 class="text-gray-500 font-medium">Fonte de Gastos</h4>
-                <h1 id="valor-gasto-card" class="text-3xl font-bold text-red-600">0,00</h1>
-                <p class="text-sm text-gray-400">Total gastos <span class="data-dinamica-card">---</span></p>
-              </div>
-          </div>
-  
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col gap-1">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-medium text-gray-500">Gastos</h2>
+        <span class="w-9 h-9 rounded-xl flex items-center justify-center bg-red-50 text-red-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"/></svg></span>
+      </div>
+      <p id="valor-gasto-card" class="text-2xl xl:text-3xl font-bold tabular-nums text-red-600">R$ 0,00</p>
+      <p class="text-xs text-gray-400">Total gasto em <span class="data-dinamica-card">---</span></p>
+    </div>
   `;
 }
 function cardGastos(mesISO) {
@@ -132,9 +114,7 @@ function cardGastos(mesISO) {
   // 2. Atualização do Valor Principal
   const h1Gasto = document.getElementById("valor-gasto-card");
   if (h1Gasto) {
-    h1Gasto.innerText = totalGasto.toLocaleString("pt-BR", {
-      minimumFractionDigits: 2,
-    });
+    h1Gasto.innerText = formatoMoeda.format(totalGasto);
   }
 
   // 3. Atualização das Legendas (Visual)
@@ -163,18 +143,15 @@ function cardGastos(mesISO) {
 // <===========|CARDS SOLDO DISPONIVEL (INICIO)|==============>
 function templateCardDisponivel() {
   return `
-        <div
-              class="h-[170px] flex-1 bg-white rounded-xl border border-gray-200 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-            >
-              <div
-                class="h-[170px] flex-1 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-5 flex flex-col justify-center"
-              >
-                <h4 class="text-gray-500 font-medium">Saldo Disponível</h4>
-                <h1 id="valor-saldo-card" class="text-3xl font-bold text-green-600">0,00</h1>
-                <p class="text-sm text-gray-400">Disponível em <span class="data-dinamica-card">---</span></p>
-              </div>
-        </div>
-`;
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col gap-1">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-medium text-gray-500">Saldo disponível</h2>
+        <span class="w-9 h-9 rounded-xl flex items-center justify-center bg-sky-50 text-sky-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg></span>
+      </div>
+      <p id="valor-saldo-card" class="text-2xl xl:text-3xl font-bold tabular-nums text-green-600">R$ 0,00</p>
+      <p class="text-xs text-gray-400">Disponível em <span class="data-dinamica-card">---</span></p>
+    </div>
+  `;
 }
 
 function cardSaldo(mesISO) {
@@ -201,9 +178,7 @@ function cardSaldo(mesISO) {
   let h1Saldo = document.getElementById("valor-saldo-card");
 
   if (h1Saldo) {
-    h1Saldo.innerText = resul.toLocaleString("pt-BR", {
-      minimumFractionDigits: 2,
-    });
+    h1Saldo.innerText = formatoMoeda.format(resul);
 
     // Bônus: Muda a cor do texto se o saldo ficar negativo
     if (resul < 0) {
@@ -239,90 +214,65 @@ function cardSaldo(mesISO) {
 
 function templateCardCofrinho() {
   return `
-        <div
-            class="h-[170px] flex-1 bg-white rounded-xl border border-gray-200 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-          >
-            <div
-              class="h-[170px] flex-1 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-5 flex flex-col justify-center"
-            >
-              <h4 class="text-gray-500 font-medium">Cofrinho</h4>
-              <h1 class="text-3xl font-bold text-gray-400">Em breve</h1>
-              <p class="text-sm text-gray-400">Total acumulado</p>
-            </div>
-        </div>
-  
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col gap-1">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-medium text-gray-500">Cofrinho</h2>
+        <span class="w-9 h-9 rounded-xl flex items-center justify-center bg-amber-50 text-amber-500"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 9v1m9-5a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
+      </div>
+      <p  class="text-2xl xl:text-3xl font-bold tabular-nums text-gray-300">Em breve</p>
+      <p class="text-xs text-gray-400">Total acumulado</p>
+    </div>
   `;
 }
 // <===========|TEMPLANTES CARDS MAIN (INICIO)|==============>
 function templateCardDashboard() {
   return `
-    <div class="w-full h-auto p-3 flex justify-between gap-4">      
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
     ${templateCardRenda()}
-    ${templateCardGasto()}      
+    ${templateCardGasto()}
     ${templateCardDisponivel()}
-    ${templateCardCofrinho()}      
+    ${templateCardCofrinho()}
     </div>
     `;
 }
 // <===========|TEMPLANTES CARDS MAIN (FIM)|==============>
 // <===========|TEMPLANTES CARDS (FIM)|==============>
 function templateCentroDashboard() {
+  const card = "bg-white rounded-2xl border border-gray-100 shadow-sm p-4 md:p-5";
   return `
-    <div class="w-full p-3 h-auto grid grid-cols-3 gap-4">
-          <div
-            class="h-[400px] col-span-2 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-4"
-          >
-            <h3 class="text-gray-500 font-medium mb-2">Graficos de Gastos</h3>
-            <div
-              class="w-full h-[330px] border border-gray-300 rounded-2xl bg-white/50 p-2"
-            >
-              <canvas id="meuGraficoGastos"></canvas>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div class="${card} lg:col-span-2 flex flex-col">
+        <h3 class="font-semibold text-gray-700 mb-3">Gastos por categoria</h3>
+        <div class="relative w-full h-[300px] md:h-[340px]">
+          <canvas id="meuGraficoGastos"></canvas>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="${card} flex flex-col">
+            <h3 class="font-semibold text-gray-700 text-sm">Renda vs. Gastos</h3>
+            <div class="relative w-[110px] h-[110px] mx-auto mt-3">
+              <canvas id="graficoProporcao"></canvas>
             </div>
           </div>
 
-          <div class="col-span-1 flex flex-col gap-4 h-[400px]">
-            <div class="grid grid-cols-2 gap-4">
-              <div
-                class="bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl shadow-md border border-gray-300 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-4 flex flex-col"
-              >
-                <h3 class="text-gray-500 font-medium mb-2 text-sm">
-                  Renda vs. Gastos
-                </h3>
-                <div
-                  class="relative flex justify-center items-center w-[110px] h-[110px] mt-2 mb-1 mx-auto"
-                >
-                  <canvas id="graficoProporcao"></canvas>
-                </div>
-              </div>
+          <div class="${card} flex flex-col overflow-hidden">
+            <h3 class="font-semibold text-gray-700 text-sm mb-2">Top 3 despesas</h3>
+            <div id="lista-top-despesas" class="flex flex-col gap-2 mt-1"></div>
+          </div>
+        </div>
 
-              <div
-                class="bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl shadow-md border border-gray-300 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-4 flex flex-col overflow-hidden"
-              >
-                <h3
-                  class="text-gray-500 font-medium text-sm w-full text-left mb-2"
-                >
-                  Top 3 Despesas
-                </h3>
-                <div
-                  id="lista-top-despesas"
-                  class="flex flex-col gap-2 mt-1"
-                ></div>
-              </div>
-            </div>
-
-            <div
-              class="bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl shadow-md border border-gray-300 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-4 flex-1 flex flex-col"
-            >
-              <h3 class="text-gray-500 font-medium mb-2">Evolução (4 meses)</h3>
-
-              <div class="relative w-full flex-1 min-h-0">
-                <div class="absolute inset-0">
-                  <canvas id="graficoEvolucao"></canvas>
-                </div>
-              </div>
+        <div class="${card} flex-1 flex flex-col min-h-[200px]">
+          <h3 class="font-semibold text-gray-700 mb-2">Evolução dos gastos (4 meses)</h3>
+          <div class="relative w-full flex-1 min-h-[140px]">
+            <div class="absolute inset-0">
+              <canvas id="graficoEvolucao"></canvas>
             </div>
           </div>
         </div>
+      </div>
+    </div>
     `;
 }
 
@@ -373,14 +323,7 @@ function atualizarGrafico(mesISO) {
           label: "Total Gasto (R$)", // Rótulo do conjunto de dados
           data: valoresCategorias, // Valores no eixo Y
           // Mantemos as cores bonitinhas para cada barra
-          backgroundColor: [
-            "#EF4444",
-            "#F59E0B",
-            "#10B981",
-            "#3B82F6",
-            "#8B5CF6",
-            "#EC4899",
-          ],
+          backgroundColor: nomesCategorias.map((nome) => categoriaGasto(nome).cor), // mesma cor da etiqueta na lista
           borderWidth: 0,
           borderRadius: 5, // Um toque sutil: deixa o topo das barras arredondado
         },
@@ -795,16 +738,11 @@ function atualizarGestaoPorRenda(mesISO) {
 
 function templateDespesasDashboard() {
   return `
-    <div class="w-full h-auto p-3">
-      <div class="col-span-3 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl border border-gray-300 shadow-md p-5">
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 md:p-5 overflow-x-auto">
+      <div class="min-w-[560px]">
         
         <div class="flex justify-between items-center mb-4">
-          <h3 class="text-gray-600 font-bold text-lg">Gestão de Salários (Potinhos)</h3>
-          <button class="text-gray-400 hover:text-gray-600 transition-colors">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
-            </svg>
-          </button>
+          <h3 class="font-semibold text-gray-700">Gestão de salários (potinhos)</h3>
         </div>
 
         <div class="grid grid-cols-12 text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-300 pb-2 mb-2 px-2">
@@ -823,10 +761,12 @@ function templateDespesasDashboard() {
 
 export function templatesDashboard() {
   return `
+    <section class="w-full max-w-6xl mx-auto p-4 md:p-6 flex flex-col gap-4">
     ${templateHeaderDashboard()}
     ${templateCardDashboard()}
     ${templateCentroDashboard()}
     ${templateDespesasDashboard()}
+    </section>
     `;
 }
 

@@ -18,6 +18,10 @@ const clicar = (seletor: string) => $<HTMLElement>(seletor).click();
 const botao = (acao: "editar" | "excluir", id: Gasto["id"]) => `[data-acao="${acao}"][data-id="${id}"]`;
 const idsNaTela = () =>
     [...document.querySelectorAll<HTMLElement>('[data-acao="excluir"]')].map((b) => b.dataset.id);
+const dialogo = () => document.querySelector("#dialogo-confirmacao");
+const responder = (sim: boolean) => clicar(`#dialogo-confirmacao [data-resposta="${sim ? "sim" : "nao"}"]`);
+const notificacoes = () =>
+    [...document.querySelectorAll("#notificacoes [role] > span:last-child")].map((n) => n.textContent?.trim());
 const totalNaTela = () => $("#total-Gasto").textContent?.replace(/\s/g, " ");
 
 function mudar(seletor: string, valor: string) {
@@ -41,8 +45,6 @@ function montarTela(dados: Gasto[]) {
 beforeEach(() => {
     vi.useFakeTimers({ toFake: ["Date"] });
     vi.setSystemTime(HOJE);
-    vi.stubGlobal("alert", vi.fn());
-    vi.stubGlobal("confirm", vi.fn(() => true));
 });
 
 afterEach(() => {
@@ -66,11 +68,21 @@ describe("GastosUI", () => {
             expect(totalNaTela()).toBe("R$ 450,50");
         });
 
-        it("mostra total zerado quando não há gastos no mês", () => {
+        it("mostra total zerado e a mensagem de lista vazia quando não há gastos no mês", () => {
             montarTela([setembro]);
 
             expect(idsNaTela()).toEqual([]);
             expect(totalNaTela()).toBe("R$ 0,00");
+            expect($("#container-lista-gastos").textContent).toContain("Nenhum gasto neste período");
+        });
+
+        it("o botão da lista vazia abre o cadastro no mês em exibição", () => {
+            montarTela([]);
+
+            clicar('[data-acao="novo"]');
+
+            expect($("#fundo-escuro").classList.contains("hidden")).toBe(false);
+            expect($("#inputData").value).toBe("2026-10-01");
         });
     });
 
@@ -153,6 +165,7 @@ describe("GastosUI", () => {
             // o filtro de categoria esconderia o gasto novo, então é limpo
             expect($<HTMLSelectElement>("#filtro-categoria").value).toBe("");
             expect(totalNaTela()).toBe("R$ 200,00");
+            expect(notificacoes()).toContain("Gasto cadastrado.");
         });
     });
 
@@ -168,24 +181,32 @@ describe("GastosUI", () => {
 
             expect(logic.obterTodos()[0]).toEqual({ ...internet, valor: 120.75 });
             expect(totalNaTela()).toBe("R$ 471,25");
+            expect(notificacoes()).toContain("Gasto atualizado.");
         });
 
-        it("exclui o gasto quando o usuário confirma", () => {
+        it("pede confirmação e exclui o gasto quando o usuário confirma", async () => {
             montarTela([internet, mercado]);
 
             clicar(botao("excluir", 1));
+            expect(dialogo()?.textContent).toContain('"Internet" de 05/10/2026 será removido');
+            expect(logic.obterTodos()).toHaveLength(2);
 
-            expect(confirm).toHaveBeenCalledWith('Excluir "Internet" de 05/10/2026?');
-            expect(logic.obterTodos()).toEqual([mercado]);
+            responder(true);
+
+            await vi.waitFor(() => expect(logic.obterTodos()).toEqual([mercado]));
             expect(idsNaTela()).toEqual(["2"]);
+            expect(dialogo()).toBeNull();
+            expect(notificacoes()).toContain("Gasto excluído.");
         });
 
-        it("mantém o gasto quando o usuário cancela a exclusão", () => {
-            vi.stubGlobal("confirm", vi.fn(() => false));
+        it("mantém o gasto quando o usuário cancela a exclusão", async () => {
             montarTela([internet, mercado]);
 
             clicar(botao("excluir", 1));
+            responder(false);
+            await Promise.resolve();
 
+            expect(dialogo()).toBeNull();
             expect(aoAlterar).not.toHaveBeenCalled();
             expect(idsNaTela()).toEqual(["1", "2"]);
         });
@@ -193,9 +214,9 @@ describe("GastosUI", () => {
         it("funciona ao clicar no ícone dentro do botão", () => {
             montarTela([internet]);
 
-            $(`${botao("excluir", 1)} img`).dispatchEvent(new MouseEvent("click", { bubbles: true }));
+            $(`${botao("excluir", 1)} svg`).dispatchEvent(new MouseEvent("click", { bubbles: true }));
 
-            expect(logic.obterTodos()).toEqual([]);
+            expect(dialogo()).not.toBeNull();
         });
 
         it("continua com um único listener depois de várias renderizações", () => {
@@ -205,7 +226,7 @@ describe("GastosUI", () => {
 
             clicar(botao("excluir", 1));
 
-            expect(confirm).toHaveBeenCalledOnce();
+            expect(document.querySelectorAll("#dialogo-confirmacao")).toHaveLength(1);
         });
 
         it("encontra gastos cujo id está armazenado como texto", () => {
@@ -226,7 +247,7 @@ describe("GastosUI", () => {
             clicar("#container-lista-gastos > div span");
             clicar(botao("excluir", 999));
 
-            expect(confirm).not.toHaveBeenCalled();
+            expect(dialogo()).toBeNull();
             expect(aoAlterar).not.toHaveBeenCalled();
         });
     });

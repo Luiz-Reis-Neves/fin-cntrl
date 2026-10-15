@@ -7,28 +7,28 @@ function hojeISO() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-// Barra de filtros. 'tipo' é "pagar" (gastos) ou "receber" (rendas)
-// 'foco' é a classe de cor do campo em foco (precisa ser escrita por extenso no arquivo da tela, por causa do Tailwind)
-export function templateFiltros(tipo, foco) {
+// Barra de filtros. 'tipo' é "pagar" (gastos) ou "receber" (rendas).
+// A cor do campo em foco vem da variável --cor-destaque da tela (style.css).
+export function templateFiltros(tipo) {
   const verbo = tipo === "pagar" ? "pagar" : "receber";
-  const campo = `w-full px-2 py-1 border-2 rounded-lg text-sm focus:outline-none ${foco}`;
+  const campo = "campo !py-1.5";
   return `
-  <div class="w-full bg-white rounded-[10px] shadow-sm p-2 flex flex-wrap items-end gap-3">
-    <div class="flex flex-col min-w-[150px]">
+  <div class="w-full bg-white rounded-xl shadow-sm border border-gray-100 p-3 grid grid-cols-2 lg:flex lg:flex-wrap items-end gap-3">
+    <div class="col-span-2 flex flex-col gap-1 lg:min-w-[180px]">
       <label for="filtro-categoria" class="text-xs text-gray-500">Categoria</label>
       <select id="filtro-categoria" class="${campo}">
         <option value="">Todas</option>
       </select>
     </div>
-    <div class="flex flex-col">
+    <div class="flex flex-col gap-1">
       <label for="filtro-de" class="text-xs text-gray-500">Data de</label>
       <input type="date" id="filtro-de" class="${campo}" />
     </div>
-    <div class="flex flex-col">
+    <div class="flex flex-col gap-1">
       <label for="filtro-ate" class="text-xs text-gray-500">Data até</label>
       <input type="date" id="filtro-ate" class="${campo}" />
     </div>
-    <div class="flex flex-col min-w-[200px]">
+    <div class="col-span-2 flex flex-col gap-1 lg:min-w-[220px]">
       <label for="filtro-ordem" class="text-xs text-gray-500">Ordenar por</label>
       <select id="filtro-ordem" class="${campo}">
         <option value="cadastro-asc">Cadastro: mais antigos primeiro</option>
@@ -43,7 +43,7 @@ export function templateFiltros(tipo, foco) {
     <button
       type="button"
       id="btn-limpar-filtros"
-      class="px-3 py-1 text-sm text-gray-600 border-2 rounded-lg hover:bg-gray-100 active:scale-95"
+      class="col-span-2 lg:col-span-1 px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 active:scale-95 transition"
     >
       Limpar filtros
     </button>

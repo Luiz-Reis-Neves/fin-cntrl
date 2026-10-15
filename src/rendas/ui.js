@@ -1,258 +1,210 @@
 import { adicionarRenda, editarRenda, rendasDelete, calcularTotalRenda, validarRenda } from "./logic.js"
 import { rendas } from "./../data/store.js"
 import { escaparHTML } from "../dom.ts"
+import { confirmar, notificar } from "../feedback.ts"
 import { templateFiltros, lerFiltros, aplicarFiltros, iniciarFiltros, limparFiltrosExtras } from "../filtros.js"
 let rendaEmEdicao = null
-// função que contem o template do header rendas
+
+const ICONE_CALENDARIO = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`
+const ICONE_EDITAR = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6.232-6.232a2.5 2.5 0 113.536 3.536L12.536 16.536 8 18l1-4.464z"/></svg>`
+const ICONE_EXCLUIR = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16"/></svg>`
+const ICONE_VAZIO = `<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`
+
+// Cabeçalho: título, mês em exibição, total e botão de nova renda
 function templateHeader() {
   return `
-  <div
-          class="w-full h-[100px] bg-gray-200 rounded-[10px] flex items-center gap-4 p-2 shadow-md"
+  <header class="bg-white rounded-2xl shadow-sm border border-gray-100 border-l-4 border-l-green-700 p-4 md:p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+    <div class="flex-1 min-w-0">
+      <h1 class="text-2xl font-semibold text-gray-800">Rendas</h1>
+      <div class="relative mt-1 flex items-center gap-1 text-sm text-gray-500">
+        <span>Período:</span>
+        <button
+          type="button"
+          id="btn-abrir-calendario"
+          aria-label="Escolher mês"
+          class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md font-medium text-green-700 hover:bg-green-50 transition-colors"
         >
-          <div class="flex flex-col shadow-md rounded-2xl p-4">
-            <h2 class="text-sm text-gray-500">Renda Total</h2>
-            <label
-              id="total-Renda"
-              for=""
-              class="text-xl text-green-700 font-bold"
-            >
-              R$ 0,00
-            </label>
-          </div>
-          <button
-            id="btn-nova-renda"
-            class="w-[140px] h-[40px] bg-[#459464] hover:bg-[#3a7d54] text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d"
-          >
-            + Nova Renda
-          </button>
-          <div id="lista-cards-header" class="flex gap-2 overflow-x-auto">
+          ${ICONE_CALENDARIO}
+          <span id="texto-mes-atual">Mês atual</span>
+        </button>
+        <input
+          type="month"
+          id="input-filtro-mes"
+          class="absolute left-0 top-full opacity-0 w-1 h-1 pointer-events-none -z-10"
+        />
+      </div>
+    </div>
 
-          </div>
-        </div>
-  
+    <div class="sm:text-right">
+      <p class="text-xs font-medium uppercase tracking-wide text-gray-500">Total no período</p>
+      <p id="total-Renda" class="text-2xl md:text-3xl font-bold text-green-700 tabular-nums">R$ 0,00</p>
+    </div>
+
+    <button
+      type="button"
+      id="btn-nova-renda"
+      class="shrink-0 px-5 py-2.5 rounded-xl bg-green-700 hover:bg-green-800 active:scale-95 text-white font-medium shadow-sm transition"
+    >
+      + Nova Renda
+    </button>
+  </header>
   `
 }
-// templetes cards do header
-function templateCardsHeader() {
-  return `
-  <div class=" flex flex-col shadow-md rounded-2xl p-4 ">
-              <h2 class="text-sm text-blue-800"></h2>
-              <label for="" class="text-xl text-blue-800 font-bold"
-                ></label
-              >
-            </div>
-  
-  `
-}
-// função que contem o templete painel do rendas
-function templatePainel() {
-  return `
-  <div
-          class="w-full h-[50px] text-green-800 bg-white p-2 flex items-center justify-between rounded-[10px] shadow-sm rounded-2xl border-l-4 border-green-800"
-        >
-          <h1 class="text-xl font-semibold">Painel de Rendas</h1>
 
-          <div class="relative flex items-center gap-2">
-            <span
-              id="texto-mes-atual"
-              class="font-medium text-green-800 text-sm"
-              >Mês atual</span
-            >
-
-            <button
-              id="btn-abrir-calendario"
-              class="w-8 h-8 border flex items-center justify-center py-2 rounded hover:bg-green-100 active:scale-95 btn-3d-data"
-            >
-              <img
-                src="/fin-cntrl/assets/calendario.png"
-                class="w-7 h-7"
-                alt="Filtrar por mês"
-              />
-            </button>
-
-            <input
-              type="month"
-              id="input-filtro-mes"
-              class="absolute right-0 top-full opacity-0 w-1 h-1 pointer-events-none -z-10"
-            />
-          </div>
-
-        </div>
-  
-  `
-}
-// função que contem o templete lista do rendas
+// Lista em formato de tabela: cabeçalho de colunas no desktop
 function templateLista() {
   return `
-  <div
-          id="container-lista-rendas"
-          class="w-full h-[400px] p-2 flex flex-col gap-2 overflow-y-auto bg-white rounded-[10px] shadow-2xl"
-        ></div>
-  
-  `
-}
-// função que contem o templete modal do rendas
-function templateModal() {
-  return `
-  <div
-          id="fundo-escuro"
-          class="w-full h-full bg-black/50 hidden fixed inset-0 z-50"
-        >
-         
-          <div
-            id="formulario-cadastro-renda"
-            class="w-full h-full border flex items-center justify-center"
-          >
-            <form>
-          <div class="w-[400px] bg-white p-6 rounded shadow">
-            <h2 class="text-2xl font-bold mb-4">Cadastro de Renda</h2>
-            <div class="mb-4">
-              <label for="inputCategoria" class="block text-gray-700"
-                >Tipo de Renda</label
-              >
-              <select
-                id="inputCategoria"
-                name=""
-                class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
-              >
-                <option disabled selected value="">Selecione uma opção</option>
-                <option value="Salário">Salário</option>
-                <option value="Freelance">Freelance</option>
-                <option value="Investimentos">Investimentos</option>
-                <option value="Hora Extra">Hora Extra</option>
-                <option value="Comissão">Comissão</option>
-                <option value="Aluguel Recebido">Aluguel Recebido</option>
-                <option value="Dividendos">Dividendos</option>
-                <option value="Presente">Presente</option>
-                <option value="Restituição">Restituição</option>
-                <option value="Outros">Outros</option>
-              </select>
-            </div>
-            <div class="mb-4">
-              <label for="inputValor" class="block text-gray-700">Valor</label>
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                id="inputValor"
-                name="valor"
-                class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
-                placeholder="Digite o valor"
-              />
-            </div>
-            <div class="mb-4">
-              <label for="inputData" class="block text-gray-700"
-                >Data de Recebimento</label
-              >
-              <input
-                type="date"
-                id="inputData"
-                name="data"
-                class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
-              />
-            </div>
-            <div class="mb-4">
-              <label for="inputDescricao" class="block text-gray-700"
-                >Descrição</label
-              >
-              <input
-                type="text"
-                id="inputDescricao"
-                name="descricao"
-                class="w-full px-3 py-2 border-2 rounded-lg focus:border-green-700 focus:outline-none"
-                placeholder="Digite uma descrição"
-              />
-            </div>
-
-            <div class="flex justify-between gap-2">
-              <button
-                type="button"
-                id="btn-model-cadastrar"
-                class="w-full bg-green-800 text-white py-2 rounded hover:bg-green-700 active:scale-95 btn-3d"
-              >
-                Cadastrar
-              </button>
-              <button
-                type="button"
-                id="btn-model-cancelar"
-                class="w-full bg-red-800 text-white py-2 rounded hover:bg-red-700 btn-3d-cancelar"
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </form>
-          </div>
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="hidden md:grid grid-cols-12 gap-4 px-5 py-3 bg-gray-50 border-b border-gray-100 text-xs font-semibold uppercase tracking-wide text-gray-500">
+      <span class="col-span-4">Categoria</span>
+      <span class="col-span-3">Descrição</span>
+      <span class="col-span-2">Data</span>
+      <span class="col-span-2 text-right">Valor</span>
+      <span class="col-span-1"><span class="sr-only">Ações</span></span>
+    </div>
+    <div id="container-lista-rendas" class="divide-y divide-gray-100 max-h-[60vh] overflow-y-auto"></div>
   </div>
-  
   `
 }
-// função que contem o templete lista de cards
-function templateListaCards(itens) {
+
+// Modal de cadastro/edição
+function templateModal() {
+  const categorias = ["Salário", "Freelance", "Investimentos", "Hora Extra", "Comissão", "Aluguel Recebido", "Dividendos", "Presente", "Restituição", "Outros"]
+  const opcoes = categorias.map((nome) => `<option value="${nome}">${nome}</option>`).join("")
+
   return `
-  <div
-          class="w-full h-20 bg-gray-200 rounded-[10px] gap-4 p-2 shadow-md flex rounded-md items-center justify-between"
-        >
-          <div class="h-[30px] flex items-center gap-1 p-1">
-            <h2 class="text-gray-400">Categoria:</h2>
-            <span
-              class="border p-1 rounded-[10px] text-center ${corCategoria(itens.categoria)} font-medium "
-              >${escaparHTML(itens.categoria)}</span
-            >
+  <div id="fundo-escuro" class="hidden fixed inset-0 z-50 bg-black/50 fundo-animado">
+    <div id="formulario-cadastro-renda" class="w-full h-full flex items-center justify-center p-4">
+      <form
+        novalidate
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="titulo-modal-renda"
+        class="painel-animado w-full max-w-md max-h-full overflow-y-auto bg-white rounded-2xl shadow-xl p-6"
+      >
+        <div class="flex items-start justify-between gap-4 mb-5">
+          <h2 id="titulo-modal-renda" class="text-xl font-semibold text-gray-800">Nova renda</h2>
+          <button
+            type="button"
+            id="btn-fechar-modal"
+            aria-label="Fechar"
+            class="-mt-1 -mr-2 w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 text-2xl leading-none"
+          >&times;</button>
+        </div>
+
+        <div class="flex flex-col gap-4">
+          <div>
+            <label for="inputCategoria" class="block mb-1 text-sm font-medium text-gray-700">Categoria</label>
+            <select id="inputCategoria" class="campo">
+              <option disabled selected value="">Selecione uma opção</option>
+              ${opcoes}
+            </select>
           </div>
-          <div class="h-[30px] flex items-center gap-1 p-1">
-            <h2 class="text-gray-400">Valor:</h2>
-            <span
-              class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
-              >${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(itens.valor)}</span
-            >
+          <div>
+            <label for="inputValor" class="block mb-1 text-sm font-medium text-gray-700">Valor</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 pointer-events-none">R$</span>
+              <input type="number" step="0.01" min="0" inputmode="decimal" id="inputValor" class="campo pl-9" placeholder="0,00" />
+            </div>
           </div>
-          <div class="h-[30px] flex items-center gap-1 p-1">
-            <h2 class="text-gray-400">Data:</h2>
-            <span
-              class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
-              >${itens.data.split("-").reverse().join("/")}</span
-            >
+          <div>
+            <label for="inputData" class="block mb-1 text-sm font-medium text-gray-700">Data de recebimento</label>
+            <input type="date" id="inputData" class="campo" />
           </div>
-          <div class="h-[30px] flex items-center gap-1 p-1">
-            <h2 class="text-gray-400">Descrição:</h2>
-            <span
-              class="p-1 rounded-[10px] text-center text-gray-800 font-medium"
-              >${escaparHTML(itens.descricao)}</span
-            >
-          </div>
-          <div class="w-[110px] p-1 flex items-center justify-between">
-            <button
-              id="btn-editar-${itens.id}"
-              class="w-[50px] h-[30px] bg-blue-500 hover:bg-blue-400 text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d-editar"
-            >
-              <img
-                src="/fin-cntrl/assets/botao-editar.png"
-                class="w-auto h-auto"
-                alt=""
-              />
-            </button>
-            <button
-              id="btn-deletar-${itens.id}"
-              class="w-[50px] h-[30px] bg-red-500 hover:bg-red-400 text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d-deletar"
-            >
-              <img
-                src="/fin-cntrl/assets/excluir.png"
-                class="w-auto h-auto"
-                alt=""
-              />
-            </button>
+          <div>
+            <label for="inputDescricao" class="block mb-1 text-sm font-medium text-gray-700">
+              Descrição <span class="font-normal text-gray-400">(opcional)</span>
+            </label>
+            <input type="text" id="inputDescricao" class="campo" placeholder="Ex.: salário da empresa" />
           </div>
         </div>
+
+        <div class="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+          <button
+            type="button"
+            id="btn-model-cancelar"
+            class="px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors"
+          >Cancelar</button>
+          <button
+            type="submit"
+            id="btn-model-cadastrar"
+            class="px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-green-700 hover:bg-green-800 active:scale-95 transition"
+          >Cadastrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
   `
 }
+
+// Linha da lista: grade alinhada com o cabeçalho no desktop, cartão empilhado no celular
+function templateListaCards(itens) {
+  const formato = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
+  const descricao = itens.descricao
+    ? escaparHTML(itens.descricao)
+    : `<span class="text-gray-400">Sem descrição</span>`
+
+  return `
+  <div class="px-4 md:px-5 py-3 flex flex-col gap-2 md:grid md:grid-cols-12 md:gap-4 md:items-center hover:bg-gray-50 transition-colors">
+    <div class="flex items-center justify-between gap-3 md:contents">
+      <div class="min-w-0 md:col-span-4 md:order-1">
+        <span class="inline-flex max-w-full px-2.5 py-1 rounded-full text-xs font-medium ring-1 ring-inset ${corCategoria(itens.categoria)}">
+          <span class="truncate">${escaparHTML(itens.categoria)}</span>
+        </span>
+      </div>
+      <div class="shrink-0 font-semibold text-green-700 tabular-nums md:col-span-2 md:order-4 md:text-right">
+        ${formato.format(itens.valor)}
+      </div>
+    </div>
+    <div class="flex items-center justify-between gap-3 md:contents">
+      <div class="min-w-0 flex items-center gap-1.5 text-sm text-gray-500 md:contents">
+        <span class="truncate text-gray-700 md:col-span-3 md:order-2">${descricao}</span>
+        <span class="md:hidden" aria-hidden="true">·</span>
+        <span class="shrink-0 tabular-nums md:col-span-2 md:order-3">${itens.data.split("-").reverse().join("/")}</span>
+      </div>
+      <div class="shrink-0 flex justify-end gap-1 md:col-span-1 md:order-5">
+        <button
+          type="button"
+          id="btn-editar-${itens.id}"
+          aria-label="Editar renda"
+          title="Editar"
+          class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+        >${ICONE_EDITAR}</button>
+        <button
+          type="button"
+          id="btn-deletar-${itens.id}"
+          aria-label="Excluir renda"
+          title="Excluir"
+          class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+        >${ICONE_EXCLUIR}</button>
+      </div>
+    </div>
+  </div>
+  `
+}
+
+// Exibida quando nenhuma renda passa pelos filtros
+function templateListaVazia() {
+  return `
+  <div class="py-14 px-4 flex flex-col items-center text-center">
+    <div class="w-16 h-16 rounded-full bg-green-50 text-green-700 flex items-center justify-center">${ICONE_VAZIO}</div>
+    <p class="mt-4 font-medium text-gray-700">Nenhuma renda neste período</p>
+    <p class="mt-1 text-sm text-gray-500">Cadastre uma renda ou ajuste os filtros acima.</p>
+    <button
+      type="button"
+      id="btn-vazio-nova-renda"
+      class="mt-4 px-4 py-2 rounded-xl text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 transition-colors"
+    >+ Cadastrar renda</button>
+  </div>
+  `
+}
+
 // função que chama todos os templentes de rendas
 export function templatesRenda() {
   return `
-    <section class="w-full h-full flex flex-col p-2 gap-2">
+    <section class="w-full max-w-6xl mx-auto p-4 md:p-6 flex flex-col gap-4">
       ${templateHeader()}
-      ${templatePainel()}
-      ${templateFiltros("receber", "focus:border-green-700")}
+      ${templateFiltros("receber")}
       ${templateLista()}
       ${templateModal()}
     </section>
@@ -265,6 +217,8 @@ export function templatesRenda() {
 function abrirModal() {
   let fundoEscuro = document.querySelector("#fundo-escuro")
   fundoEscuro.classList.remove("hidden")
+  document.querySelector("#titulo-modal-renda").textContent = rendaEmEdicao !== null ? "Editar renda" : "Nova renda"
+  document.querySelector("#inputCategoria").focus()
 }
 // botão cancelar dentro do modal
 function fecharModal() {
@@ -274,6 +228,15 @@ function fecharModal() {
   limparCampos()
   rendaEmEdicao = null;
   document.querySelector("#btn-model-cadastrar").textContent = "Cadastrar";
+}
+
+// Abre o cadastro já com o dia 1º do mês selecionado no filtro
+function abrirCadastro() {
+  let mesFiltro = document.querySelector("#input-filtro-mes").value;
+  if (mesFiltro) {
+    document.querySelector("#inputData").value = `${mesFiltro}-01`;
+  }
+  abrirModal();
 }
 
 // pegar valores dos inputs do modal
@@ -304,25 +267,26 @@ function eventosDoModal() {
   let btnModalCadastrar = document.querySelector("#btn-model-cadastrar")
 
   // Botão abrir do modal
-  btnNovaRenda.addEventListener("click", () => {
-    // 1. Pega o valor que está selecionado no painel (ex: "2026-05")
-    let mesFiltro = document.querySelector("#input-filtro-mes").value;
+  btnNovaRenda.addEventListener("click", abrirCadastro)
+  // botão cancelar e o X do modal
+  btnModelCancelar.addEventListener("click", fecharModal)
+  document.querySelector("#btn-fechar-modal").addEventListener("click", fecharModal)
 
-    // 2. Se tiver um mês no filtro, já injeta ele no modal no dia 01
-    if (mesFiltro) {
-      document.querySelector("#inputData").value = `${mesFiltro}-01`;
-    }
-
-    abrirModal();
+  // Clique fora do formulário e tecla Esc também fecham
+  const fundoEscuro = document.querySelector("#fundo-escuro")
+  const formulario = fundoEscuro.querySelector("form")
+  fundoEscuro.addEventListener("click", (evento) => {
+    if (!formulario.contains(evento.target)) fecharModal()
   })
-  // botão cancelar do modal
-  btnModelCancelar.addEventListener("click", () => {
-    fecharModal()
+  fundoEscuro.addEventListener("keydown", (evento) => {
+    if (evento.key === "Escape") fecharModal()
   })
 
   // botão cadastrar do modal
   // Esse trecho é o "Cérebro Decisor" do modal, que decide se fez uma edição ou um novo cadastro
-  btnModalCadastrar.addEventListener("click", () => {
+  // submit cobre o clique em Cadastrar e o Enter dentro dos campos
+  formulario.addEventListener("submit", (evento) => {
+    evento.preventDefault()
     // [COLETA]: Chama a função que lê todos os inputs do modal e guarda em um objeto
     let valoresModal = pegarValoresModal();
 
@@ -337,10 +301,12 @@ function eventosDoModal() {
       editarRenda(rendaEmEdicao, valoresModal);
       rendaEmEdicao = null;
       btnModalCadastrar.textContent = "Cadastrar";
+      notificar("Renda atualizada.")
 
     } else {
       // [EXECUÇÃO DO CREATE]
       adicionarRenda(valoresModal);
+      notificar("Renda cadastrada.")
     }
 
 
@@ -434,8 +400,9 @@ function listaDeRendasRead() {
     return templateListaCards(itens)
   }).join("")
 
-  // lançar a lista no html
-  containerListaRendas.innerHTML = cardsListasRendas
+  // lançar a lista no html (ou a mensagem de lista vazia)
+  containerListaRendas.innerHTML = rendasFiltradas.length > 0 ? cardsListasRendas : templateListaVazia()
+  document.querySelector("#btn-vazio-nova-renda")?.addEventListener("click", abrirCadastro)
 
   // exibir o total da renda no header
   let totalRenda = document.querySelector("#total-Renda")
@@ -467,7 +434,7 @@ function listaDeRendasUpdate() {
         document.querySelector("#inputData").value = itens.data;
         document.querySelector("#inputDescricao").value = itens.descricao;
         // Altera visualmente o texto do botão do modal de "Cadastrar" para "Concluir Edição"
-        btnModalCadastrar.textContent = "Concluir Edição";
+        btnModalCadastrar.textContent = "Salvar alterações";
         // Executa a função que remove a classe 'hidden' e faz o modal aparecer na frente do usuário
         abrirModal();
       });
@@ -483,10 +450,17 @@ function listaDeRendasDelete() {
 
     // [SEGURANÇA]: Só adicionamos o evento se o botão realmente existir na tela atual
     if (btnDelete) {
-      btnDelete.addEventListener("click", () => {
-        if (!confirm(`Excluir "${itens.categoria}" de ${itens.data.split("-").reverse().join("/")}?`)) return
+      btnDelete.addEventListener("click", async () => {
+        const data = itens.data.split("-").reverse().join("/")
+        const confirmado = await confirmar(`"${itens.categoria}" de ${data} será removida. Esta ação não pode ser desfeita.`, {
+          titulo: "Excluir renda?",
+          textoConfirmar: "Excluir",
+          perigoso: true,
+        })
+        if (!confirmado) return
         rendasDelete(itens)
         listaRendas()
+        notificar("Renda excluída.")
       })
     }
   })
@@ -496,27 +470,27 @@ function listaDeRendasDelete() {
 function corCategoria(categoria) {
   switch (categoria) {
     case "Salário":
-      return "bg-blue-200 text-blue-800"
+      return "bg-blue-100 text-blue-800 ring-blue-300"
     case "Freelance":
-      return "bg-purple-200 text-purple-800"
+      return "bg-purple-100 text-purple-800 ring-purple-300"
     case "Investimentos":
-      return "bg-yellow-200 text-yellow-800"
+      return "bg-yellow-100 text-yellow-800 ring-yellow-300"
     case "Hora Extra":
-      return "bg-orange-200 text-orange-800"
+      return "bg-orange-100 text-orange-800 ring-orange-300"
     case "Comissão":
-      return "bg-pink-200 text-pink-800"
+      return "bg-pink-100 text-pink-800 ring-pink-300"
     case "Aluguel Recebido":
-      return "bg-teal-200 text-teal-800"
+      return "bg-teal-100 text-teal-800 ring-teal-300"
     case "Dividendos":
-      return "bg-green-200 text-green-800"
+      return "bg-green-100 text-green-800 ring-green-300"
     case "Presente":
-      return "bg-red-200 text-red-800"
+      return "bg-red-100 text-red-800 ring-red-300"
     case "Restituição":
-      return "bg-indigo-200 text-indigo-800"
+      return "bg-indigo-100 text-indigo-800 ring-indigo-300"
     case "Outros":
-      return "bg-gray-200 text-gray-800"
+      return "bg-gray-100 text-gray-700 ring-gray-300"
     default:
-      return "bg-gray-200 text-gray-400"
+      return "bg-gray-100 text-gray-500 ring-gray-200"
   }
 }
 // <---------------------| FUNÇÕES LISTA DE RENDAS (FIM)|---------------------->

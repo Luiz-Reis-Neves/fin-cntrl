@@ -1,5 +1,6 @@
 import { rendas } from "../data/store.js";
 import { salvarDados } from "../data/store.js";
+import { notificar } from "../feedback.ts";
 
 export function adicionarRenda({ categoria, valor, data, descricao }) {
     let id = Date.now()
@@ -52,7 +53,7 @@ export function rendasDelete(itens) {
 function validarCategoria(categoria) {
 
     if (categoria === "") {
-        alert("Prencha o campo categoria")
+        notificar("Preencha o campo categoria", "erro")
         return false
     }
     return true
@@ -60,10 +61,10 @@ function validarCategoria(categoria) {
 
 function validarValor(valor) {
     if (valor === "") {
-        alert("Preencha o campo valor")
+        notificar("Preencha o campo valor", "erro")
         return false
     } else if (valor <= 0) {
-        alert("O campo valor tem que ser maior que zero")
+        notificar("O campo valor tem que ser maior que zero", "erro")
         return false
     }
     return true
@@ -71,7 +72,7 @@ function validarValor(valor) {
 
 function validarData(data) {
     if (data === "") {
-        alert("Preencha o campo data")
+        notificar("Preencha o campo data", "erro")
         return false
     }
     return true

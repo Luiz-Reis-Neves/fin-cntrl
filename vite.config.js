@@ -10,7 +10,7 @@ export default defineConfig({
         include: ['tests/**/*.test.ts'],
         coverage: {
             provider: 'v8',
-            include: ['src/gastos/**', 'src/dom.ts'],
+            include: ['src/gastos/**', 'src/dom.ts', 'src/feedback.ts'],
             reporter: ['text', 'html'],
         },
     },

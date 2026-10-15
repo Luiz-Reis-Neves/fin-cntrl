@@ -7,6 +7,7 @@ import { GastosUI } from './gastos/ui.ts';
 import { templatesGastos } from './gastos/templates.ts';
 import { validarGasto } from './gastos/validador.ts';
 import { exigir } from './dom.ts';
+import { notificar } from './feedback.ts';
 import { templatesDashboard, inicializarDashboard } from './dashboard/ui.js';
 
 // Declaração de variaveis dos botões
@@ -27,9 +28,42 @@ const gastosLogic = new GastosLogic(gastos, (listaAtualizada) => {
     salvarDados();
 });
 
+// ==========================================
+// MENU LATERAL (gaveta no celular, fixo no desktop)
+// ==========================================
+const menu = document.getElementById("container-menu-filho-1");
+const fundoMenu = document.getElementById("fundo-menu");
+const btnMenu = document.getElementById("btn-menu");
+
+function definirMenuAberto(aberto) {
+    menu.classList.toggle("-translate-x-full", !aberto);
+    fundoMenu.classList.toggle("hidden", !aberto);
+    btnMenu.setAttribute("aria-expanded", String(aberto));
+}
+
+btnMenu.addEventListener("click", () => definirMenuAberto(menu.classList.contains("-translate-x-full")));
+fundoMenu.addEventListener("click", () => definirMenuAberto(false));
+document.addEventListener("keydown", (evento) => {
+    if (evento.key === "Escape") definirMenuAberto(false);
+});
+
+// Marca a aba atual no menu (aria-current também é usado pelo CSS para o destaque)
+function marcarAbaAtiva(botaoAtivo) {
+    document.querySelectorAll("#lista-navegacao .nav-item").forEach((botao) => {
+        if (botao === botaoAtivo) botao.setAttribute("aria-current", "page");
+        else botao.removeAttribute("aria-current");
+    });
+}
+
 // add eventos de click para cada botão
 botoesNav.forEach((botao) => {
     botao.addEventListener("click", () => {
+        definirMenuAberto(false);
+        if (["btn-renda", "btn-gastos", "btn-dashboard"].includes(botao.id)) {
+            marcarAbaAtiva(botao);
+            window.scrollTo(0, 0);
+        }
+
         switch (botao.id) {
             case "btn-renda":
                 containerConteudoFilho2.innerHTML = templatesRenda();
@@ -45,6 +79,9 @@ botoesNav.forEach((botao) => {
                 break;
 
             // 👉 LÓGICA DOS NOVOS BOTÕES AQUI:
+            case "btn-cofrinho":
+                notificar("O Cofrinho ainda está em construção.", "info");
+                break;
             case "btn-exportar":
                 exportarBackup();
                 break;
@@ -79,6 +116,7 @@ function exportarBackup() {
     document.body.appendChild(linkFalso);
     linkFalso.click();
     document.body.removeChild(linkFalso);
+    notificar("Backup exportado.");
 }
 
 // Escuta o momento exato em que o usuário seleciona um arquivo no input invisível
@@ -102,13 +140,14 @@ if (inputArquivoBackup) {
 
                     salvarDados(); // Salva no LocalStorage
 
-                    alert("🎉 Backup restaurado com sucesso!");
-                    window.location.reload(); // Atualiza a página para mostrar os dados
+                    // A página recarrega para mostrar os dados; a notificação aparece depois do reload
+                    sessionStorage.setItem("backupRestaurado", "1");
+                    window.location.reload();
                 } else {
-                    alert("❌ Erro: O arquivo selecionado não é um backup válido do nosso sistema.");
+                    notificar("O arquivo selecionado não é um backup válido.", "erro");
                 }
             } catch (erro) {
-                alert("❌ Erro ao ler o arquivo. Ele pode estar corrompido.");
+                notificar("Não foi possível ler o arquivo. Ele pode estar corrompido.", "erro");
             }
         };
 
@@ -121,3 +160,8 @@ if (inputArquivoBackup) {
 
 // Abre o app direto no Dashboard (antes a tela começava em branco)
 document.getElementById("btn-dashboard").click();
+
+if (sessionStorage.getItem("backupRestaurado")) {
+    sessionStorage.removeItem("backupRestaurado");
+    notificar("Backup restaurado com sucesso!");
+}

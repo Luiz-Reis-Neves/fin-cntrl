@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { describe, it, expect } from "vitest";
-import { templateListaCardsGastos, templatesGastos } from "../../src/gastos/templates.ts";
+import { templateListaCardsGastos, templateListaVazia, templatesGastos } from "../../src/gastos/templates.ts";
+import { CATEGORIAS_GASTO, categoriaGasto } from "../../src/gastos/categorias.ts";
 import type { Gasto } from "../../src/gastos/type.ts";
 
 const gasto: Gasto = { id: 7, categoria: "Internet", valor: 1234.5, data: "2026-10-05", descricao: "fibra" };
@@ -47,16 +48,24 @@ describe("templateListaCardsGastos", () => {
         expect(card.querySelector<HTMLElement>('[data-acao="editar"]')?.dataset.id).toBe(`"x"`);
     });
 
-    it("aplica a cor da categoria", () => {
-        const etiqueta = renderizar(templateListaCardsGastos(gasto)).querySelector("span");
+    it("aplica a cor da categoria definida em categorias.ts", () => {
+        const etiqueta = renderizar(templateListaCardsGastos(gasto)).querySelector("span.rounded-full");
 
-        expect(etiqueta?.className).toContain("bg-sky-200");
+        expect(etiqueta?.className).toContain(categoriaGasto("Internet").etiqueta);
     });
 
     it("usa cor neutra para categoria desconhecida", () => {
-        const etiqueta = renderizar(templateListaCardsGastos({ ...gasto, categoria: "Nova" })).querySelector("span");
+        const etiqueta = renderizar(templateListaCardsGastos({ ...gasto, categoria: "Nova" })).querySelector(
+            "span.rounded-full",
+        );
 
-        expect(etiqueta?.className).toContain("text-gray-400");
+        expect(etiqueta?.className).toContain("text-gray-500");
+    });
+
+    it("indica quando o gasto não tem descrição", () => {
+        const texto = renderizar(templateListaCardsGastos({ ...gasto, descricao: "" })).textContent;
+
+        expect(texto).toContain("Sem descrição");
     });
 });
 
@@ -79,10 +88,33 @@ describe("templatesGastos", () => {
         }
     });
 
+    it("oferece no formulário exatamente as categorias de categorias.ts", () => {
+        const opcoes = [...renderizar(templatesGastos()).querySelectorAll<HTMLOptionElement>("#inputCategoria option:not([disabled])")];
+
+        expect(opcoes.map((o) => o.value)).toEqual(CATEGORIAS_GASTO.map((c) => c.nome));
+    });
+
+    it("tem um espaço de mensagem de erro para cada campo do formulário", () => {
+        const tela = renderizar(templatesGastos());
+
+        for (const campo of ["categoria", "valor", "data", "descricao"]) {
+            expect(tela.querySelector(`[data-erro-para="${campo}"]`), campo).not.toBeNull();
+        }
+    });
+
     it("começa com a lista vazia e o modal oculto", () => {
         const tela = renderizar(templatesGastos());
 
         expect(tela.querySelector("#container-lista-gastos")?.children).toHaveLength(0);
         expect(tela.querySelector("#fundo-escuro")?.classList.contains("hidden")).toBe(true);
+    });
+});
+
+describe("templateListaVazia", () => {
+    it("mostra a mensagem e um botão que pede um novo cadastro", () => {
+        const vazia = renderizar(templateListaVazia());
+
+        expect(vazia.textContent).toContain("Nenhum gasto neste período");
+        expect(vazia.querySelector('[data-acao="novo"]')).not.toBeNull();
     });
 });

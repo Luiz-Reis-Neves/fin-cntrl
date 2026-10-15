@@ -9,9 +9,10 @@
  */
 import type { GastosLogic } from "./logic.ts";
 import { ModalGasto, type Validador } from "./modal.ts";
-import { templateListaCardsGastos } from "./templates.ts";
+import { templateListaCardsGastos, templateListaVazia } from "./templates.ts";
 import type { Gasto, NovoGasto } from "./type.ts";
 import { exigir } from "../dom.ts";
+import { confirmar, notificar } from "../feedback.ts";
 import { lerFiltros, aplicarFiltros, iniciarFiltros, limparFiltrosExtras } from "../filtros.js";
 
 const formatoMoeda = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
@@ -59,16 +60,12 @@ export class GastosUI {
 
   renderizar(): void {
     const visiveis = aplicarFiltros(this.#logic.obterTodos(), lerFiltros()) as Gasto[];
-    this.#lista.innerHTML = visiveis.map(templateListaCardsGastos).join("");
+    this.#lista.innerHTML = visiveis.length > 0 ? visiveis.map(templateListaCardsGastos).join("") : templateListaVazia();
     this.#total.textContent = formatoMoeda.format(this.#logic.calcularTotal(visiveis));
   }
 
   #ligarEventos(): void {
-    exigir(this.#raiz, "#btn-nova-gastos").addEventListener("click", () => {
-      // Novo gasto já vem com o dia 1º do mês em exibição
-      const mes = this.#inputMes.value;
-      this.#modal.abrirCadastro(mes ? `${mes}-01` : undefined);
-    });
+    exigir(this.#raiz, "#btn-nova-gastos").addEventListener("click", () => this.#abrirCadastro());
 
     exigir(this.#raiz, "#btn-abrir-calendario").addEventListener("click", () => this.#inputMes.showPicker());
 
@@ -81,13 +78,20 @@ export class GastosUI {
     this.#lista.addEventListener("click", (evento) => {
       const botao = (evento.target as Element).closest<HTMLElement>("[data-acao]");
       if (!botao) return;
+      if (botao.dataset.acao === "novo") return this.#abrirCadastro();
 
       const gasto = this.#logic.obterTodos().find((g) => String(g.id) === botao.dataset.id);
       if (!gasto) return;
 
       if (botao.dataset.acao === "editar") this.#modal.abrirEdicao(gasto);
-      if (botao.dataset.acao === "excluir") this.#excluir(gasto);
+      if (botao.dataset.acao === "excluir") void this.#excluir(gasto);
     });
+  }
+
+  // Novo gasto já vem com o dia 1º do mês em exibição
+  #abrirCadastro(): void {
+    const mes = this.#inputMes.value;
+    this.#modal.abrirCadastro(mes ? `${mes}-01` : undefined);
   }
 
   #definirMes(mesISO: string): void {
@@ -98,8 +102,10 @@ export class GastosUI {
   #salvar(dados: NovoGasto, idEmEdicao: Gasto["id"] | null): void {
     if (idEmEdicao !== null) {
       this.#logic.editar(idEmEdicao, dados);
+      notificar("Gasto atualizado.");
     } else {
       this.#logic.adicionar(dados);
+      notificar("Gasto cadastrado.");
     }
 
     // Mostra o mês do gasto salvo e remove filtros que poderiam escondê-lo.
@@ -108,11 +114,17 @@ export class GastosUI {
     this.renderizar();
   }
 
-  #excluir(gasto: Gasto): void {
+  async #excluir(gasto: Gasto): Promise<void> {
     const data = gasto.data.split("-").reverse().join("/");
-    if (!confirm(`Excluir "${gasto.categoria}" de ${data}?`)) return;
+    const confirmado = await confirmar(`"${gasto.categoria}" de ${data} será removido. Esta ação não pode ser desfeita.`, {
+      titulo: "Excluir gasto?",
+      textoConfirmar: "Excluir",
+      perigoso: true,
+    });
+    if (!confirmado) return;
 
     this.#logic.excluir(gasto.id);
     this.renderizar();
+    notificar("Gasto excluído.");
   }
 }

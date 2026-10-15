@@ -15,6 +15,15 @@ const camposEmVermelho = () =>
         $(s).classList.contains("border-red-500"),
     );
 
+// Mensagens de erro visíveis, por campo
+const mensagensVisiveis = () =>
+    Object.fromEntries(
+        [...document.querySelectorAll<HTMLElement>("[data-erro-para]:not(.hidden)")].map((p) => [
+            p.dataset.erroPara,
+            p.textContent,
+        ]),
+    );
+
 function preencher(campos: Partial<Record<"categoria" | "valor" | "data" | "descricao", string>>) {
     if (campos.categoria !== undefined) $<HTMLSelectElement>("#inputCategoria").value = campos.categoria;
     if (campos.valor !== undefined) $("#inputValor").value = campos.valor;
@@ -77,7 +86,8 @@ describe("ModalGasto", () => {
             expect($("#inputValor").value).toBe("100");
             expect($("#inputData").value).toBe("2026-10-05");
             expect($("#inputDescricao").value).toBe("fibra");
-            expect($("#btn-model-cadastrar").textContent).toBe("Concluir Edição");
+            expect($("#btn-model-cadastrar").textContent).toBe("Salvar alterações");
+            expect($("#titulo-modal-gasto").textContent).toBe("Editar gasto");
         });
 
         it("entrega os dados com o id do gasto em edição", () => {
@@ -112,15 +122,26 @@ describe("ModalGasto", () => {
             expect(estaAberto()).toBe(true);
         });
 
-        it("mostra todas as mensagens em um único alerta e destaca os campos", () => {
+        it("mostra cada mensagem embaixo do seu campo, sem alert, e destaca os campos", () => {
             modal.abrirCadastro();
             clicar("#btn-model-cadastrar");
 
-            expect(alert).toHaveBeenCalledOnce();
-            expect(alert).toHaveBeenCalledWith(
-                "Preencha o campo categoria\nPreencha o campo valor\nPreencha o campo data",
-            );
+            expect(mensagensVisiveis()).toEqual({
+                categoria: "Preencha o campo categoria",
+                valor: "Preencha o campo valor",
+                data: "Preencha o campo data",
+            });
             expect(camposEmVermelho()).toEqual(["#inputCategoria", "#inputValor", "#inputData"]);
+            expect($("#inputValor").getAttribute("aria-invalid")).toBe("true");
+            expect(alert).not.toHaveBeenCalled();
+        });
+
+        it("coloca o foco no primeiro campo com erro", () => {
+            modal.abrirCadastro("2026-10-01");
+            preencher({ categoria: "Internet" });
+            clicar("#btn-model-cadastrar");
+
+            expect(document.activeElement).toBe($("#inputValor"));
         });
 
         it("remove o destaque dos campos corrigidos na nova tentativa", () => {
@@ -143,7 +164,7 @@ describe("ModalGasto", () => {
             clicar("#btn-model-cadastrar");
 
             expect(validar).toHaveBeenCalledOnce();
-            expect(alert).toHaveBeenCalledWith("Descrição obrigatória");
+            expect(mensagensVisiveis()).toEqual({ descricao: "Descrição obrigatória" });
             expect(camposEmVermelho()).toEqual(["#inputDescricao"]);
         });
     });
@@ -159,7 +180,59 @@ describe("ModalGasto", () => {
             expect($("#inputValor").value).toBe("");
             expect($("#inputDescricao").value).toBe("");
             expect(camposEmVermelho()).toEqual([]);
+            expect(mensagensVisiveis()).toEqual({});
             expect($("#btn-model-cadastrar").textContent).toBe("Cadastrar");
+            expect($("#titulo-modal-gasto").textContent).toBe("Novo gasto");
         });
+
+        it("fecha pelo botão X", () => {
+            modal.abrirCadastro();
+            clicar("#btn-fechar-modal");
+            expect(estaAberto()).toBe(false);
+        });
+
+        it("fecha com a tecla Esc", () => {
+            modal.abrirCadastro();
+            $("#inputDescricao").dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+            expect(estaAberto()).toBe(false);
+        });
+
+        it("ignora outras teclas", () => {
+            modal.abrirCadastro();
+            $("#inputDescricao").dispatchEvent(new KeyboardEvent("keydown", { key: "a", bubbles: true }));
+            expect(estaAberto()).toBe(true);
+        });
+
+        it("fecha ao clicar no fundo escurecido, mas não ao clicar no formulário", () => {
+            modal.abrirCadastro();
+            clicar("#titulo-modal-gasto");
+            expect(estaAberto()).toBe(true);
+
+            clicar("#formulario-cadastro-gastos");
+            expect(estaAberto()).toBe(false);
+        });
+
+        it("devolve o foco para o elemento que estava focado antes de abrir", () => {
+            const origem = document.createElement("button");
+            document.body.appendChild(origem);
+            origem.focus();
+
+            modal.abrirCadastro();
+            expect(document.activeElement).toBe($("#inputCategoria"));
+
+            modal.fechar();
+            expect(document.activeElement).toBe(origem);
+        });
+    });
+
+    it("envia pelo submit do formulário (Enter em um campo)", () => {
+        modal.abrirCadastro("2026-10-01");
+        preencher({ categoria: "Internet", valor: "10" });
+
+        const evento = new Event("submit", { cancelable: true });
+        $<HTMLFormElement>("#fundo-escuro form").dispatchEvent(evento);
+
+        expect(evento.defaultPrevented).toBe(true);
+        expect(aoSalvar).toHaveBeenCalledOnce();
     });
 });

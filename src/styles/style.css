@@ -3,40 +3,6 @@
      font-family: "Roboto", sans-serif;
 }
 
-.btn-3d,.btn-3d-data {
-  box-shadow: 0 6px 0 #2d6b43;
-  transition: all 0.1s ease;
-}
-
-.btn-3d:active,.btn-3d-data:active {
-  box-shadow: 0 2px 0 #2d6b43;
-  transform: translateY(4px);
-}
-
-.btn-3d-cancelar,
-.btn-3d-deletar,.btn-gasto-3d, .btn-3d-data-gasto {
-  box-shadow: 0 6px 0 #6b0000;
-  transition: all 0.1s ease;
-}
-
-.btn-3d-cancelar:active,
-.btn-3d-deletar:active,.btn-gasto-3d:active, .btn-3d-data-gasto:active {
-  box-shadow: 0 2px 0 #6b0000;
-  transform: translateY(4px);
-}
-
-.btn-3d-editar {
-  box-shadow: 0 6px 0 #1d4ed8;
-  transition: all 0.1s ease;
-}
-
-.btn-3d-editar:active {
-  box-shadow: 0 2px 0 #1d4ed8;
-  transform: translateY(4px);
-}
-
-
-
 ::-webkit-scrollbar {
   height: 4px;
 }
@@ -50,3 +16,76 @@
   border-radius: 999px;
 }
 
+
+/* ===== Melhorias visuais ===== */
+
+/* Cor de destaque de cada tela (vermelho em gastos, verde em rendas) */
+:root {
+  --cor-destaque: #15803d;
+}
+.tema-gastos {
+  --cor-destaque: #9f0712;
+}
+
+/* Campos de formulário e filtros */
+@layer components {
+  .campo {
+    @apply w-full px-3 py-2 text-sm text-gray-800 bg-white border border-gray-300 rounded-lg transition-shadow;
+  }
+  .campo:focus {
+    outline: none;
+    border-color: var(--cor-destaque);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--cor-destaque) 18%, transparent);
+  }
+  .campo.border-red-500 {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgb(239 68 68 / 0.15);
+  }
+}
+
+/* Item ativo do menu lateral */
+.nav-item[aria-current="page"] {
+  background: rgb(255 255 255 / 0.14);
+  box-shadow: inset 3px 0 0 #fff;
+  font-weight: 600;
+}
+
+/* Modais e diálogos: entrada suave */
+@keyframes fundo-entrada {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes painel-entrada {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+.fundo-animado {
+  animation: fundo-entrada 0.15s ease-out;
+}
+.painel-animado {
+  animation: painel-entrada 0.2s ease-out;
+}
+
+/* Notificações */
+@keyframes notificacao-entrada {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes notificacao-saida {
+  to { opacity: 0; transform: translateX(20px); }
+}
+.notificacao {
+  animation: notificacao-entrada 0.2s ease-out;
+}
+.notificacao-saindo {
+  animation: notificacao-saida 0.25s ease-in forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fundo-animado,
+  .painel-animado,
+  .notificacao,
+  .notificacao-saindo {
+    animation: none;
+  }
+}
