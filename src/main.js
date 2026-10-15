@@ -2,8 +2,11 @@
 import { carregarDados, salvarDados, rendas, gastos } from './data/store.js';
 import './styles/style.css';
 import { inicializarRenda, templatesRenda } from './rendas/ui.js';
-import { inicializarGastos } from './gastos/ui.ts';
+import { GastosLogic } from './gastos/logic.ts';
+import { GastosUI } from './gastos/ui.ts';
 import { templatesGastos } from './gastos/templates.ts';
+import { validarGasto } from './gastos/validador.ts';
+import { exigir } from './dom.ts';
 import { templatesDashboard, inicializarDashboard } from './dashboard/ui.js';
 
 // Declaração de variaveis dos botões
@@ -16,6 +19,14 @@ const inputArquivoBackup = document.getElementById("input-arquivo-backup");
 // 👉 2. Carrega os dados salvos no navegador AGORA!
 carregarDados();
 
+// Instância única durante toda a sessão. A persistência é decidida aqui:
+// a lista também é espelhada no store porque o dashboard e o backup ainda leem de lá.
+const gastosLogic = new GastosLogic(gastos, (listaAtualizada) => {
+    gastos.length = 0;
+    gastos.push(...listaAtualizada);
+    salvarDados();
+});
+
 // add eventos de click para cada botão
 botoesNav.forEach((botao) => {
     botao.addEventListener("click", () => {
@@ -26,7 +37,7 @@ botoesNav.forEach((botao) => {
                 break;
             case "btn-gastos":
                 containerConteudoFilho2.innerHTML = templatesGastos();
-                inicializarGastos();
+                new GastosUI(exigir(containerConteudoFilho2, "#tela-gastos"), gastosLogic, validarGasto).montar();
                 break;
             case "btn-dashboard":
                 containerConteudoFilho2.innerHTML = templatesDashboard();

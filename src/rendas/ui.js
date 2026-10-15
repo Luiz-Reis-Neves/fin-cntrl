@@ -1,5 +1,6 @@
 import { adicionarRenda, editarRenda, rendasDelete, calcularTotalRenda, validarRenda } from "./logic.js"
-import { rendas, escaparHTML } from "./../data/store.js"
+import { rendas } from "./../data/store.js"
+import { escaparHTML } from "../dom.ts"
 import { templateFiltros, lerFiltros, aplicarFiltros, iniciarFiltros, limparFiltrosExtras } from "../filtros.js"
 let rendaEmEdicao = null
 // função que contem o template do header rendas

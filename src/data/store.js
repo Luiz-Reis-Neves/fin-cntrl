@@ -34,14 +34,3 @@ export function carregarDados() {
         gastos.push(...gastosSalvos);
     }
 }
-
-// Escapa texto digitado pelo usuário antes de colocar dentro de innerHTML
-// (sem isso, uma descrição com "<" quebra o layout do card)
-export function escaparHTML(texto) {
-    return String(texto ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#39;");
-}

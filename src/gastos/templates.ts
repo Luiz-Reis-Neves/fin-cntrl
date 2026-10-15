@@ -5,7 +5,7 @@
  * alterar o DOM. Eventos e renderização ficam na ui.ts.
  */
 import type { Gasto } from "./type.ts";
-import { escaparHTML } from "../data/store.js";
+import { escaparHTML } from "../dom.ts";
 import { templateFiltros } from "../filtros.js";
 
 function templateHeader(): string {

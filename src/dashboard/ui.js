@@ -1,5 +1,6 @@
 import Chart from "chart.js/auto";
-import { rendas, gastos, escaparHTML } from "../data/store.js";
+import { rendas, gastos } from "../data/store.js";
+import { escaparHTML } from "../dom.ts";
 
 function templateHeaderDashboard() {
   return `

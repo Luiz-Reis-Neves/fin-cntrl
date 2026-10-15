@@ -7,13 +7,11 @@
  * construtor, e os cliques nos cards são tratados por um único listener
  * (delegação de eventos), que continua válido a cada nova renderização.
  */
-import { GastosLogic } from "./logic.ts";
+import type { GastosLogic } from "./logic.ts";
 import { ModalGasto, type Validador } from "./modal.ts";
-import { validarGasto } from "./validador.ts";
 import { templateListaCardsGastos } from "./templates.ts";
 import type { Gasto, NovoGasto } from "./type.ts";
 import { exigir } from "../dom.ts";
-import { gastos, salvarDados } from "../data/store.js";
 import { lerFiltros, aplicarFiltros, iniciarFiltros, limparFiltrosExtras } from "../filtros.js";
 
 const formatoMoeda = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
@@ -117,16 +115,4 @@ export class GastosUI {
     this.#logic.excluir(gasto.id);
     this.renderizar();
   }
-}
-
-// Ponto de entrada usado pelo main.js. A criação da GastosLogic e a persistência
-// ficam aqui até serem movidas para o main (passo 4).
-export function inicializarGastos(): void {
-  const logic = new GastosLogic(gastos, (listaAtualizada) => {
-    gastos.length = 0;
-    gastos.push(...listaAtualizada);
-    salvarDados();
-  });
-
-  new GastosUI(exigir(document, "#tela-gastos"), logic, validarGasto).montar();
 }
