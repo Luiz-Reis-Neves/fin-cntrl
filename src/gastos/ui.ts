@@ -1,143 +1,36 @@
 import { GastosLogic } from "./logic.ts";
 import { validarGasto } from "./validador.ts";
-import type { ErroValidacao, FormularioGasto } from "./type.ts";
+import type { Gasto, NovoGasto } from "./type.ts";
+import { ModalGasto } from "./modal.ts";
 import { templateListaCardsGastos } from "./templates.ts";
 import { gastos, salvarDados } from "./../data/store.js"
 import { lerFiltros, aplicarFiltros, iniciarFiltros, limparFiltrosExtras } from "../filtros.js"
 
-let gastoEmEdicao = null;
-// Criada no inicializarGastos(), depois que o store já carregou os dados
+// Criadas no inicializarGastos(), depois que o template está no DOM e o store já carregou
 let gastosLogic: GastosLogic;
+let modal: ModalGasto;
 
-// <---------------------|FUNÇÕES MODAL (INICIO)|---------------------->
-// quando clickar no "cadastrar gasto" vai abrir o modal
-function abrirModal() {
-  let fundoEscuro = document.querySelector("#fundo-escuro")
-  fundoEscuro.classList.remove("hidden")
+// Destino dos dados confirmados no modal: cadastro ou edição
+function salvarGasto(dados: NovoGasto, idEmEdicao: Gasto["id"] | null) {
+  if (idEmEdicao !== null) {
+    gastosLogic.editar(idEmEdicao, dados);
+  } else {
+    gastosLogic.adicionar(dados);
+  }
+
+  // Leva o filtro para o mês do gasto salvo, para ele aparecer na lista
+  sincFiltro(dados.data)
+  limparFiltrosExtras()
+  listaGastos();
 }
 
-// botão cancelar dentro do modal
-function fecharModal() {
-  let fundoEscuro = document.querySelector("#fundo-escuro")
-  fundoEscuro.classList.add("hidden")
-
-  // Sempre que fechar, limpa a sujeira visual e a memória fantasma
-  limparCampos()
-  limparErros()
-  gastoEmEdicao = null; // <-- MUDANÇA AQUI: Trocamos 'rendaEmEdicao'
-  document.querySelector("#btn-model-cadastrar").textContent = "Cadastrar";
-}
-
-// pegar valores dos inputs do modal
-function pegarValoresModal() {
-  let categoria = document.querySelector("#inputCategoria").value;
-  let valor = document.querySelector("#inputValor").value;
-  let data = document.querySelector("#inputData").value;
-  let descricao = document.querySelector("#inputDescricao").value;
-
-  // Coloca tudo num pacote e entrega pra quem pediu
-  return { categoria, valor, data, descricao };
-}
-
-// Input correspondente a cada campo validado
-const seletorDoCampo: Record<keyof FormularioGasto, string> = {
-  categoria: "#inputCategoria",
-  valor: "#inputValor",
-  data: "#inputData",
-  descricao: "#inputDescricao",
-};
-
-// Destaca os inputs inválidos e mostra todas as mensagens de uma vez
-function mostrarErros(erros: ErroValidacao[]) {
-  erros.forEach(({ campo }) => {
-    document.querySelector(seletorDoCampo[campo])?.classList.add("border-red-500");
-  });
-  alert(erros.map(({ mensagem }) => mensagem).join("\n"));
-}
-
-function limparErros() {
-  Object.values(seletorDoCampo).forEach((seletor) => {
-    document.querySelector(seletor)?.classList.remove("border-red-500");
-  });
-}
-
-// limpar campos do modal
-function limparCampos() {
-  document.querySelector("#inputCategoria").value = ""
-  document.querySelector("#inputValor").value = ""
-  document.querySelector("#inputData").value = ""
-  document.querySelector("#inputDescricao").value = ""
-}
-// <---------------------|FUNÇÕES MODAL (FIM)|---------------------->
-// <---------------------|MODAL DE GASTOS (INICIO)|---------------------->
-// funcionalidades do modal
 function eventosDoModal() {
-  // Alterado para buscar o botão com o ID correto do HTML de gastos
-  let btnNovoGasto = document.querySelector("#btn-nova-gastos")
-  let btnModalCancelar = document.querySelector("#btn-model-cancelar")
-  let btnModalCadastrar = document.querySelector("#btn-model-cadastrar")
-
-  // Botão abrir do modal
-  btnNovoGasto.addEventListener("click", () => {
-    // 1. Pega o valor que está selecionado no painel (ex: "2026-05")
-    let mesFiltro = document.querySelector("#input-filtro-mes").value;
-
-    // 2. Se tiver um mês no filtro, já injeta ele no modal no dia 01
-    if (mesFiltro) {
-      document.querySelector("#inputData").value = `${mesFiltro}-01`;
-    }
-
-    abrirModal();
+  // Novo gasto já vem com o dia 1º do mês selecionado no filtro
+  document.querySelector("#btn-nova-gastos").addEventListener("click", () => {
+    const mesFiltro = document.querySelector("#input-filtro-mes").value;
+    modal.abrirCadastro(mesFiltro ? `${mesFiltro}-01` : undefined);
   })
-
-  // botão cancelar do modal
-  btnModalCancelar.addEventListener("click", () => {
-    fecharModal()
-  })
-
-  // botão cadastrar do modal
-  // Esse trecho é o "Cérebro Decisor" do modal, que decide se fez uma edição ou um novo cadastro
-  btnModalCadastrar.addEventListener("click", () => {
-    // [COLETA]: Chama a função que lê todos os inputs do modal e guarda em um objeto
-    let valoresModal = pegarValoresModal();
-
-    // validação: o validador só aponta os erros, a tela decide como exibi-los
-    limparErros();
-    const erros = validarGasto(valoresModal);
-    if (erros.length > 0) {
-      mostrarErros(erros);
-      return
-    }
-
-    // o input entrega texto; a GastosLogic recebe o valor já como número
-    const dadosGasto = { ...valoresModal, valor: Number(valoresModal.valor) };
-
-    // [DECISÃO]: Verifica se existe um ID guardado na variável. (Alterado para gastoEmEdicao)
-    if (gastoEmEdicao !== null) {
-      // [EXECUÇÃO DO UPDATE]
-      gastosLogic.editar(gastoEmEdicao, dadosGasto);
-      gastoEmEdicao = null;
-      btnModalCadastrar.textContent = "Cadastrar";
-
-    } else {
-      // [EXECUÇÃO DO CREATE]
-      gastosLogic.adicionar(dadosGasto);
-    }
-
-    // --- NOVO: SINCRONIZAÇÃO DE FILTRO ---
-    sincFiltro(valoresModal.data)
-    limparFiltrosExtras()
-    // -------------------------------------
-
-    // [ATUALIZAÇÃO]: Chama o Maestro para redesenhar a lista na tela
-    // (Alterado para listaGastos)
-    listaGastos();
-
-    // [FINALIZAÇÃO]: Fecha a janela
-    fecharModal();
-  });
 }
-// <---------------------|MODAL DE GASTOS (FIM)|---------------------->
 //<---------------------|FEATURE DATA (INICIO)|---------------------->
 
 function sincFiltro(dataDoGasto) {
@@ -223,33 +116,10 @@ function listaDeGastosRead() {
 }
 
 function listaDeGastosUpdate() {
-  // Seleciona o botão de "Cadastrar" que fica dentro do Modal para alterar o texto dele depois
-  let btnModalCadastrar = document.querySelector("#btn-model-cadastrar")
-
-  // [PERCORRE]: Entra no array de dados e executa o código abaixo para cada item da lista
   gastosLogic.obterTodos().forEach(itens => {
-    // [ACHA]: Busca no HTML o botão específico usando o ID de GASTO
     const btnEditar = document.querySelector(`#btn-editar-gasto-${itens.id}`);
-
-    // Verifica se o botão realmente foi encontrado no HTML
     if (btnEditar) {
-      // [PREPARA]: Adiciona um "ouvidor" de clique
-      btnEditar.addEventListener("click", () => {
-        // [ANOTAR]: Salva o ID do item clicado na variável global correta
-        gastoEmEdicao = itens.id;
-
-        // Pega o valor do objeto atual e joga dentro do modal
-        document.querySelector("#inputCategoria").value = itens.categoria;
-        document.querySelector("#inputValor").value = itens.valor;
-        document.querySelector("#inputData").value = itens.data;
-        document.querySelector("#inputDescricao").value = itens.descricao;
-
-        // Altera visualmente o texto do botão do modal
-        btnModalCadastrar.textContent = "Concluir Edição";
-
-        // Abre o modal
-        abrirModal();
-      });
+      btnEditar.addEventListener("click", () => modal.abrirEdicao(itens));
     }
   });
 }
@@ -295,7 +165,9 @@ export function inicializarGastos() {
     salvarDados();
   });
 
-  eventosDoModal() // Configura os botões do modal de gastos
+  modal = new ModalGasto(document.querySelector("#fundo-escuro"), validarGasto, salvarGasto);
+
+  eventosDoModal() // Configura o botão "+ Novo Gasto"
   iniciarFiltros(listaGastos) // Categoria, período e ordenação
   btnData()        // Configura o seletor de mês ANTES de desenhar a lista, senão o filtro está vazio e mostra tudo
   listaGastos()    // Desenha a lista de gastos na tela (já filtrada pelo mês atual)
