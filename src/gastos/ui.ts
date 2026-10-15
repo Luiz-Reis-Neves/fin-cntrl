@@ -1,10 +1,13 @@
-import { adicionarGasto, calcularTotalGasto, editarGasto, gastosDelete } from "./logic.ts";
+import { GastosLogic } from "./logic.ts";
 import { validarGasto } from "./validador.ts";
-import { gastos, escaparHTML } from "./../data/store.js"
+import type { ErroValidacao, FormularioGasto } from "./type.ts";
+import { gastos, escaparHTML, salvarDados } from "./../data/store.js"
 import { templateFiltros, lerFiltros, aplicarFiltros, iniciarFiltros, limparFiltrosExtras } from "../filtros.js"
 
 // função que contem o template do header gastos
 let gastoEmEdicao = null;
+// Criada no inicializarGastos(), depois que o store já carregou os dados
+let gastosLogic: GastosLogic;
 function templateHeader() {
   return `
   <div
@@ -303,6 +306,7 @@ function fecharModal() {
 
   // Sempre que fechar, limpa a sujeira visual e a memória fantasma
   limparCampos()
+  limparErros()
   gastoEmEdicao = null; // <-- MUDANÇA AQUI: Trocamos 'rendaEmEdicao'
   document.querySelector("#btn-model-cadastrar").textContent = "Cadastrar";
 }
@@ -316,6 +320,28 @@ function pegarValoresModal() {
 
   // Coloca tudo num pacote e entrega pra quem pediu
   return { categoria, valor, data, descricao };
+}
+
+// Input correspondente a cada campo validado
+const seletorDoCampo: Record<keyof FormularioGasto, string> = {
+  categoria: "#inputCategoria",
+  valor: "#inputValor",
+  data: "#inputData",
+  descricao: "#inputDescricao",
+};
+
+// Destaca os inputs inválidos e mostra todas as mensagens de uma vez
+function mostrarErros(erros: ErroValidacao[]) {
+  erros.forEach(({ campo }) => {
+    document.querySelector(seletorDoCampo[campo])?.classList.add("border-red-500");
+  });
+  alert(erros.map(({ mensagem }) => mensagem).join("\n"));
+}
+
+function limparErros() {
+  Object.values(seletorDoCampo).forEach((seletor) => {
+    document.querySelector(seletor)?.classList.remove("border-red-500");
+  });
 }
 
 // limpar campos do modal
@@ -358,21 +384,27 @@ function eventosDoModal() {
     // [COLETA]: Chama a função que lê todos os inputs do modal e guarda em um objeto
     let valoresModal = pegarValoresModal();
 
-    // validação (Alterado para a função de gastos)
-    if (!validarGasto(valoresModal)) {
+    // validação: o validador só aponta os erros, a tela decide como exibi-los
+    limparErros();
+    const erros = validarGasto(valoresModal);
+    if (erros.length > 0) {
+      mostrarErros(erros);
       return
     }
+
+    // o input entrega texto; a GastosLogic recebe o valor já como número
+    const dadosGasto = { ...valoresModal, valor: Number(valoresModal.valor) };
 
     // [DECISÃO]: Verifica se existe um ID guardado na variável. (Alterado para gastoEmEdicao)
     if (gastoEmEdicao !== null) {
       // [EXECUÇÃO DO UPDATE]
-      editarGasto(gastoEmEdicao, valoresModal);
+      gastosLogic.editar(gastoEmEdicao, dadosGasto);
       gastoEmEdicao = null;
       btnModalCadastrar.textContent = "Cadastrar";
 
     } else {
       // [EXECUÇÃO DO CREATE]
-      adicionarGasto(valoresModal);
+      gastosLogic.adicionar(dadosGasto);
     }
 
     // --- NOVO: SINCRONIZAÇÃO DE FILTRO ---
@@ -454,7 +486,7 @@ function listaDeGastosRead() {
   let containerListaGastos = document.querySelector("#container-lista-gastos")
 
   // Filtra (mês, categoria, período) e ordena conforme a barra de filtros
-  const gastosFiltrados = aplicarFiltros(gastos, lerFiltros())
+  const gastosFiltrados = aplicarFiltros(gastosLogic.obterTodos(), lerFiltros())
 
   // percorrer o resultado FILTRADO e entregar os itens para o template de cards de gastos
   let cardsListasGastos = gastosFiltrados.map(itens => {
@@ -468,7 +500,7 @@ function listaDeGastosRead() {
   let totalGasto = document.querySelector("#total-Gasto")
 
   // AJUSTE: Passamos os gastos filtrados para o cálculo do total
-  const valorTotal = calcularTotalGasto(gastosFiltrados)
+  const valorTotal = gastosLogic.calcularTotal(gastosFiltrados)
 
   totalGasto.textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorTotal)
 }
@@ -478,7 +510,7 @@ function listaDeGastosUpdate() {
   let btnModalCadastrar = document.querySelector("#btn-model-cadastrar")
 
   // [PERCORRE]: Entra no array de dados e executa o código abaixo para cada item da lista
-  gastos.forEach(itens => {
+  gastosLogic.obterTodos().forEach(itens => {
     // [ACHA]: Busca no HTML o botão específico usando o ID de GASTO
     const btnEditar = document.querySelector(`#btn-editar-gasto-${itens.id}`);
 
@@ -507,7 +539,7 @@ function listaDeGastosUpdate() {
 
 function listaDeGastosDelete() {
   // Percorremos TODOS os gastos do banco
-  gastos.forEach(itens => {
+  gastosLogic.obterTodos().forEach(itens => {
     // Tentamos encontrar o botão de deletar usando o ID de GASTO
     const btnDelete = document.querySelector(`#btn-deletar-gasto-${itens.id}`)
 
@@ -515,7 +547,7 @@ function listaDeGastosDelete() {
     if (btnDelete) {
       btnDelete.addEventListener("click", () => {
         if (!confirm(`Excluir "${itens.categoria}" de ${itens.data.split("-").reverse().join("/")}?`)) return
-        gastosDelete(itens) // Deleta do banco
+        gastosLogic.excluir(itens.id) // Deleta da lista
         listaGastos() // Redesenha a tela
       })
     }
@@ -538,6 +570,14 @@ function listaGastos() {
 
 // <---------------------|NUCLEO GERAL (INICIO)|---------------------->
 export function inicializarGastos() {
+  // A GastosLogic não sabe do localStorage: a cada mudança, quem a criou
+  // atualiza o store (o dashboard ainda lê de lá) e salva no navegador
+  gastosLogic = new GastosLogic(gastos, (listaAtualizada) => {
+    gastos.length = 0;
+    gastos.push(...listaAtualizada);
+    salvarDados();
+  });
+
   eventosDoModal() // Configura os botões do modal de gastos
   iniciarFiltros(listaGastos) // Categoria, período e ordenação
   btnData()        // Configura o seletor de mês ANTES de desenhar a lista, senão o filtro está vazio e mostra tudo

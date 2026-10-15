@@ -6,4 +6,14 @@ export default defineConfig({
     plugins: [
         tailwindcss(),
     ],
+    test: {
+        include: ['tests/**/*.test.ts'],
+        coverage: {
+            provider: 'v8',
+            include: ['src/gastos/**'],
+            // ui.ts entra na cobertura depois da refatoração
+            exclude: ['src/gastos/ui.ts'],
+            reporter: ['text', 'html'],
+        },
+    },
 })
