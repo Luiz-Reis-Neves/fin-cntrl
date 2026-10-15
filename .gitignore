@@ -25,3 +25,6 @@ dist-ssr
 
 # Relatório de cobertura de testes
 coverage
+
+# Instruções locais do Claude Code
+CLAUDE.md
