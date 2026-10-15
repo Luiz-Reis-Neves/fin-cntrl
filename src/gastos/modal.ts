@@ -7,18 +7,12 @@
  * entrega um NovoGasto válido para `aoSalvar` e se fecha em seguida.
  */
 import type { ErroValidacao, FormularioGasto, Gasto, NovoGasto } from "./type.ts";
+import { exigir } from "../dom.ts";
 
-type Validador = (dados: FormularioGasto) => ErroValidacao[];
+export type Validador = (dados: FormularioGasto) => ErroValidacao[];
 type AoSalvar = (dados: NovoGasto, idEmEdicao: Gasto["id"] | null) => void;
 
 const CLASSE_ERRO = "border-red-500";
-
-// Falha cedo se o template mudar e um seletor deixar de existir.
-function exigir<T extends Element>(raiz: ParentNode, seletor: string): T {
-    const elemento = raiz.querySelector<T>(seletor);
-    if (!elemento) throw new Error(`ModalGasto: elemento "${seletor}" não encontrado`);
-    return elemento;
-}
 
 export class ModalGasto {
     #fundo: HTMLElement;

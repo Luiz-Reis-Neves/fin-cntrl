@@ -1,175 +1,132 @@
+/**
+ * Tela de gastos.
+ *
+ * A GastosUI liga o HTML gerado por templates.ts à GastosLogic: desenha a
+ * lista conforme os filtros, mantém o total atualizado e trata as ações do
+ * usuário. Todas as buscas no DOM partem do elemento raiz recebido no
+ * construtor, e os cliques nos cards são tratados por um único listener
+ * (delegação de eventos), que continua válido a cada nova renderização.
+ */
 import { GastosLogic } from "./logic.ts";
+import { ModalGasto, type Validador } from "./modal.ts";
 import { validarGasto } from "./validador.ts";
-import type { Gasto, NovoGasto } from "./type.ts";
-import { ModalGasto } from "./modal.ts";
 import { templateListaCardsGastos } from "./templates.ts";
-import { gastos, salvarDados } from "./../data/store.js"
-import { lerFiltros, aplicarFiltros, iniciarFiltros, limparFiltrosExtras } from "../filtros.js"
+import type { Gasto, NovoGasto } from "./type.ts";
+import { exigir } from "../dom.ts";
+import { gastos, salvarDados } from "../data/store.js";
+import { lerFiltros, aplicarFiltros, iniciarFiltros, limparFiltrosExtras } from "../filtros.js";
 
-// Criadas no inicializarGastos(), depois que o template está no DOM e o store já carregou
-let gastosLogic: GastosLogic;
-let modal: ModalGasto;
+const formatoMoeda = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
-// Destino dos dados confirmados no modal: cadastro ou edição
-function salvarGasto(dados: NovoGasto, idEmEdicao: Gasto["id"] | null) {
-  if (idEmEdicao !== null) {
-    gastosLogic.editar(idEmEdicao, dados);
-  } else {
-    gastosLogic.adicionar(dados);
-  }
-
-  // Leva o filtro para o mês do gasto salvo, para ele aparecer na lista
-  sincFiltro(dados.data)
-  limparFiltrosExtras()
-  listaGastos();
+// "2026-04" -> "04/2026"
+function rotuloDoMes(mesISO: string): string {
+  const [ano, mes] = mesISO.split("-");
+  return `${mes}/${ano}`;
 }
 
-function eventosDoModal() {
-  // Novo gasto já vem com o dia 1º do mês selecionado no filtro
-  document.querySelector("#btn-nova-gastos").addEventListener("click", () => {
-    const mesFiltro = document.querySelector("#input-filtro-mes").value;
-    modal.abrirCadastro(mesFiltro ? `${mesFiltro}-01` : undefined);
-  })
-}
-//<---------------------|FEATURE DATA (INICIO)|---------------------->
-
-function sincFiltro(dataDoGasto) {
-  // Agora usamos a variável que recebemos ali em cima
-  const [ano, mes] = dataDoGasto.split("-");
-  const mesAnoGasto = `${ano}-${mes}`; // Formato: "YYYY-MM"
-
-  // Selecionamos os elementos do filtro no Painel
-  const inputFiltro = document.querySelector("#input-filtro-mes");
-  const textoFiltro = document.querySelector("#texto-mes-atual");
-
-  // Forçamos o filtro do painel a ir para o mês do gasto que acabamos de mexer
-  if (inputFiltro) {
-    inputFiltro.value = mesAnoGasto;
-    textoFiltro.textContent = `${mes}/${ano}`;
-  }
-}
-
-// funcionalidade do botão de data
-function btnData() {
-  const btnCalendario = document.querySelector("#btn-abrir-calendario");
-  const inputMes = document.querySelector("#input-filtro-mes");
-  const textoMesAtual = document.querySelector("#texto-mes-atual");
-
-  // --- LÓGICA DO MÊS ATUAL ---
+function mesAtualISO(): string {
   const hoje = new Date();
-  const ano = hoje.getFullYear();
-  const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-  const dataFormatada = `${ano}-${mes}`; // Ex: 2026-04
+  return `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}`;
+}
 
-  // Inicializa os valores na tela
-  if (inputMes) {
-    inputMes.value = dataFormatada;
-    textoMesAtual.textContent = `${mes}/${ano}`;
+export class GastosUI {
+  #logic: GastosLogic;
+  #modal: ModalGasto;
+  #raiz: HTMLElement;
+  #lista: HTMLElement;
+  #total: HTMLElement;
+  #inputMes: HTMLInputElement;
+  #textoMes: HTMLElement;
+
+  /** @param raiz Elemento que contém o HTML de templatesGastos(). */
+  constructor(raiz: HTMLElement, logic: GastosLogic, validar: Validador) {
+    this.#raiz = raiz;
+    this.#logic = logic;
+    this.#lista = exigir(raiz, "#container-lista-gastos");
+    this.#total = exigir(raiz, "#total-Gasto");
+    this.#inputMes = exigir(raiz, "#input-filtro-mes");
+    this.#textoMes = exigir(raiz, "#texto-mes-atual");
+    this.#modal = new ModalGasto(exigir(raiz, "#fundo-escuro"), validar, (dados, id) => this.#salvar(dados, id));
   }
 
-  // --- EVENTOS ---
-  // Abre o calendário ao clicar no ícone
-  btnCalendario.addEventListener("click", () => inputMes.showPicker());
+  /** Liga os eventos e faz a primeira renderização, já filtrada pelo mês atual. */
+  montar(): void {
+    // Precisa vir antes do listener de mês: o filtros.js limpa o período
+    // personalizado no mesmo evento, e a lista só deve ser lida depois disso.
+    iniciarFiltros(() => this.renderizar());
+    this.#ligarEventos();
+    this.#definirMes(mesAtualISO());
+    this.renderizar();
+  }
 
-  // Atualiza tudo quando o usuário troca o mês
-  inputMes.addEventListener("change", (e) => {
-    const valorInput = e.target.value;
+  renderizar(): void {
+    const visiveis = aplicarFiltros(this.#logic.obterTodos(), lerFiltros()) as Gasto[];
+    this.#lista.innerHTML = visiveis.map(templateListaCardsGastos).join("");
+    this.#total.textContent = formatoMoeda.format(this.#logic.calcularTotal(visiveis));
+  }
 
-    if (valorInput) {
-      // Se tem valor (ex: "2026-04")
-      const [anoSel, mesSel] = valorInput.split("-");
-      textoMesAtual.textContent = `${mesSel}/${anoSel}`;
+  #ligarEventos(): void {
+    exigir(this.#raiz, "#btn-nova-gastos").addEventListener("click", () => {
+      // Novo gasto já vem com o dia 1º do mês em exibição
+      const mes = this.#inputMes.value;
+      this.#modal.abrirCadastro(mes ? `${mes}-01` : undefined);
+    });
+
+    exigir(this.#raiz, "#btn-abrir-calendario").addEventListener("click", () => this.#inputMes.showPicker());
+
+    this.#inputMes.addEventListener("change", () => {
+      // Valor vazio significa que o usuário limpou o seletor: a lista mostra todos os meses.
+      this.#textoMes.textContent = this.#inputMes.value ? rotuloDoMes(this.#inputMes.value) : "Selecione um mês";
+      this.renderizar();
+    });
+
+    this.#lista.addEventListener("click", (evento) => {
+      const botao = (evento.target as Element).closest<HTMLElement>("[data-acao]");
+      if (!botao) return;
+
+      const gasto = this.#logic.obterTodos().find((g) => String(g.id) === botao.dataset.id);
+      if (!gasto) return;
+
+      if (botao.dataset.acao === "editar") this.#modal.abrirEdicao(gasto);
+      if (botao.dataset.acao === "excluir") this.#excluir(gasto);
+    });
+  }
+
+  #definirMes(mesISO: string): void {
+    this.#inputMes.value = mesISO;
+    this.#textoMes.textContent = rotuloDoMes(mesISO);
+  }
+
+  #salvar(dados: NovoGasto, idEmEdicao: Gasto["id"] | null): void {
+    if (idEmEdicao !== null) {
+      this.#logic.editar(idEmEdicao, dados);
     } else {
-      // Se o usuário clicou em "Limpar"
-      textoMesAtual.textContent = "Selecione um mês";
+      this.#logic.adicionar(dados);
     }
 
-    // AQUI ESTÁ A MUDANÇA CRÍTICA: Chama a lista de gastos!
-    listaGastos();
-  });
-}
-//<---------------------|FEATURE DATA (FIM)|---------------------->
-// <---------------------| FUNÇÕES LISTA DE GASTOS (INICIO)|---------------------->
+    // Mostra o mês do gasto salvo e remove filtros que poderiam escondê-lo.
+    this.#definirMes(dados.data.slice(0, 7));
+    limparFiltrosExtras();
+    this.renderizar();
+  }
 
-function listaDeGastosRead() {
-  // trackear o local onde vai ficar a lista de gastos
-  let containerListaGastos = document.querySelector("#container-lista-gastos")
+  #excluir(gasto: Gasto): void {
+    const data = gasto.data.split("-").reverse().join("/");
+    if (!confirm(`Excluir "${gasto.categoria}" de ${data}?`)) return;
 
-  // Filtra (mês, categoria, período) e ordena conforme a barra de filtros
-  const gastosFiltrados = aplicarFiltros(gastosLogic.obterTodos(), lerFiltros())
-
-  // percorrer o resultado FILTRADO e entregar os itens para o template de cards de gastos
-  let cardsListasGastos = gastosFiltrados.map(itens => {
-    return templateListaCardsGastos(itens) // Chamando o template correto de gastos
-  }).join("")
-
-  // lançar a lista no html
-  containerListaGastos.innerHTML = cardsListasGastos
-
-  // exibir o total de gastos no header
-  let totalGasto = document.querySelector("#total-Gasto")
-
-  // AJUSTE: Passamos os gastos filtrados para o cálculo do total
-  const valorTotal = gastosLogic.calcularTotal(gastosFiltrados)
-
-  totalGasto.textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorTotal)
+    this.#logic.excluir(gasto.id);
+    this.renderizar();
+  }
 }
 
-function listaDeGastosUpdate() {
-  gastosLogic.obterTodos().forEach(itens => {
-    const btnEditar = document.querySelector(`#btn-editar-gasto-${itens.id}`);
-    if (btnEditar) {
-      btnEditar.addEventListener("click", () => modal.abrirEdicao(itens));
-    }
-  });
-}
-
-function listaDeGastosDelete() {
-  // Percorremos TODOS os gastos do banco
-  gastosLogic.obterTodos().forEach(itens => {
-    // Tentamos encontrar o botão de deletar usando o ID de GASTO
-    const btnDelete = document.querySelector(`#btn-deletar-gasto-${itens.id}`)
-
-    // [SEGURANÇA]: Só adicionamos o evento se o botão existir
-    if (btnDelete) {
-      btnDelete.addEventListener("click", () => {
-        if (!confirm(`Excluir "${itens.categoria}" de ${itens.data.split("-").reverse().join("/")}?`)) return
-        gastosLogic.excluir(itens.id) // Deleta da lista
-        listaGastos() // Redesenha a tela
-      })
-    }
-  })
-}
-
-// <---------------------| FUNÇÕES LISTA DE GASTOS (FIM)|---------------------->
-// <---------------------|  LISTA DE GASTOS (INICIO)|---------------------->
-function listaGastos() {
-  // 1. READ: Lê o array 'gastos' e desenha os cards no HTML
-  listaDeGastosRead()
-
-  // 2. UPDATE: Procura os botões de editar que acabaram de ser criados e dá vida a eles
-  listaDeGastosUpdate()
-
-  // 3. DELETE: Procura os botões de lixeira e dá vida a eles
-  listaDeGastosDelete()
-}
-// <---------------------|  LISTA DE GASTOS (FIM)|---------------------->
-
-// <---------------------|NUCLEO GERAL (INICIO)|---------------------->
-export function inicializarGastos() {
-  // A GastosLogic não sabe do localStorage: a cada mudança, quem a criou
-  // atualiza o store (o dashboard ainda lê de lá) e salva no navegador
-  gastosLogic = new GastosLogic(gastos, (listaAtualizada) => {
+// Ponto de entrada usado pelo main.js. A criação da GastosLogic e a persistência
+// ficam aqui até serem movidas para o main (passo 4).
+export function inicializarGastos(): void {
+  const logic = new GastosLogic(gastos, (listaAtualizada) => {
     gastos.length = 0;
     gastos.push(...listaAtualizada);
     salvarDados();
   });
 
-  modal = new ModalGasto(document.querySelector("#fundo-escuro"), validarGasto, salvarGasto);
-
-  eventosDoModal() // Configura o botão "+ Novo Gasto"
-  iniciarFiltros(listaGastos) // Categoria, período e ordenação
-  btnData()        // Configura o seletor de mês ANTES de desenhar a lista, senão o filtro está vazio e mostra tudo
-  listaGastos()    // Desenha a lista de gastos na tela (já filtrada pelo mês atual)
+  new GastosUI(exigir(document, "#tela-gastos"), logic, validarGasto).montar();
 }
-// <---------------------|NUCLEO GERAL (FIM)|---------------------->

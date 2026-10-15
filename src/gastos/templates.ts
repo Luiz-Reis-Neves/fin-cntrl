@@ -215,7 +215,10 @@ export function templateListaCardsGastos(itens: Gasto): string {
           </div>
           <div class="w-[110px] p-1 flex items-center justify-between">
             <button
-              id="btn-editar-gasto-${itens.id}" 
+              type="button"
+              data-acao="editar"
+              data-id="${escaparHTML(itens.id)}"
+              aria-label="Editar gasto"
               class="w-[50px] h-[30px] bg-blue-500 hover:bg-blue-400 text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d-editar"
             >
               <img
@@ -225,7 +228,10 @@ export function templateListaCardsGastos(itens: Gasto): string {
               />
             </button>
             <button
-              id="btn-deletar-gasto-${itens.id}"
+              type="button"
+              data-acao="excluir"
+              data-id="${escaparHTML(itens.id)}"
+              aria-label="Excluir gasto"
               class="w-[50px] h-[30px] bg-red-500 hover:bg-red-400 text-white py-1 px-4 rounded shadow-md active:shadow-none active:translate-y-1 transition-all duration-150 btn-3d-deletar"
             >
               <img
@@ -278,7 +284,7 @@ function corCategoriaGasto(categoria: string): string {
 /** Estrutura completa da tela; a lista começa vazia e é preenchida pela ui.ts. */
 export function templatesGastos(): string {
   return `
-    <section class="w-full h-full flex flex-col p-2 gap-2">
+    <section id="tela-gastos" class="w-full h-full flex flex-col p-2 gap-2">
     ${templateHeader()}
     ${templatePainel()}
     ${templateFiltros("pagar", "focus:border-[#9F0712]")}
