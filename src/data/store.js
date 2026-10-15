@@ -11,7 +11,10 @@ export function salvarDados() {
 function lerLista(chave) {
     try {
         const lista = JSON.parse(localStorage.getItem(chave));
-        return Array.isArray(lista) ? lista : null;
+        if (!Array.isArray(lista)) return null;
+        // Versões antigas gravavam o valor editado como texto ("99.78"); somado
+        // com +, isso concatena em vez de somar. Normaliza tudo para número.
+        return lista.map((item) => ({ ...item, valor: Number(item.valor) }));
     } catch (erro) {
         console.error(`Dados corrompidos em "${chave}"`, erro);
         return null;
