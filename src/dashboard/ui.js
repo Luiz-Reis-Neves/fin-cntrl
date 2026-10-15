@@ -242,10 +242,11 @@ function templateCentroDashboard() {
   return `
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <div class="${card} lg:col-span-2 flex flex-col">
-        <h3 class="font-semibold text-gray-700 mb-3">Gastos por categoria</h3>
-        <div class="relative w-full h-[300px] md:h-[340px]">
-          <canvas id="meuGraficoGastos"></canvas>
+        <div class="flex items-baseline justify-between gap-3 mb-4">
+          <h3 class="font-semibold text-gray-700">Gastos por categoria</h3>
+          <p id="resumo-categorias" class="text-xs text-gray-400"></p>
         </div>
+        <ol id="grafico-categorias" class="flex-1 flex flex-col justify-evenly gap-4" aria-label="Gastos por categoria, do maior para o menor"></ol>
       </div>
 
       <div class="flex flex-col gap-4">
@@ -278,110 +279,81 @@ function templateCentroDashboard() {
 
 // <==================|GRAFICOS|=========================>
 
-// Variável global para guardar o gráfico atual.
-// Isso é MUITO IMPORTANTE para podermos apagá-lo antes de desenhar o do próximo mês!
-// Variável global para guardar o gráfico atual. (Não remova!)
-let graficoAtual = null;
+// Quantas categorias aparecem antes de agrupar o restante em "Outras"
+const MAX_CATEGORIAS = 6;
 
+// Ranking de gastos por categoria em barras horizontais (HTML, sem canvas):
+// nomes longos ficam legíveis e valor e porcentagem aparecem sem depender do mouse.
+// As barras têm uma cor só; a cor da categoria fica na bolinha, igual à etiqueta da lista.
 function atualizarGrafico(mesISO) {
   if (!mesISO) return;
 
-  // 1. Pega só os gastos do mês selecionado (Lógica original, perfeita)
-  const gastosDoMes = gastos.filter((item) => item.data?.startsWith(mesISO));
+  const lista = document.getElementById("grafico-categorias");
+  const resumo = document.getElementById("resumo-categorias");
+  if (!lista) return;
 
-  // 2. Agrupa os valores por Categoria (Lógica original, perfeita)
+  // 1. Soma os gastos do mês por categoria
   const totaisPorCategoria = {};
-  gastosDoMes.forEach((gasto) => {
-    const cat = gasto.categoria || "Outros";
-    if (totaisPorCategoria[cat]) {
-      totaisPorCategoria[cat] += Number(gasto.valor);
-    } else {
-      totaisPorCategoria[cat] = Number(gasto.valor);
-    }
-  });
+  gastos
+    .filter((item) => item.data?.startsWith(mesISO))
+    .forEach((gasto) => {
+      const cat = gasto.categoria || "Outros Gastos";
+      totaisPorCategoria[cat] = (totaisPorCategoria[cat] || 0) + (Number(gasto.valor) || 0);
+    });
 
-  // 3. Separa os Nomes (Labels) e os Valores (Data) (Lógica original, perfeita)
-  const nomesCategorias = Object.keys(totaisPorCategoria);
-  const valoresCategorias = Object.values(totaisPorCategoria);
+  // 2. Ordena do maior para o menor e agrupa a cauda em "Outras"
+  let linhas = Object.entries(totaisPorCategoria)
+    .map(([nome, valor]) => ({ nome, valor, cor: categoriaGasto(nome).cor }))
+    .sort((a, b) => b.valor - a.valor);
 
-  // 4. Desenha o Gráfico!
-  const canvas = document.getElementById("meuGraficoGastos");
-  if (!canvas) return; // Proteção para evitar erros
-
-  // Se já existir um gráfico, destrói para criar o novo do próximo mês (Não remova!)
-  if (graficoAtual) {
-    graficoAtual.destroy();
+  if (linhas.length > MAX_CATEGORIAS) {
+    const cauda = linhas.slice(MAX_CATEGORIAS - 1);
+    linhas = [
+      ...linhas.slice(0, MAX_CATEGORIAS - 1),
+      {
+        nome: `Outras (${cauda.length} categorias)`,
+        valor: cauda.reduce((acc, linha) => acc + linha.valor, 0),
+        cor: "#d1d5db",
+      },
+    ];
   }
 
-  // Cria o novo gráfico - VERSÃO EM BARRAS
-  graficoAtual = new Chart(canvas, {
-    type: "bar", // MUDANÇA: 'doughnut' para 'bar'
-    data: {
-      labels: nomesCategorias, // Categorias no eixo X
-      datasets: [
-        {
-          label: "Total Gasto (R$)", // Rótulo do conjunto de dados
-          data: valoresCategorias, // Valores no eixo Y
-          // Mantemos as cores bonitinhas para cada barra
-          backgroundColor: nomesCategorias.map((nome) => categoriaGasto(nome).cor), // mesma cor da etiqueta na lista
-          borderWidth: 0,
-          borderRadius: 5, // Um toque sutil: deixa o topo das barras arredondado
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: false, // MUDANÇA: Ocultamos a legenda, pois os nomes já estão no eixo X
-        },
-        tooltip: {
-          // Configuração do balãozinho de informações ao passar o mouse
-          callbacks: {
-            label: function (context) {
-              return " " + context.formattedValue + " Gasto";
-            },
-          },
-        },
-      },
-      // MUDANÇA IMPORTANTE: Configurando os eixos (scales)
-      scales: {
-        y: {
-          // Eixo Y (Valores)
-          beginAtZero: true, // Garante que comece do 0
-          title: {
-            display: true,
-            text: "Total Gasto (R$)", // Título do eixo Y (like example's "(habitantes/km²)")
-            font: {
-              size: 14,
-              weight: "bold",
-            },
-          },
-          ticks: {
-            // Formatar os valores do eixo Y para dinheiro (R$)
-            callback: function (value, index, values) {
-              return "R$ " + value.toLocaleString("pt-BR");
-            },
-          },
-        },
-        x: {
-          // Eixo X (Categorias)
-          title: {
-            display: true,
-            text: "Categorias de Gastos", // Título do eixo X
-            font: {
-              size: 14,
-              weight: "bold",
-            },
-          },
-          grid: {
-            display: false, // Tira as linhas de grade verticais para ficar mais clean
-          },
-        },
-      },
-    },
-  });
+  const total = linhas.reduce((acc, linha) => acc + linha.valor, 0);
+  const maior = linhas[0]?.valor || 0;
+
+  if (resumo) {
+    const qtd = Object.keys(totaisPorCategoria).length;
+    resumo.textContent = qtd > 0 ? `${formatoMoeda.format(total)} em ${qtd} ${qtd === 1 ? "categoria" : "categorias"}` : "";
+  }
+
+  if (linhas.length === 0) {
+    lista.innerHTML = '<li class="py-10 my-auto text-center text-sm text-gray-400">Nenhum gasto neste mês.</li>';
+    return;
+  }
+
+  // 3. Desenha uma linha por categoria; a barra é proporcional à maior categoria
+  lista.innerHTML = linhas
+    .map(({ nome, valor, cor }) => {
+      const porcentagem = total > 0 ? Math.round((valor / total) * 100) : 0;
+      const largura = maior > 0 ? Math.max((valor / maior) * 100, 1) : 0;
+      return `
+      <li class="group" title="${escaparHTML(nome)}: ${formatoMoeda.format(valor)} (${porcentagem}% do mês)">
+        <div class="flex items-baseline justify-between gap-4">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${cor}" aria-hidden="true"></span>
+            <span class="truncate text-sm text-gray-700">${escaparHTML(nome)}</span>
+          </div>
+          <div class="shrink-0 text-sm tabular-nums">
+            <span class="font-semibold text-gray-800">${formatoMoeda.format(valor)}</span>
+            <span class="inline-block w-10 text-right text-xs text-gray-400">${porcentagem}%</span>
+          </div>
+        </div>
+        <div class="mt-1.5 h-2 rounded-full bg-gray-100 overflow-hidden">
+          <div class="h-full rounded-full bg-[#9F0712] opacity-85 group-hover:opacity-100 transition-opacity" style="width:${largura}%"></div>
+        </div>
+      </li>`;
+    })
+    .join("");
 }
 
 // Variável global para este gráfico também!
